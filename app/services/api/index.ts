@@ -195,7 +195,7 @@ export async function getLeague(
     standings: { results },
   } = league;
   const managers = await Promise.all(
-    results.slice(0, 3).map(async (result) => {
+    results.slice(0, 20).map(async (result) => {
       const [gw, transfersResponse, historyResponse] = await Promise.all([
         fetchGameweek({
           teamId: result.entry,

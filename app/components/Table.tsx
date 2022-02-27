@@ -1,8 +1,8 @@
-import { capitalCase } from "change-case"
-import React from "react"
-import colors from "src/style/colors"
-import { ItemsOf } from "src/util/utilityTypes"
-import styled, { css } from "styled-components"
+import { capitalCase } from "change-case";
+import React from "react";
+import styled, { css } from "styled-components";
+import colors from "~/style/colors";
+import { ItemsOf } from "~/util/utilityTypes";
 
 const _Table = styled.table.attrs({ cellSpacing: 0 })`
   width: 100%;
@@ -10,7 +10,7 @@ const _Table = styled.table.attrs({ cellSpacing: 0 })`
   border: 1px solid ${colors.border};
   background-color: white;
   border-radius: 5px;
-`
+`;
 
 const Row = styled.tr`
   th,
@@ -23,26 +23,26 @@ const Row = styled.tr`
       border-bottom: none;
     }
   }
-`
+`;
 
-const HeaderRow = styled(Row)``
+const HeaderRow = styled(Row)``;
 
-export type CellWidth = number | "hide" | "auto" | "nowrap"
-export type CellWidths = [CellWidth] | [CellWidth, CellWidth]
+export type CellWidth = number | "hide" | "auto" | "nowrap";
+export type CellWidths = [CellWidth] | [CellWidth, CellWidth];
 
 interface CellProps {
-  widths: CellWidths
+  widths: CellWidths;
 }
 
 function makeCellWidthStyle(cellWidth: CellWidth) {
-  const widthValue = typeof cellWidth === "number" ? cellWidth + "px" : "auto"
+  const widthValue = typeof cellWidth === "number" ? cellWidth + "px" : "auto";
   const style = `
     display: ${cellWidth === "hide" ? "none" : "table-cell"};
     width: ${widthValue};
     min-width: ${widthValue};
     ${cellWidth === "nowrap" ? `white-space: nowrap;` : ""}
-  `
-  return style
+  `;
+  return style;
 }
 
 const cellStyle = css<CellProps>`
@@ -65,11 +65,11 @@ const cellStyle = css<CellProps>`
   &:last-child {
     padding-right: 8px;
   }
-`
+`;
 
 const Cell = styled.td<CellProps>`
   ${cellStyle};
-`
+`;
 
 const HeaderCell = styled.th<CellProps & { onClick?: any }>`
   font-weight: bold;
@@ -77,17 +77,17 @@ const HeaderCell = styled.th<CellProps & { onClick?: any }>`
   text-transform: uppercase;
   text-align: left;
   ${cellStyle};
-`
+`;
 
 interface TableProps<
   RowData extends object,
   Headers extends readonly string[]
 > {
-  data: RowData[]
-  headers: Headers
-  renderCell: (header: ItemsOf<Headers>, rowData: RowData) => React.ReactNode
-  renderHeader?: (header: ItemsOf<Headers>) => React.ReactNode
-  cellWidths: Record<ItemsOf<Headers>, CellWidths>
+  data: RowData[];
+  headers: Headers;
+  renderCell: (header: ItemsOf<Headers>, rowData: RowData) => React.ReactNode;
+  renderHeader?: (header: ItemsOf<Headers>) => React.ReactNode;
+  cellWidths: Record<ItemsOf<Headers>, CellWidths>;
 }
 
 function Table<RowData extends object, Headers extends readonly string[]>(
@@ -98,8 +98,8 @@ function Table<RowData extends object, Headers extends readonly string[]>(
     headers,
     renderCell,
     renderHeader = capitalCase,
-    cellWidths
-  } = props
+    cellWidths,
+  } = props;
   return (
     <_Table>
       <HeaderRow>
@@ -109,7 +109,7 @@ function Table<RowData extends object, Headers extends readonly string[]>(
               children={renderHeader(header)}
               widths={cellWidths[header]}
             />
-          )
+          );
         })}
       </HeaderRow>
       {data.map((rowData) => {
@@ -121,13 +121,13 @@ function Table<RowData extends object, Headers extends readonly string[]>(
                   children={renderCell(header, rowData)}
                   widths={cellWidths[header]}
                 />
-              )
+              );
             })}
           </Row>
-        )
+        );
       })}
     </_Table>
-  )
+  );
 }
 
 Object.assign(Table, {
@@ -135,12 +135,12 @@ Object.assign(Table, {
   Row,
   HeaderRow,
   Cell,
-  HeaderCell
-})
+  HeaderCell,
+});
 
 export default React.memo(Table) as <
   RowData extends object,
   Headers extends readonly string[]
 >(
   props: TableProps<RowData, Headers>
-) => React.ReactElement
+) => React.ReactElement;
