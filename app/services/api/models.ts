@@ -73,3 +73,15 @@ export interface Fixture {
   home: FixtureTeam;
   away: FixtureTeam;
 }
+
+// a league in the context of a list of one manager's leagues
+export interface ManagerLeague {
+  id: number;
+  name: string;
+  managerRank: number;
+}
+export interface ManagerProfile {
+  name: string;
+  overallRank: number;
+  leagues: Array<ManagerLeague>;
+}

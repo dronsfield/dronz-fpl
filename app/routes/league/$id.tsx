@@ -1,8 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { LoaderFunction, Outlet, useLoaderData } from "remix";
+import { LoaderFunction, Outlet, useLoaderData, useTransition } from "remix";
 import styled from "styled-components";
 import invariant from "tiny-invariant";
+import { Loader } from "~/components/Loader";
 import Spacer from "~/components/Spacer";
 import { getLeague, init } from "~/services/api";
 import colors from "~/style/colors";
@@ -51,7 +52,7 @@ const NavButtons = styled.div`
 `;
 
 const CustomLink = (props: any) => (
-  <NavLink {...props} activeClassName="active" exact />
+  <NavLink {...props} activeClassName="active" exact replace />
 );
 
 const NavButton = styled(CustomLink)`
@@ -93,7 +94,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
         </Banner>
         <Spacer height={5} />
         <NavButtons>
-          <NavButton children="Fixtures" to="fixtures" />
+          <NavButton children="Fixtures" to="fixtures" repl />
           <NavButton children="Captains" to="captains" />
           <NavButton children="Chips" to="chips" />
         </NavButtons>
@@ -129,11 +130,17 @@ export const LeagueContext = React.createContext<LeagueData>(
 
 const League: React.FC<LeagueProps> = (props) => {
   const data = useLoaderData<LeagueData>();
+  const transition = useTransition();
+  console.log(JSON.stringify(transition));
 
   return (
     <LeagueContext.Provider value={data}>
       <Layout name={data.name}>
-        <Outlet />
+        {transition.state === "loading" ? (
+          <Loader size={20} />
+        ) : (
+          <Outlet context={data} />
+        )}
       </Layout>
     </LeagueContext.Provider>
   );

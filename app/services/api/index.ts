@@ -1,32 +1,3 @@
-// import {
-//   playerPositions,
-//   PlayerPosition,
-//   Player,
-//   Players,
-//   Team,
-//   Teams,
-//   GameweekTransfers,
-//   Chip,
-//   PickType,
-//   Manager,
-//   League,
-//   FixtureTeam,
-//   Fixture,
-// } from "./models";
-// import {
-//   ElementRT,
-//   TeamRT,
-//   EventRT,
-//   BootstrapRT,
-//   LeagueRT,
-//   PickRT,
-//   GameweekRT,
-//   TransferRT,
-//   StatRT,
-//   FixtureRT,
-//   HistoryRT,
-// } from "./requests";
-
 import { keyBy } from "~/util/keyBy";
 import {
   Chip,
@@ -35,6 +6,7 @@ import {
   GameweekTransfers,
   League,
   Manager,
+  ManagerProfile,
   PickType,
   Player,
   playerPositions,
@@ -49,13 +21,16 @@ import {
   fetchGameweek,
   fetchHistory,
   fetchLeague,
+  fetchManagerInfo,
   fetchTransfers,
   FixtureRT,
   HistoryRT,
+  ManagerInfoRT,
   PickRT,
   TeamRT,
   TransferRT,
 } from "./requests";
+export * from "./models";
 
 function parseCurrentEventId(events: EventRT[]): number {
   let currentEventId = 0;
@@ -162,6 +137,17 @@ function parseChips(history: HistoryRT): Chip[] {
     name: chip.name,
   }));
 }
+function parseManagerProfile(managerInfo: ManagerInfoRT): ManagerProfile {
+  return {
+    name: `${managerInfo.player_first_name} ${managerInfo.player_last_name}`,
+    overallRank: managerInfo.summary_overall_rank,
+    leagues: managerInfo.leagues.classic.map((item) => ({
+      id: item.id,
+      name: item.name,
+      managerRank: item.entry_rank,
+    })),
+  };
+}
 
 export async function init() {
   const bootstrap = await fetchBootstrap();
@@ -198,11 +184,11 @@ export async function getLeague(
     results.slice(0, 20).map(async (result) => {
       const [gw, transfersResponse, historyResponse] = await Promise.all([
         fetchGameweek({
-          teamId: result.entry,
+          managerId: result.entry,
           eventId: currentEventId,
         }),
-        fetchTransfers({ teamId: result.entry }),
-        fetchHistory({ teamId: result.entry }),
+        fetchTransfers({ managerId: result.entry }),
+        fetchHistory({ managerId: result.entry }),
       ]);
 
       const picks = gw.picks.reduce((acc, pick) => {
@@ -238,4 +224,9 @@ export async function getLeague(
     id,
     managers,
   };
+}
+
+export async function getManagerProfile(managerId: number) {
+  const data = await fetchManagerInfo({ managerId });
+  return parseManagerProfile(data);
 }

@@ -1,5 +1,6 @@
 import {
   ErrorBoundaryComponent,
+  Link,
   Links,
   LinksFunction,
   LiveReload,
@@ -13,7 +14,7 @@ import {
 import GlobalStyle from "./style/global";
 
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: "FPL.DRONZ" };
 };
 
 export const links: LinksFunction = () => {
@@ -71,8 +72,10 @@ export function CatchBoundary() {
   return (
     <App>
       <h1>
-        {caught.status} + {caught.statusText}
+        {caught.status} {"&&"} {caught.statusText}
       </h1>
+      <Link to="/" children="Go home" />
+      <Link to="/test" children="Go test" />
     </App>
   );
 }

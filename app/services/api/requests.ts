@@ -110,6 +110,22 @@ export const HistoryRT = Record({
 });
 export type HistoryRT = Static<typeof HistoryRT>;
 
+export const ManagerInfoRT = Record({
+  player_first_name: String,
+  player_last_name: String,
+  summary_overall_rank: Number,
+  leagues: Record({
+    classic: Array(
+      Record({
+        id: Number,
+        name: String,
+        entry_rank: Number,
+      })
+    ),
+  }),
+});
+export type ManagerInfoRT = Static<typeof ManagerInfoRT>;
+
 export function fetchBootstrap() {
   const url = `${BASE_URL}/bootstrap-static/`;
   return runtypeFetch(BootstrapRT, url);
@@ -118,19 +134,23 @@ export function fetchLeague(opts: { leagueId: number }) {
   const url = `${BASE_URL}/leagues-classic/${opts.leagueId}/standings/`;
   return runtypeFetch(LeagueRT, url);
 }
-export function fetchGameweek(opts: { teamId: number; eventId: number }) {
-  const url = `${BASE_URL}/entry/${opts.teamId}/event/${opts.eventId}/picks/`;
+export function fetchGameweek(opts: { managerId: number; eventId: number }) {
+  const url = `${BASE_URL}/entry/${opts.managerId}/event/${opts.eventId}/picks/`;
   return runtypeFetch(GameweekRT, url);
 }
-export function fetchTransfers(opts: { teamId: number }) {
-  const url = `${BASE_URL}/entry/${opts.teamId}/transfers/`;
+export function fetchTransfers(opts: { managerId: number }) {
+  const url = `${BASE_URL}/entry/${opts.managerId}/transfers/`;
   return runtypeFetch(Array(TransferRT), url);
 }
 export function fetchFixtures(opts: { eventId: number }) {
   const url = `${BASE_URL}/fixtures/?event=${opts.eventId}`;
   return runtypeFetch(Array(FixtureRT), url);
 }
-export function fetchHistory(opts: { teamId: number }) {
-  const url = `${BASE_URL}/entry/${opts.teamId}/history/`;
+export function fetchHistory(opts: { managerId: number }) {
+  const url = `${BASE_URL}/entry/${opts.managerId}/history/`;
   return runtypeFetch(HistoryRT, url);
+}
+export function fetchManagerInfo(opts: { managerId: number }) {
+  const url = `${BASE_URL}/entry/${opts.managerId}/`;
+  return runtypeFetch(ManagerInfoRT, url);
 }

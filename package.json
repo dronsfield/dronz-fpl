@@ -7,6 +7,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production remix build",
     "dev": "cross-env NODE_ENV=development remix dev",
+    "typecheck": "tsc --watch --noEmit",
     "postinstall": "remix setup node"
   },
   "dependencies": {

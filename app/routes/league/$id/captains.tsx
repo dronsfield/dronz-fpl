@@ -1,16 +1,23 @@
 import React from "react";
+import { useMatches, useOutletContext } from "remix";
 import { ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import Table from "~/components/Table";
 import { sortBy } from "~/util/sortBy";
-import { LeagueContext } from "../$id";
+import { LeagueContext, LeagueData } from "../$id";
 
 const headers = ["manager", "captain", "vice"] as const;
 const aggregateHeaders = ["player", "count"] as const;
 
 const Captains: React.FC<{}> = (props) => {
   const { managers, currentEventId, players } = React.useContext(LeagueContext);
+
+  const matches = useMatches();
+  console.log(matches);
+
+  const outletCtx = useOutletContext<LeagueData>();
+  console.log(outletCtx);
 
   const data = React.useMemo(() => {
     return managers.map((manager) => {
