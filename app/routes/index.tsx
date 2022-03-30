@@ -14,7 +14,8 @@ import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import { getManagerProfile, ManagerProfile } from "~/services/api";
 import { createUserSession, getUser } from "~/services/session.server";
-import { readFormData } from "~/util/readFormData";
+import { readRequestFormData } from "~/util/readFormData";
+import Login from "~/views/Login";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
@@ -25,7 +26,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const [action, id] = await readFormData(request, ["xd", "id"]);
+  const [action, id] = await readRequestFormData(request, ["xd", "id"]);
   if (action === "user") {
     const parsedId = Number(id);
     if (!parsedId) return { formError: "invalid id" };
@@ -67,21 +68,7 @@ export default function Index() {
       </Section>
     );
   } else {
-    return (
-      <Section>
-        <Form method="post">
-          <input type="hidden" name="xd" value="user" />
-          <input type="text" name="id" required placeholder="Your FPL ID" />
-          <button type="submit" children="GO" />
-        </Form>
-
-        <Form method="post">
-          <input type="hidden" name="xd" value="league" />
-          <input type="text" name="id" required placeholder="League ID" />
-          <button type="submit" children="GO" />
-        </Form>
-      </Section>
-    );
+    return <Login />;
   }
 }
 

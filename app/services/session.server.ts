@@ -4,7 +4,7 @@ const sessionSecret = process.env.SESSION_SECRET || "lul";
 if (!sessionSecret) throw new Error("SESSION_SECRET required");
 
 export const storage = createCookieSessionStorage({
-  cookie: { name: "fpl.dronz" },
+  cookie: { name: "fpl.dronz", secure: true, maxAge: 60 * 60 * 24 * 365 },
 });
 
 export async function createUserSession(userId: number, redirectTo: string) {
