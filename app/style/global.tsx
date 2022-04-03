@@ -1,5 +1,5 @@
-import { createGlobalStyle } from "styled-components"
-import colors from "./colors"
+import { createGlobalStyle } from "styled-components";
+import colors from "./colors";
 
 export const GlobalStyle = createGlobalStyle`
   *, *:before, *:after {
@@ -16,6 +16,7 @@ export const GlobalStyle = createGlobalStyle`
     max-width: 100%;
     height: 100%;
     color: ${colors.text};
+    background-color: ${colors.background};
     font-family: IBM Plex Sans, sans-serif;
     font-size: 11px;
     @media (min-width: 360px) {
@@ -48,6 +49,6 @@ export const GlobalStyle = createGlobalStyle`
       margin-bottom: 0;
     }
   }
-`
+`;
 
-export default GlobalStyle
+export default GlobalStyle;

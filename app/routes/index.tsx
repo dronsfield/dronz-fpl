@@ -2,19 +2,15 @@ import React from "react";
 import {
   ActionFunction,
   ErrorBoundaryComponent,
-  Form,
-  Link,
   LoaderFunction,
   redirect,
   useActionData,
   useLoaderData,
 } from "remix";
-import LogoutButton from "~/components/LogoutButton";
-import Section from "~/components/Section";
-import Spacer from "~/components/Spacer";
 import { getManagerProfile, ManagerProfile } from "~/services/api";
 import { createUserSession, getUser } from "~/services/session.server";
 import { readRequestFormData } from "~/util/readFormData";
+import Home from "~/views/Home";
 import Login from "~/views/Login";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -44,29 +40,7 @@ export default function Index() {
   if (actionData) console.log(actionData);
 
   if (data) {
-    return (
-      <Section>
-        <div children="My leagues:" />
-        {data?.leagues.map((league) => (
-          <div>
-            <Link
-              key={league.id}
-              children={league.name}
-              to={`/league/${league.id}`}
-            />
-          </div>
-        ))}
-        <Spacer height={16} />
-        <div children="View another league" />
-        <Form method="post">
-          <input type="hidden" name="xd" value="league" />
-          <input type="text" name="id" required placeholder="League ID" />
-          <button type="submit" children="GO" />
-          <Spacer height={32} />
-          <LogoutButton />
-        </Form>
-      </Section>
-    );
+    return <Home data={data} />;
   } else {
     return <Login />;
   }

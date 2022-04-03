@@ -2,6 +2,7 @@ import { capitalCase } from "change-case";
 import React from "react";
 import styled, { css } from "styled-components";
 import colors from "~/style/colors";
+import { recordFromArray } from "~/util/recordFromArray";
 import { ItemsOf } from "~/util/utilityTypes";
 
 const _Table = styled.table.attrs({ cellSpacing: 0 })`
@@ -87,19 +88,28 @@ interface TableProps<
   headers: Headers;
   renderCell: (header: ItemsOf<Headers>, rowData: RowData) => React.ReactNode;
   renderHeader?: (header: ItemsOf<Headers>) => React.ReactNode;
-  cellWidths: Record<ItemsOf<Headers>, CellWidths>;
+  cellWidths?: Record<ItemsOf<Headers>, CellWidths>;
 }
 
 function Table<RowData extends object, Headers extends readonly string[]>(
   props: TableProps<RowData, Headers>
 ): React.ReactElement {
-  const {
+  let {
     data,
     headers,
     renderCell,
     renderHeader = capitalCase,
-    cellWidths,
+    cellWidths: cellWidthsProp,
   } = props;
+
+  const cellWidths = React.useMemo(() => {
+    if (cellWidthsProp) {
+      return cellWidthsProp;
+    } else {
+      return recordFromArray(headers, () => ["auto"] as CellWidths);
+    }
+  }, [headers, cellWidthsProp]);
+
   return (
     <_Table>
       <HeaderRow>
