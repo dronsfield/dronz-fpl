@@ -2,7 +2,7 @@ import React from "react";
 import { ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Table from "~/components/Table";
-import { LeagueContext } from "../$id";
+import { useLeagueData } from "../$id";
 
 const headers = [
   "Manager",
@@ -17,7 +17,7 @@ function moneyColumn(value: number) {
 }
 
 const TemplateTeam: React.FC<{}> = (props) => {
-  const { managers, currentEventId } = React.useContext(LeagueContext);
+  const { managers, currentEventId } = useLeagueData();
 
   return (
     <Section>

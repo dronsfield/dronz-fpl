@@ -1,4 +1,5 @@
 import React from "react";
+import { useTransition } from "remix";
 import { ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
@@ -6,7 +7,7 @@ import Table from "~/components/Table";
 import { Manager } from "~/services/api/models";
 import colors from "~/style/colors";
 import { ItemsOf } from "~/util/utilityTypes";
-import { LeagueContext } from "../$id";
+import { useLeagueData } from "../$id";
 
 const chipKeys = ["wc1", "wc2", "fh1", "fh2", "tc", "bb"] as const;
 type ChipKey = ItemsOf<typeof chipKeys>;
@@ -44,7 +45,7 @@ type EventData = {
 };
 
 const Chips: React.FC<{}> = () => {
-  const { managers, currentEventId } = React.useContext(LeagueContext);
+  const { managers, currentEventId } = useLeagueData();
 
   const { seasonData, eventData } = React.useMemo(() => {
     const eventData: EventData[] = [];
@@ -86,6 +87,8 @@ const Chips: React.FC<{}> = () => {
     });
     return { seasonData, eventData };
   }, [managers, currentEventId]);
+
+  console.log(useTransition());
 
   return (
     <Section>

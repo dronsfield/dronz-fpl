@@ -4,11 +4,11 @@ import Section from "~/components/Section";
 import Table from "~/components/Table";
 import { Player } from "~/services/api/models";
 import { sortBy } from "~/util/sortBy";
-import { LeagueContext } from "../$id";
+import { useLeagueData } from "../$id";
 
 const TBMHeaders = ["manager", "in", "out"] as const;
 const TransfersByManager: React.FC<{}> = (props) => {
-  const { managers, currentEventId, players } = React.useContext(LeagueContext);
+  const { managers, currentEventId, players } = useLeagueData();
   return (
     <Table
       data={managers}
@@ -38,7 +38,7 @@ interface TBPData {
 }
 const TBPHeaders = ["player", "transfers"];
 const TransfersByPlayer: React.FC<{}> = (props) => {
-  const { managers, currentEventId, players } = React.useContext(LeagueContext);
+  const { managers, currentEventId, players } = useLeagueData();
 
   const data = React.useMemo(() => {
     const values: { [playerId: number]: number } = {};

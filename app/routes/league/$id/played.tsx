@@ -7,7 +7,7 @@ import { FixtureTeam, PickType, Player } from "~/services/api/models";
 import colors from "~/style/colors";
 import { sortBy } from "~/util/sortBy";
 import { ItemsOf } from "~/util/utilityTypes";
-import { LeagueContext } from "../$id";
+import { useLeagueData } from "../$id";
 
 const headers = [
   "manager",
@@ -37,8 +37,7 @@ const PlayerName = styled.span<{
 `;
 
 const Played: React.FC<{}> = (props) => {
-  const { managers, currentEventId, players, fixtures } =
-    React.useContext(LeagueContext);
+  const { managers, currentEventId, players, fixtures } = useLeagueData();
 
   const data = React.useMemo(() => {
     const teamFixtureStatuses: { [teamId: number]: TeamFixtureStatus } = {};

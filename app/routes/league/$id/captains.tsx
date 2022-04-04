@@ -5,13 +5,13 @@ import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import Table from "~/components/Table";
 import { sortBy } from "~/util/sortBy";
-import { LeagueContext, LeagueData } from "../$id";
+import { LeagueData, useLeagueData } from "../$id";
 
 const headers = ["manager", "captain", "vice"] as const;
 const aggregateHeaders = ["player", "count"] as const;
 
 const Captains: React.FC<{}> = (props) => {
-  const { managers, currentEventId, players } = React.useContext(LeagueContext);
+  const { managers, currentEventId, players } = useLeagueData();
 
   const matches = useMatches();
   console.log(matches);

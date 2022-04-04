@@ -1,5 +1,7 @@
 import React from "react";
-import { Form } from "remix";
+import { Form, useTransition } from "remix";
+import FlexRow from "~/components/FlexRow";
+import { Loader } from "~/components/Loader";
 import LogoutButton from "~/components/LogoutButton";
 import PlainLink from "~/components/PlainLink";
 import Section from "~/components/Section";
@@ -15,6 +17,8 @@ export interface HomeProps {
 }
 const Home: React.FC<HomeProps> = (props) => {
   const { data } = props;
+
+  const transition = useTransition();
 
   const [showAll, setShowAll] = React.useState(false);
 
@@ -34,8 +38,18 @@ const Home: React.FC<HomeProps> = (props) => {
         headers={tableHeaders}
         renderCell={(header, rowData) => {
           if (header === "name") {
+            const to = `/league/${rowData.id}`;
+            const transitionPath = transition.location?.pathname;
             return (
-              <PlainLink children={rowData.name} to={`/league/${rowData.id}`} />
+              <FlexRow>
+                <PlainLink children={rowData.name} to={to} />
+                {transitionPath && transitionPath.startsWith(to) ? (
+                  <>
+                    <Spacer width={8} />
+                    <Loader size={14} />
+                  </>
+                ) : null}
+              </FlexRow>
             );
           }
           return rowData[header];

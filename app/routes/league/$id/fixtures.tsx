@@ -18,7 +18,7 @@ import { normalizeButton, removeHighlight } from "~/style/mixins";
 import { StateSetter } from "~/types";
 import { formatName } from "~/util/formatName";
 import { sortBy } from "~/util/sortBy";
-import { LeagueContext } from "../$id";
+import { useLeagueData } from "../$id";
 
 interface StateContextValue {
   playerId?: number;
@@ -225,8 +225,7 @@ const renderFixture: React.FC<{ fixture: FixtureWithPicks }> = (props) => {
 };
 
 function useFixturesWithPicks() {
-  const { fixtures, managers, teams, players } =
-    React.useContext(LeagueContext);
+  const { fixtures, managers, teams, players } = useLeagueData();
   const fixturesWithPicks: FixtureWithPicks[] = React.useMemo(() => {
     const picksByTeam: { [teamId: number]: { [playerId: number]: TeamPick } } =
       {};

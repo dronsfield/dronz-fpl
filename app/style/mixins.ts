@@ -12,7 +12,7 @@ export const normalizeInput = `
   &::placeholder{}
   &::-ms-expand{}
   &:focus{}
-`
+`;
 
 export const normalizeButton = `
   appearance: none;
@@ -22,8 +22,9 @@ export const normalizeButton = `
   cursor: pointer;
   font-size: inherit;
   font-family: inherit;
-`
+  color: inherit;
+`;
 
 export const removeHighlight = `
   -webkit-tap-highlight-color: transparent;
-`
+`;

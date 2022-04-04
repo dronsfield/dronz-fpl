@@ -18,7 +18,7 @@ const Row = styled.tr`
   td {
     border-bottom: 1px solid ${colors.border};
   }
-  &:last-child {
+  tbody &:last-child {
     th,
     td {
       border-bottom: none;
@@ -112,30 +112,34 @@ function Table<RowData extends object, Headers extends readonly string[]>(
 
   return (
     <_Table>
-      <HeaderRow>
-        {headers.map((header: ItemsOf<Headers>) => {
+      <thead>
+        <HeaderRow>
+          {headers.map((header: ItemsOf<Headers>) => {
+            return (
+              <HeaderCell
+                children={renderHeader(header)}
+                widths={cellWidths[header]}
+              />
+            );
+          })}
+        </HeaderRow>
+      </thead>
+      <tbody>
+        {data.map((rowData) => {
           return (
-            <HeaderCell
-              children={renderHeader(header)}
-              widths={cellWidths[header]}
-            />
+            <Row>
+              {headers.map((header: ItemsOf<Headers>) => {
+                return (
+                  <Cell
+                    children={renderCell(header, rowData)}
+                    widths={cellWidths[header]}
+                  />
+                );
+              })}
+            </Row>
           );
         })}
-      </HeaderRow>
-      {data.map((rowData) => {
-        return (
-          <Row>
-            {headers.map((header: ItemsOf<Headers>) => {
-              return (
-                <Cell
-                  children={renderCell(header, rowData)}
-                  widths={cellWidths[header]}
-                />
-              );
-            })}
-          </Row>
-        );
-      })}
+      </tbody>
     </_Table>
   );
 }

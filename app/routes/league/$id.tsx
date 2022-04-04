@@ -1,10 +1,12 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
 import { LoaderFunction, Outlet, useLoaderData, useTransition } from "remix";
 import styled from "styled-components";
 import invariant from "tiny-invariant";
+import Button from "~/components/Button";
+import FlexCenter from "~/components/FlexCenter";
 import { Loader } from "~/components/Loader";
 import Spacer from "~/components/Spacer";
+import { useRouteData } from "~/hooks/useRouteData";
 import { getLeague, init } from "~/services/api";
 import colors from "~/style/colors";
 
@@ -51,18 +53,16 @@ const NavButtons = styled.div`
   justify-content: center;
 `;
 
-const CustomLink = (props: any) => (
-  <NavLink {...props} activeClassName="active" exact replace />
-);
-
-const NavButton = styled(CustomLink)`
-  font-weight: bold;
+const NavButton = styled(Button).attrs({
+  exact: true,
+  replace: true,
+  isNav: true,
+})`
   text-transform: uppercase;
-  padding: 4px 6px;
-  border-radius: 4px;
+
   margin: 3px 3px;
   color: white;
-  text-decoration: none;
+
   background-color: rgba(255, 255, 255, 0.2);
   transition: 0.1s linear all;
   -webkit-tap-highlight-color: transparent;
@@ -94,7 +94,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
         </Banner>
         <Spacer height={5} />
         <NavButtons>
-          <NavButton children="Fixtures" to="fixtures" repl />
+          <NavButton children="Fixtures" to="fixtures" />
           <NavButton children="Captains" to="captains" />
           <NavButton children="Chips" to="chips" />
         </NavButtons>
@@ -110,39 +110,30 @@ const Layout: React.FC<LayoutProps> = (props) => {
   );
 };
 
+export type LeagueData = Awaited<ReturnType<typeof getData>>;
+
+export function useLeagueData() {
+  return useRouteData<LeagueData>("routes/league/$id");
+}
+
 export interface LeagueProps {
   foo: string;
 }
-
-export type LeagueData = Awaited<ReturnType<typeof getData>>;
-const leagueContextDefaultValue: LeagueData = {
-  name: "",
-  id: 0,
-  managers: [],
-  players: {},
-  teams: {},
-  fixtures: [],
-  currentEventId: 1,
-};
-export const LeagueContext = React.createContext<LeagueData>(
-  leagueContextDefaultValue
-);
-
 const League: React.FC<LeagueProps> = (props) => {
   const data = useLoaderData<LeagueData>();
   const transition = useTransition();
-  console.log(JSON.stringify(transition));
 
   return (
-    <LeagueContext.Provider value={data}>
-      <Layout name={data.name}>
-        {transition.state === "loading" ? (
-          <Loader size={20} />
-        ) : (
-          <Outlet context={data} />
-        )}
-      </Layout>
-    </LeagueContext.Provider>
+    <Layout name={data.name}>
+      {transition.state !== "idle" ? (
+        <FlexCenter>
+          <Spacer height={32} />
+          <Loader size={36} color={colors.darkPurple} />
+        </FlexCenter>
+      ) : (
+        <Outlet context={data} />
+      )}
+    </Layout>
   );
 };
 
