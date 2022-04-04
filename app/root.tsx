@@ -1,6 +1,5 @@
 import {
   ErrorBoundaryComponent,
-  Link,
   Links,
   LinksFunction,
   LiveReload,
@@ -74,8 +73,7 @@ export function CatchBoundary() {
       <h1>
         {caught.status} {"&&"} {caught.statusText}
       </h1>
-      <Link to="/" children="Go home" />
-      <Link to="/test" children="Go test" />
+      <a href="/" children="Home" />
     </App>
   );
 }

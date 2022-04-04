@@ -25,6 +25,13 @@ export const normalizeButton = `
   color: inherit;
 `;
 
+export const normalizeList = `
+  margin:0;
+  padding: 0;
+  text-indent: 0;
+  list-style-type: none;
+`;
+
 export const removeHighlight = `
   -webkit-tap-highlight-color: transparent;
 `;

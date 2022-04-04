@@ -7,6 +7,7 @@ import {
   useActionData,
   useLoaderData,
 } from "remix";
+import Nav from "~/components/Nav";
 import { getManagerProfile, ManagerProfile } from "~/services/api";
 import { createUserSession, getUser } from "~/services/session.server";
 import { readRequestFormData } from "~/util/readFormData";
@@ -38,12 +39,16 @@ export default function Index() {
   const data = useLoaderData<ManagerProfile | null>();
   const actionData = useActionData();
   if (actionData) console.log(actionData);
+  console.log("poopy");
 
-  if (data) {
-    return <Home data={data} />;
-  } else {
-    return <Login />;
-  }
+  return (
+    <>
+      <div style={{ backgroundColor: "black", color: "white", height: 40 }}>
+        <Nav />
+      </div>
+      {data ? <Home data={data} /> : <Login />}
+    </>
+  );
 }
 
 export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
