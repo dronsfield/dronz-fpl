@@ -6,7 +6,14 @@ import { Player } from "~/services/api";
 import { sortBy } from "~/util/sortBy";
 import { useLeagueData } from "../$id";
 
-const headers = ["Player", "Pos", "Price", "FPLBOYS", "Overall"] as const;
+const headers = [
+  "Player",
+  "Team",
+  "Pos",
+  "Price",
+  "FPLBOYS",
+  "Overall",
+] as const;
 
 interface TemplateData {
   player: Player;
@@ -16,6 +23,10 @@ interface TemplateData {
 const TotalCost = styled.div`
   padding: 9px;
   font-weight: bold;
+`;
+
+const BadgeIcon = styled.img`
+  width: 30px;
 `;
 
 const TemplateTeam: React.FC<{}> = (props) => {
@@ -64,6 +75,12 @@ const TemplateTeam: React.FC<{}> = (props) => {
           switch (header) {
             case "Player":
               return player.webName;
+            case "Team":
+              return (
+                <BadgeIcon
+                  src={`https://resources.premierleague.com/premierleague/badges/50/t${player.teamCode}.png`}
+                />
+              );
             case "Pos":
               return player.position;
             case "Price":
@@ -79,6 +96,7 @@ const TemplateTeam: React.FC<{}> = (props) => {
         }}
         cellWidths={{
           Player: ["auto"],
+          Team: ["auto"],
           Pos: ["auto"],
           Price: ["auto"],
           FPLBOYS: ["auto"],
