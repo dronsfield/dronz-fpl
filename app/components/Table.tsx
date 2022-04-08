@@ -63,9 +63,6 @@ const cellStyle = css<CellProps>`
   &:first-child {
     padding-left: 8px;
   }
-  &:nth-child(2) {
-    padding: 0;
-  }
   &:last-child {
     padding-right: 8px;
   }

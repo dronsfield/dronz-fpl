@@ -26,7 +26,7 @@ const TotalCost = styled.div`
 `;
 
 const BadgeIcon = styled.img`
-  width: 25px;
+  width: 15px;
 `;
 
 const TemplateTeam: React.FC<{}> = (props) => {
