@@ -26,7 +26,7 @@ const TotalCost = styled.div`
 `;
 
 const BadgeIcon = styled.img`
-  width: 30px;
+  width: 25px;
 `;
 
 const TemplateTeam: React.FC<{}> = (props) => {
@@ -78,7 +78,7 @@ const TemplateTeam: React.FC<{}> = (props) => {
             case "Team":
               return (
                 <BadgeIcon
-                  src={`https://resources.premierleague.com/premierleague/badges/50/t${player.teamCode}.png`}
+                  src={`https://resources.premierleague.com/premierleague/badges/100/t${player.teamCode}.png`}
                 />
               );
             case "Pos":
