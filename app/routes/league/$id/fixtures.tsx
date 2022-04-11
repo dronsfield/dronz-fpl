@@ -33,6 +33,7 @@ const StateContext = React.createContext<StateContextValue>(
 );
 
 const Row = styled.div<{ flexEnd?: boolean }>`
+  width: 100%;
   display: flex;
   flex-direction: ${(p) => (p.flexEnd ? "row-reverse" : "row")};
   text-align: ${(p) => (p.flexEnd ? "right" : "left")};
@@ -59,6 +60,7 @@ const Score = styled.div`
 `;
 
 const PlayerContainer = styled.div<{ alignRight?: boolean }>`
+  width: 100%;
   position: relative;
   display: flex;
   flex-direction: ${(p) => (p.alignRight ? "row-reverse" : "row")};
@@ -92,12 +94,19 @@ const ManagerName = styled.div<{ pickType: PickType }>`
   ${(p) => (p.pickType === "BENCHED" ? "opacity: 0.5;" : "")}
   ${(p) => (p.pickType === "CAPTAIN" ? "font-weight: bold;" : "")}
 `;
+
+const PlayersContainer = styled.div`
+  width: 100%;
+`;
+
 const PlayerStatIconsWrapper = styled.div`
   margin: 0 4px;
   display: flex;
   flex-direction: row;
-  align-items: middle;
+  align-items: center;
+  flex-shrink: 0;
 `;
+
 const PlayerStatIcon = styled.img`
   display: inline-block;
   margin: 0 1px;
@@ -167,7 +176,7 @@ const TeamPicks: React.FC<{
       </TeamFirstRow>
       <Spacer height={5} />
       <Row flexEnd={home}>
-        <div>
+        <PlayersContainer>
           {team.picks.map((pick) => {
             const { player, picks, playerStats } = pick;
             const text = `${player.webName} x${picks.length}`;
@@ -208,7 +217,7 @@ const TeamPicks: React.FC<{
               </PlayerContainer>
             );
           })}
-        </div>
+        </PlayersContainer>
       </Row>
     </TeamContainer>
   );
