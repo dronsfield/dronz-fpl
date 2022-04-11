@@ -1,9 +1,8 @@
 import React from "react";
-import { Form, useTransition } from "remix";
-import FlexRow from "~/components/FlexRow";
-import { Loader } from "~/components/Loader";
+import { Form } from "remix";
+import appConfig from "~/appConfig";
+import LoaderLink from "~/components/LoaderLink";
 import LogoutButton from "~/components/LogoutButton";
-import PlainLink from "~/components/PlainLink";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import Table from "~/components/Table";
@@ -18,15 +17,15 @@ export interface HomeProps {
 const Home: React.FC<HomeProps> = (props) => {
   const { data } = props;
 
-  const transition = useTransition();
-
   const [showAll, setShowAll] = React.useState(false);
 
   const validLeagues = React.useMemo(() => {
     return sortBy(
       showAll
         ? data.leagues
-        : data.leagues.filter((league) => league.managerRank <= 20),
+        : data.leagues.filter(
+            (league) => league.managerRank <= appConfig.MAX_MANAGERS
+          ),
       "name"
     );
   }, [data, showAll]);
@@ -39,18 +38,7 @@ const Home: React.FC<HomeProps> = (props) => {
         renderCell={(header, rowData) => {
           if (header === "name") {
             const to = `/league/${rowData.id}`;
-            const transitionPath = transition.location?.pathname;
-            return (
-              <FlexRow>
-                <PlainLink children={rowData.name} to={to} />
-                {transitionPath && transitionPath.startsWith(to) ? (
-                  <>
-                    <Spacer width={8} />
-                    <Loader size={14} />
-                  </>
-                ) : null}
-              </FlexRow>
-            );
+            return <LoaderLink to={to} children={rowData.name} />;
           }
           return rowData[header];
         }}

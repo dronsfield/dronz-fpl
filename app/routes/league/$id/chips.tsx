@@ -4,10 +4,10 @@ import { ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import Table from "~/components/Table";
+import { useLeagueData } from "~/hooks/useRouteData";
 import { Manager } from "~/services/api/models";
 import colors from "~/style/colors";
 import { ItemsOf } from "~/util/utilityTypes";
-import { useLeagueData } from "../$id";
 
 const chipKeys = ["wc1", "wc2", "fh1", "fh2", "tc", "bb"] as const;
 type ChipKey = ItemsOf<typeof chipKeys>;

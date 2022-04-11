@@ -2,7 +2,7 @@ import React from "react";
 import { ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Table from "~/components/Table";
-import { useLeagueData } from "../$id";
+import { useLeagueData } from "~/hooks/useRouteData";
 
 const headers = [
   "Manager",

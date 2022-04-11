@@ -3,11 +3,11 @@ import styled from "styled-components";
 import { ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Table from "~/components/Table";
+import { useLeagueData } from "~/hooks/useRouteData";
 import { FixtureTeam, PickType, Player } from "~/services/api/models";
 import colors from "~/style/colors";
 import { sortBy } from "~/util/sortBy";
 import { ItemsOf } from "~/util/utilityTypes";
-import { useLeagueData } from "../$id";
 
 const headers = [
   "manager",

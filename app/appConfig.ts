@@ -9,7 +9,7 @@ function craEnv(suffix: string) {
 }
 
 const appConfig = {
-  BUILD_ID: craEnv("BUILD_ID"),
   LEAGUE_ID: 1011990,
+  MAX_MANAGERS: 20,
 };
 export default appConfig;

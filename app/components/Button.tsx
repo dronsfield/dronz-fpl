@@ -15,20 +15,11 @@ interface RootCompProps {
 }
 
 const RootComp: React.FC<RootCompProps> = (props) => {
-  const {
-    to,
-    onClick,
-    children,
-    className,
-    type,
-    disabled,
-    exact,
-    replace,
-    isNav,
-  } = props;
+  const { to, onClick, children, className, type, disabled, replace, isNav } =
+    props;
   const commonProps = { onClick, children, className, type };
   if (to) {
-    return <Link {...{ to, exact, replace, isNav }} {...commonProps} />;
+    return <Link {...{ to, replace, isNav }} {...commonProps} />;
   } else {
     return <button {...commonProps} disabled={disabled} />;
   }

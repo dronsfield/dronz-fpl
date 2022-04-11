@@ -3,6 +3,7 @@ import {
   Links,
   LinksFunction,
   LiveReload,
+  LoaderFunction,
   Meta,
   MetaFunction,
   Outlet,
@@ -10,7 +11,15 @@ import {
   ScrollRestoration,
   useCatch,
 } from "remix";
+import { getManagerProfile } from "./services/api";
+import { getUser } from "./services/session.server";
 import GlobalStyle from "./style/global";
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const user = await getUser(request);
+  const profile = user ? await getManagerProfile(user.userId) : null;
+  return profile;
+};
 
 export const meta: MetaFunction = () => {
   return { title: "FPL.DRONZ" };

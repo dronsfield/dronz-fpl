@@ -2,9 +2,9 @@ import React from "react";
 import { ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Table from "~/components/Table";
+import { useLeagueData } from "~/hooks/useRouteData";
 import { Player } from "~/services/api/models";
 import { sortBy } from "~/util/sortBy";
-import { useLeagueData } from "../$id";
 
 const TBMHeaders = ["manager", "in", "out"] as const;
 const TransfersByManager: React.FC<{}> = (props) => {

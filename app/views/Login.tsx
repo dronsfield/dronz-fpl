@@ -70,7 +70,7 @@ const Login: React.FC<LoginProps> = (props) => {
   const transition = useTransition();
 
   const isButtonLoading = (xd: string) =>
-    transition.state !== "idle" &&
+    transition.state === "submitting" &&
     readTransitionFormData(transition, ["xd"])[0] === xd;
 
   const getButton = (xd: string) => {

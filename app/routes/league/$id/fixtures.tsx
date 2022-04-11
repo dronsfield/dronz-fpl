@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
+import { useLeagueData } from "~/hooks/useRouteData";
 import assistIcon from "~/images/assist.svg";
 import goalIcon from "~/images/goal.svg";
 import redCardIcon from "~/images/red-card.svg";
@@ -18,7 +19,6 @@ import { normalizeButton, removeHighlight } from "~/style/mixins";
 import { StateSetter } from "~/types";
 import { formatName } from "~/util/formatName";
 import { sortBy } from "~/util/sortBy";
-import { useLeagueData } from "../$id";
 
 interface StateContextValue {
   playerId?: number;
@@ -172,7 +172,7 @@ const TeamPicks: React.FC<{
             const { player, picks, playerStats } = pick;
             const text = `${player.webName} x${picks.length}`;
             return (
-              <PlayerContainer alignRight={home}>
+              <PlayerContainer alignRight={home} key={player.id}>
                 <PlayerName
                   key={player.id}
                   children={text}
@@ -217,7 +217,7 @@ const TeamPicks: React.FC<{
 const renderFixture: React.FC<{ fixture: FixtureWithPicks }> = (props) => {
   const { fixture } = props;
   return (
-    <Row>
+    <Row key={fixture.id}>
       <TeamPicks {...{ team: fixture.home, home: true }} />
       <TeamPicks {...{ team: fixture.away }} />
     </Row>

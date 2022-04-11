@@ -2,9 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import Section from "~/components/Section";
 import Table from "~/components/Table";
+import { useLeagueData } from "~/hooks/useRouteData";
 import { Player } from "~/services/api";
 import { sortBy } from "~/util/sortBy";
-import { useLeagueData } from "../$id";
 
 const headers = ["Player", "Pos", "Price", "FPLBOYS", "Overall"] as const;
 

@@ -1,5 +1,7 @@
 import React from "react";
 import { useMatches } from "remix";
+import { LeagueData } from "~/routes/league/$id";
+import { ManagerProfile } from "~/services/api";
 
 export function useRouteData<Data>(id: string) {
   const matches = useMatches();
@@ -9,6 +11,14 @@ export function useRouteData<Data>(id: string) {
       if (match.id === id) return match.data as Data;
     }
   }, [matches]);
-  if (!data) throw new Error(`No data for route "${id}"`);
+  if (data === undefined) throw new Error(`No data for route "${id}"`);
   return data;
+}
+
+export function useLeagueData() {
+  return useRouteData<LeagueData>("routes/league/$id");
+}
+
+export function useProfileData() {
+  return useRouteData<ManagerProfile | null>("root");
 }

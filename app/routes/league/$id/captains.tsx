@@ -4,9 +4,9 @@ import { ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import Table from "~/components/Table";
+import { useLeagueData } from "~/hooks/useRouteData";
 import { sortBy } from "~/util/sortBy";
-import { LeagueData, useLeagueData } from "../$id";
-
+import { LeagueData } from "../$id";
 const headers = ["manager", "captain", "vice"] as const;
 const aggregateHeaders = ["player", "count"] as const;
 

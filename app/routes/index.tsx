@@ -2,25 +2,15 @@ import React from "react";
 import {
   ActionFunction,
   ErrorBoundaryComponent,
-  LoaderFunction,
   redirect,
   useActionData,
-  useLoaderData,
 } from "remix";
 import Nav from "~/components/Nav";
-import { getManagerProfile, ManagerProfile } from "~/services/api";
-import { createUserSession, getUser } from "~/services/session.server";
+import { useProfileData } from "~/hooks/useRouteData";
+import { createUserSession } from "~/services/session.server";
 import { readRequestFormData } from "~/util/readFormData";
 import Home from "~/views/Home";
 import Login from "~/views/Login";
-
-export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getUser(request);
-  console.log("loader", user);
-
-  const profile = user ? await getManagerProfile(user.userId) : null;
-  return profile;
-};
 
 export const action: ActionFunction = async ({ request }) => {
   const [action, id] = await readRequestFormData(request, ["xd", "id"]);
@@ -36,10 +26,9 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  const data = useLoaderData<ManagerProfile | null>();
+  const data = useProfileData();
   const actionData = useActionData();
   if (actionData) console.log(actionData);
-  console.log("poopy");
 
   return (
     <>

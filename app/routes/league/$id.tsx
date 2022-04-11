@@ -5,8 +5,8 @@ import invariant from "tiny-invariant";
 import Button from "~/components/Button";
 import FlexCenter from "~/components/FlexCenter";
 import { Loader } from "~/components/Loader";
+import Nav from "~/components/Nav";
 import Spacer from "~/components/Spacer";
-import { useRouteData } from "~/hooks/useRouteData";
 import { getLeague, init } from "~/services/api";
 import colors from "~/style/colors";
 
@@ -39,7 +39,7 @@ const Banner = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   line-height: 1;
   color: white;
@@ -54,7 +54,6 @@ const NavButtons = styled.div`
 `;
 
 const NavButton = styled(Button).attrs({
-  exact: true,
   replace: true,
   isNav: true,
 })`
@@ -88,6 +87,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
 
   return (
     <>
+      <Nav />
       <Header>
         <Banner>
           <Title children={name} />
@@ -111,11 +111,6 @@ const Layout: React.FC<LayoutProps> = (props) => {
 };
 
 export type LeagueData = Awaited<ReturnType<typeof getData>>;
-
-export function useLeagueData() {
-  return useRouteData<LeagueData>("routes/league/$id");
-}
-
 export interface LeagueProps {
   foo: string;
 }
