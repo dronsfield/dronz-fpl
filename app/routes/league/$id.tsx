@@ -2,21 +2,40 @@ import React from "react";
 import { LoaderFunction, Outlet, useLoaderData, useTransition } from "remix";
 import styled from "styled-components";
 import invariant from "tiny-invariant";
+import appConfig from "~/appConfig";
 import Button from "~/components/Button";
 import FlexCenter from "~/components/FlexCenter";
 import { Loader } from "~/components/Loader";
 import Nav from "~/components/Nav";
 import Spacer from "~/components/Spacer";
+import managersData from "~/data/managers.json";
 import { getLeague, init } from "~/services/api";
 import colors from "~/style/colors";
+import { BuyInManager, calculatePrizes } from "~/util/calculatePrizes";
+
+const buyInsById: { [id: string]: number } = {};
+managersData.forEach((manager) => {
+  buyInsById[manager.id] = manager.datePaid ? manager.buyIn : 0;
+});
 
 export const getData = async (id: number) => {
   const initData = await init();
   const leagueData = await getLeague(id, initData.currentEventId);
 
+  const buyInManagers: BuyInManager[] = leagueData.managers.map((manager) => {
+    const buyIn =
+      leagueData.id === appConfig.LEAGUE_ID
+        ? buyInsById[String(manager.id)] || 0
+        : 0;
+    return { ...manager, buyIn };
+  });
+  const prizeCalculation = calculatePrizes(buyInManagers);
+
   return {
     ...initData,
     ...leagueData,
+    managers: prizeCalculation.managers,
+    prizeCalculation,
   };
 };
 
@@ -94,6 +113,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
         </Banner>
         <Spacer height={5} />
         <NavButtons>
+          <NavButton children="Standings" to="standings" />
           <NavButton children="Fixtures" to="fixtures" />
           <NavButton children="Captains" to="captains" />
           <NavButton children="Chips" to="chips" />

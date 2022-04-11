@@ -119,20 +119,22 @@ function Table<RowData extends object, Headers extends readonly string[]>(
               <HeaderCell
                 children={renderHeader(header)}
                 widths={cellWidths[header]}
+                key={header}
               />
             );
           })}
         </HeaderRow>
       </thead>
       <tbody>
-        {data.map((rowData) => {
+        {data.map((rowData, index) => {
           return (
-            <Row>
+            <Row key={index}>
               {headers.map((header: ItemsOf<Headers>) => {
                 return (
                   <Cell
                     children={renderCell(header, rowData)}
                     widths={cellWidths[header]}
+                    key={header}
                   />
                 );
               })}

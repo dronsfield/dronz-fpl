@@ -2,7 +2,7 @@ import React from "react";
 import { LoaderFunction, redirect } from "remix";
 
 export const loader: LoaderFunction = ({ params }) => {
-  return redirect(`/league/${params.id}/fixtures`);
+  return redirect(`/league/${params.id}/standings`);
 };
 
 export interface IndexProps {}
