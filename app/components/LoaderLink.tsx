@@ -1,9 +1,16 @@
 import React, { ComponentProps } from "react";
 import { useTransition } from "remix";
+import styled from "styled-components";
 import FlexRow from "./FlexRow";
 import { Loader } from "./Loader";
 import PlainLink from "./PlainLink";
-import Spacer from "./Spacer";
+
+const LinkContainer = styled(FlexRow)``;
+
+const SpinnerContainer = styled.div`
+  width: 0;
+  transform: translateX(8px);
+`;
 
 export interface LoaderLinkProps {
   to: string;
@@ -36,15 +43,15 @@ const LoaderLink = React.forwardRef<
   }, [transition.type, transition.location, to]);
 
   return (
-    <FlexRow>
+    <LinkContainer>
       <PlainLink {...{ to, as, className, children, ref }} />
-      {isLoading ? (
-        <>
-          <Spacer width={8} />
+      {isLoading || false ? (
+        <SpinnerContainer>
+          {/* <Spacer width={8} shrink={false} height={1} /> */}
           <Loader size={14} />
-        </>
+        </SpinnerContainer>
       ) : null}
-    </FlexRow>
+    </LinkContainer>
   );
 });
 

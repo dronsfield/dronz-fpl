@@ -1,10 +1,10 @@
-import styled from "styled-components"
+import styled from "styled-components";
 
 interface SpacerProps {
-  height?: number
-  width?: number
-  shrink?: boolean
-  inline?: boolean
+  height?: number;
+  width?: number;
+  shrink?: boolean;
+  inline?: boolean;
 }
 
 const Spacer = styled.div<SpacerProps>`
@@ -16,8 +16,8 @@ const Spacer = styled.div<SpacerProps>`
   min-width: 0;`
       : ``}
   ${(props) => (props.inline ? `display: inline-block;` : ``)}
-  ${(props) => (props.width ? `width: ${props.width}px` : ``)}
-  ${(props) => (props.height ? `height: ${props.height}px` : ``)}
-`
+  ${(props) => (props.width ? `width: ${props.width}px;` : ``)}
+  ${(props) => (props.height ? `height: ${props.height}px;` : ``)}
+`;
 
-export default Spacer
+export default Spacer;
