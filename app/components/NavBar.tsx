@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import FlexCenter from "./FlexCenter";
-import NavTray from "./NavTray";
 import Spacer from "./Spacer";
 
 const CONTAINER_HEIGHT = 40;
@@ -25,7 +24,6 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   return (
     <>
       <Container $bg={bg} as="header">
-        <NavTray />
         {children}
       </Container>
       <Spacer height={CONTAINER_HEIGHT} />

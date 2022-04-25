@@ -13,6 +13,7 @@ import {
   ScrollRestoration,
   useCatch,
 } from "remix";
+import NavTray from "./components/NavTray";
 import { getManagerProfile } from "./services/api";
 import { getUser } from "./services/session.server";
 import GlobalStyle from "./style/global";
@@ -61,6 +62,7 @@ const App: React.FC<{}> = (props) => {
         <GlobalStyle />
         <Outlet />
         {children}
+        <NavTray />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

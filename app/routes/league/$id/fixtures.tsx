@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import React from "react";
 import styled from "styled-components";
 import Section from "~/components/Section";
@@ -111,6 +112,13 @@ const PlayerStatIcon = styled.img`
   display: inline-block;
   margin: 0 1px;
   color: ${colors.purple};
+`;
+
+const SectionTitle = styled.h3`
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  margin: 0;
 `;
 
 interface PlayerStats {
@@ -331,12 +339,29 @@ const FixturePicks: React.FC<{}> = (props) => {
     };
   }, []);
 
+  const { current, past } = React.useMemo(() => {
+    const now = dayjs();
+    const current: FixtureWithPicks[] = [];
+    const past: FixtureWithPicks[] = [];
+    fixturesWithPicks.forEach((fwp) => {
+      if (dayjs(fwp.kickoffTime).isBefore(now.subtract(5, "hour"), "day")) {
+        past.push(fwp);
+      } else {
+        current.push(fwp);
+      }
+    });
+    return { current, past };
+  }, [fixturesWithPicks]);
+
   return (
     <StateContext.Provider value={{ playerId, setPlayerId }}>
       <Section>
-        {fixturesWithPicks.map((fixture) => {
-          return renderFixture({ fixture });
-        })}
+        <SectionTitle>today + future:</SectionTitle>
+        {current.map((fixture) => renderFixture({ fixture }))}
+      </Section>
+      <Section>
+        <SectionTitle>past:</SectionTitle>
+        {past.map((fixture) => renderFixture({ fixture }))}
       </Section>
     </StateContext.Provider>
   );
