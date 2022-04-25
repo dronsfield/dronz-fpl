@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import {
   ErrorBoundaryComponent,
   Links,
@@ -14,6 +16,8 @@ import {
 import { getManagerProfile } from "./services/api";
 import { getUser } from "./services/session.server";
 import GlobalStyle from "./style/global";
+
+dayjs.extend(utc);
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
@@ -43,6 +47,7 @@ export const links: LinksFunction = () => {
 
 const App: React.FC<{}> = (props) => {
   const { children } = props;
+  if (typeof window !== "undefined") (window as any).dayjs = dayjs;
   return (
     <html lang="en">
       <head>

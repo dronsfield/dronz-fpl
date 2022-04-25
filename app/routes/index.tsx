@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  ActionFunction,
-  ErrorBoundaryComponent,
-  redirect,
-  useActionData,
-} from "remix";
+import { ActionFunction, ErrorBoundaryComponent, redirect } from "remix";
 import NavBar from "~/components/NavBar";
 import { useProfileData } from "~/hooks/useRouteData";
 import { createUserSession } from "~/services/session.server";
@@ -27,8 +22,6 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
   const data = useProfileData();
-  const actionData = useActionData();
-  if (actionData) console.log(actionData);
 
   return (
     <>

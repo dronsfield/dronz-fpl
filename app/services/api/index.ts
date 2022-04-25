@@ -190,7 +190,6 @@ export async function getLeague(
         fetchTransfers({ managerId: result.entry }),
         fetchHistory({ managerId: result.entry }),
       ]);
-      console.log({ gw });
 
       const picks = gw.picks.reduce((acc, pick) => {
         acc[pick.element] = getPickType(pick);

@@ -1,5 +1,4 @@
 import React from "react";
-import { useTransition } from "remix";
 import { ManagerCell } from "~/components/CommonCells";
 import PlainLink from "~/components/PlainLink";
 import Section from "~/components/Section";
@@ -88,8 +87,6 @@ const Chips: React.FC<{}> = () => {
     });
     return { seasonData, eventData };
   }, [managers, currentEventId]);
-
-  console.log(useTransition());
 
   return (
     <Section>

@@ -1,6 +1,7 @@
 // import { fetchBootstrap } from "fpl-api"
+import dayjs from "dayjs";
 import { Array, Boolean, Null, Number, Record, Static, String } from "runtypes";
-import { runtypeFetch } from "~/util/runtypeFetch";
+import { cacheFetch } from "../redis.server";
 
 const BASE_URL = "https://fantasy.premierleague.com/api";
 
@@ -126,31 +127,60 @@ export const ManagerInfoRT = Record({
 });
 export type ManagerInfoRT = Static<typeof ManagerInfoRT>;
 
+function expireAtHalfHour() {
+  const now = dayjs();
+  return now
+    .utc()
+    .startOf("minute")
+    .set("minute", Math.ceil(now.get("minute") / 30) * 30)
+    .unix();
+}
+
+function expireAt2am() {
+  return dayjs().utc().add(1, "day").startOf("hour").set("hour", 2).unix();
+}
+
 export function fetchBootstrap() {
   const url = `${BASE_URL}/bootstrap-static/`;
-  return runtypeFetch(BootstrapRT, url);
+  return cacheFetch({
+    rt: BootstrapRT,
+    url,
+    expireAt: expireAt2am(),
+  });
 }
 export function fetchLeague(opts: { leagueId: number }) {
   const url = `${BASE_URL}/leagues-classic/${opts.leagueId}/standings/`;
-  return runtypeFetch(LeagueRT, url);
+  return cacheFetch({ rt: LeagueRT, url, expireAt: null });
 }
 export function fetchGameweek(opts: { managerId: number; eventId: number }) {
   const url = `${BASE_URL}/entry/${opts.managerId}/event/${opts.eventId}/picks/`;
-  return runtypeFetch(GameweekRT, url);
+  return cacheFetch({
+    rt: GameweekRT,
+    url,
+    expireAt: expireAtHalfHour(),
+  });
 }
 export function fetchTransfers(opts: { managerId: number }) {
   const url = `${BASE_URL}/entry/${opts.managerId}/transfers/`;
-  return runtypeFetch(Array(TransferRT), url);
+  return cacheFetch({
+    rt: Array(TransferRT),
+    url,
+    expireAt: expireAtHalfHour(),
+  });
 }
 export function fetchFixtures(opts: { eventId: number }) {
   const url = `${BASE_URL}/fixtures/?event=${opts.eventId}`;
-  return runtypeFetch(Array(FixtureRT), url);
+  return cacheFetch({ rt: Array(FixtureRT), url, expireAt: null });
 }
 export function fetchHistory(opts: { managerId: number }) {
   const url = `${BASE_URL}/entry/${opts.managerId}/history/`;
-  return runtypeFetch(HistoryRT, url);
+  return cacheFetch({
+    rt: HistoryRT,
+    url,
+    expireAt: expireAtHalfHour(),
+  });
 }
 export function fetchManagerInfo(opts: { managerId: number }) {
   const url = `${BASE_URL}/entry/${opts.managerId}/`;
-  return runtypeFetch(ManagerInfoRT, url);
+  return cacheFetch({ rt: ManagerInfoRT, url, expireAt: null });
 }

@@ -14,10 +14,8 @@ const Captains: React.FC<{}> = (props) => {
   const { managers, currentEventId, players } = useLeagueData();
 
   const matches = useMatches();
-  console.log(matches);
 
   const outletCtx = useOutletContext<LeagueData>();
-  console.log(outletCtx);
 
   const data = React.useMemo(() => {
     return managers.map((manager) => {
