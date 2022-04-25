@@ -1,9 +1,24 @@
 // import { fetchBootstrap } from "fpl-api"
 import dayjs from "dayjs";
-import { Array, Boolean, Null, Number, Record, Static, String } from "runtypes";
-import { cacheFetch } from "../redis.server";
+import {
+  Array,
+  Boolean,
+  Dictionary,
+  Null,
+  Number,
+  Record,
+  Static,
+  String,
+} from "runtypes";
+import appConfig from "~/appConfig";
+import { runtypeFetch } from "~/util/runtypeFetch";
+import { cacheFn } from "../redis.server";
 
 const BASE_URL = "https://fantasy.premierleague.com/api";
+
+// ------------------------------------------------------------
+// FPL API RESPONSE RUNTYPES
+// ------------------------------------------------------------
 
 export const ElementRT = Record({
   id: Number,
@@ -127,6 +142,27 @@ export const ManagerInfoRT = Record({
 });
 export type ManagerInfoRT = Static<typeof ManagerInfoRT>;
 
+export const ManagerRT = Record({
+  gw: GameweekRT,
+  transfers: Array(TransferRT),
+  history: HistoryRT,
+});
+export type ManagerRT = Static<typeof ManagerRT>;
+
+const ManagersRT = Dictionary(ManagerRT, Number);
+export type ManagersRT = Static<typeof ManagersRT>;
+
+export const LeagueWithManagersRT = LeagueRT.And(
+  Record({
+    managers: ManagersRT,
+  })
+);
+export type LeagueWithManagersRT = Static<typeof LeagueWithManagersRT>;
+
+// ------------------------------------------------------------
+// EXPIRY FUNCTIONS
+// ------------------------------------------------------------
+
 function expireAtHalfHour() {
   const now = dayjs();
   return now
@@ -140,47 +176,76 @@ function expireAt2am() {
   return dayjs().utc().add(1, "day").startOf("hour").set("hour", 2).unix();
 }
 
+// ------------------------------------------------------------
+// FETCHERS
+// ------------------------------------------------------------
+
 export function fetchBootstrap() {
   const url = `${BASE_URL}/bootstrap-static/`;
-  return cacheFetch({
+  const rt = BootstrapRT;
+
+  return cacheFn({
     rt: BootstrapRT,
-    url,
+    fn: () => runtypeFetch(rt, url),
+    key: `boostrap`,
     expireAt: expireAt2am(),
   });
 }
-export function fetchLeague(opts: { leagueId: number }) {
-  const url = `${BASE_URL}/leagues-classic/${opts.leagueId}/standings/`;
-  return cacheFetch({ rt: LeagueRT, url, expireAt: null });
-}
-export function fetchGameweek(opts: { managerId: number; eventId: number }) {
-  const url = `${BASE_URL}/entry/${opts.managerId}/event/${opts.eventId}/picks/`;
-  return cacheFetch({
-    rt: GameweekRT,
-    url,
+export async function fetchLeague(opts: { leagueId: number; eventId: number }) {
+  return cacheFn({
+    rt: LeagueWithManagersRT,
+    key: `league/${opts.leagueId}`,
     expireAt: expireAtHalfHour(),
+    fn: async () => {
+      const url = `${BASE_URL}/leagues-classic/${opts.leagueId}/standings/`;
+      const rt = LeagueRT;
+
+      const league = await runtypeFetch(rt, url);
+      const results = league.standings.results;
+
+      const managers: ManagersRT = {};
+      await Promise.all(
+        results.slice(0, appConfig.MAX_MANAGERS).map(async (result) => {
+          const managerId = result.entry;
+          const [gw, transfers, history] = await Promise.all([
+            runtypeFetch(
+              GameweekRT,
+              `${BASE_URL}/entry/${managerId}/event/${opts.eventId}/picks/`
+            ),
+            runtypeFetch(
+              Array(TransferRT),
+              `${BASE_URL}/entry/${managerId}/transfers/`
+            ),
+            runtypeFetch(HistoryRT, `${BASE_URL}/entry/${managerId}/history/`),
+          ]);
+          managers[managerId] = { gw, transfers, history };
+        })
+      );
+      return { ...league, managers };
+    },
   });
 }
-export function fetchTransfers(opts: { managerId: number }) {
-  const url = `${BASE_URL}/entry/${opts.managerId}/transfers/`;
-  return cacheFetch({
-    rt: Array(TransferRT),
-    url,
-    expireAt: expireAtHalfHour(),
-  });
-}
+
 export function fetchFixtures(opts: { eventId: number }) {
   const url = `${BASE_URL}/fixtures/?event=${opts.eventId}`;
-  return cacheFetch({ rt: Array(FixtureRT), url, expireAt: null });
-}
-export function fetchHistory(opts: { managerId: number }) {
-  const url = `${BASE_URL}/entry/${opts.managerId}/history/`;
-  return cacheFetch({
-    rt: HistoryRT,
-    url,
-    expireAt: expireAtHalfHour(),
+  const rt = Array(FixtureRT);
+
+  return cacheFn({
+    rt: Array(FixtureRT),
+    fn: () => runtypeFetch(rt, url),
+    key: `fixtures/${opts.eventId}`,
+    expireAt: null,
   });
 }
+
 export function fetchManagerInfo(opts: { managerId: number }) {
   const url = `${BASE_URL}/entry/${opts.managerId}/`;
-  return cacheFetch({ rt: ManagerInfoRT, url, expireAt: null });
+  const rt = ManagerInfoRT;
+
+  return cacheFn({
+    rt: ManagerInfoRT,
+    fn: () => runtypeFetch(rt, url),
+    key: `manager-info/${opts.managerId}`,
+    expireAt: null,
+  });
 }

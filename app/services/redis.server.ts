@@ -1,6 +1,5 @@
 import Redis from "ioredis";
 import { Runtype } from "runtypes";
-import { runtypeFetch } from "~/util/runtypeFetch";
 
 const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379";
 console.log({ REDIS_URL });
@@ -15,14 +14,14 @@ function cacheLog(type: "HIT" | "MISSED" | "PASSED", url: string) {
   console.log(JSON.stringify(__cacheCounter));
 }
 
-export async function cacheFetch<R>(opts: {
-  url: string;
+export async function cacheFn<R>(opts: {
+  key: string;
   rt: Runtype<R>;
+  fn: () => Promise<R>;
   expireAt: number | null;
 }) {
   try {
-    const { url, rt, expireAt } = opts;
-    const key = `${url}`;
+    const { key, rt, fn, expireAt } = opts;
 
     try {
       if (!expireAt) throw new Error("no expireAt");
@@ -30,26 +29,26 @@ export async function cacheFetch<R>(opts: {
       if (result) {
         const parsed = JSON.parse(result);
         const checked = rt.check(parsed);
-        cacheLog(`HIT`, url);
+        cacheLog(`HIT`, key);
         return checked;
       } else {
         throw new Error("not cached");
       }
     } catch (err) {
-      const response = await runtypeFetch(rt, url);
+      const result = await fn();
       try {
         if (expireAt) {
-          await redis.set(key, JSON.stringify(response));
+          await redis.set(key, JSON.stringify(result));
           await redis.expireat(key, expireAt);
-          cacheLog(`MISSED`, url);
+          cacheLog(`MISSED`, key);
         } else {
-          cacheLog(`PASSED`, url);
+          cacheLog(`PASSED`, key);
         }
       } catch (err) {
         // in case of redis errors
         console.log("UNEXPECTED REDIS ERROR", err);
       }
-      return response;
+      return result;
     }
   } catch (err) {
     console.log("UNEXPECTED CACHEFETCH ERROR", err);
