@@ -1,6 +1,7 @@
 import React from "react";
 import { useTransition } from "remix";
 import { ManagerCell } from "~/components/CommonCells";
+import PlainLink from "~/components/PlainLink";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import Table from "~/components/Table";
@@ -139,9 +140,10 @@ const Chips: React.FC<{}> = () => {
             if (active) color = colors.green;
             if (!value) color = colors.grey;
             return (
-              <span
+              <PlainLink
                 style={{ color, fontWeight: active ? "bold" : undefined }}
                 children={rowData[header] || "-"}
+                to={`https://fantasy.premierleague.com/entry/${rowData.manager.id}/event/${rowData[header]}`}
               />
             );
           }

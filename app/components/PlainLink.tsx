@@ -1,7 +1,7 @@
-import { Link } from "remix";
 import styled from "styled-components";
+import Xlink from "./Xlink";
 
-const PlainLink = styled(Link)`
+const PlainLink = styled(Xlink)`
   text-decoration: none;
 `;
 

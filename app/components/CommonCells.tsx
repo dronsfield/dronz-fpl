@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Manager } from "~/services/api";
 import colors from "~/style/colors";
 import { formatName } from "~/util/formatName";
+import PlainLink from "./PlainLink";
 
 // MONEY
 
@@ -44,19 +45,15 @@ export const MoneyCell: React.FC<{
 
 // MANAGER
 
-const ManagerLink = styled.a`
-  text-decoration: none;
-`;
-
 export const ManagerCell: React.FC<{
   manager: Manager;
   currentEventId: number;
 }> = (props) => {
   const { manager, currentEventId } = props;
   return (
-    <ManagerLink
+    <PlainLink
       children={formatName(manager.name)}
-      href={`https://fantasy.premierleague.com/entry/${manager.id}/event/${currentEventId}`}
+      to={`https://fantasy.premierleague.com/entry/${manager.id}/event/${currentEventId}`}
     />
   );
 };

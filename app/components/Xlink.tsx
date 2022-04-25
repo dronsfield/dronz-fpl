@@ -9,9 +9,9 @@ interface InclusiveLinkProps extends RouterLinkProps {
   targetBlank?: boolean;
   isNav?: boolean;
 }
-type LinkProps = Omit<Omit<InclusiveLinkProps, "component">, "href">;
+type XlinkProps = Omit<Omit<InclusiveLinkProps, "component">, "href">;
 
-const Link: React.FC<LinkProps> = (props) => {
+const Xlink: React.FC<XlinkProps> = (props) => {
   const { to, replace, children, targetBlank, isNav, ...rest } = props;
 
   if (typeof to === "string" && (targetBlank || to.startsWith("http"))) {
@@ -37,4 +37,4 @@ const Link: React.FC<LinkProps> = (props) => {
   }
 };
 
-export default Link;
+export default Xlink;
