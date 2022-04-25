@@ -11,11 +11,13 @@ import { ItemsOf } from "~/util/utilityTypes";
 
 const headers = [
   "manager",
-  "points",
+
   "finishedCount",
   "inPlayCount",
   "notStartedCount",
   "notFinished",
+  "gwPoints",
+  "seasonPoints",
 ] as const;
 
 const TEAM_FIXTURE_STATUS = [
@@ -121,17 +123,22 @@ const Played: React.FC<{}> = (props) => {
                 currentEventId={currentEventId}
               />
             );
-          } else if (header === "points") {
+          } else if (header === "seasonPoints") {
+            return rowData.manager.totalPoints;
+          } else if (header === "gwPoints") {
             return rowData.manager.eventPoints;
           } else if (header === "notFinished") {
             return rowData.notFinished.map(
-              ({ player, pickType, teamFixtureStatus }) => {
+              ({ player, pickType, teamFixtureStatus }, index) => {
                 return (
                   <PlayerName
                     pickType={pickType}
                     teamFixtureStatus={teamFixtureStatus}
                     key={player.id}
-                    children={player.webName + ", "}
+                    children={
+                      player.webName +
+                      (index === rowData.notFinished.length - 1 ? "" : ", ")
+                    }
                   />
                 );
               }
@@ -144,8 +151,10 @@ const Played: React.FC<{}> = (props) => {
           switch (header) {
             case "manager":
               return "Manager";
-            case "points":
-              return "Pts";
+            case "seasonPoints":
+              return "Total";
+            case "gwPoints":
+              return "GW";
             case "finishedCount":
               return "P";
             case "inPlayCount":
@@ -156,14 +165,7 @@ const Played: React.FC<{}> = (props) => {
               return "";
           }
         }}
-        cellWidths={{
-          manager: ["nowrap"],
-          points: ["nowrap"],
-          finishedCount: ["nowrap"],
-          inPlayCount: ["nowrap"],
-          notStartedCount: ["nowrap"],
-          notFinished: ["auto"],
-        }}
+        cellWidths={undefined}
       />
     </Section>
   );
