@@ -26,7 +26,7 @@ interface IsOpenProps {
   $isOpen: boolean;
 }
 
-const NavTray = styled.div<IsOpenProps>`
+const NavTrayBox = styled.nav<IsOpenProps>`
   position: fixed;
   z-index: 1;
   top: 0px;
@@ -59,10 +59,10 @@ const DarkLayer = styled.div<IsOpenProps>`
   transition: 0.2s ease-out opacity;
 `;
 
-export interface NavProps {
+export interface NavTrayProps {
   foo?: string;
 }
-const Nav: React.FC<NavProps> = (props) => {
+const NavTray: React.FC<NavTrayProps> = (props) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const navNode = React.useRef<HTMLAnchorElement>(null);
 
@@ -79,7 +79,7 @@ const Nav: React.FC<NavProps> = (props) => {
   return (
     <React.Fragment>
       <DarkLayer $isOpen={isOpen} onClick={() => setIsOpen(false)} />
-      <NavTray $isOpen={isOpen} id="nav">
+      <NavTrayBox $isOpen={isOpen} id="nav">
         <HamburgerFake />
         <Spacer height={8} />
         <NavInner>
@@ -117,7 +117,7 @@ const Nav: React.FC<NavProps> = (props) => {
             </nav>
           </header>
         </NavInner>
-      </NavTray>
+      </NavTrayBox>
       <HamburgerButton
         isActive={isOpen}
         onFocus={(event) => event.stopPropagation()}
@@ -136,4 +136,4 @@ const Nav: React.FC<NavProps> = (props) => {
   );
 };
 
-export default Nav;
+export default NavTray;

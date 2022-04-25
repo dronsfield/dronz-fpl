@@ -6,7 +6,7 @@ import appConfig from "~/appConfig";
 import Button from "~/components/Button";
 import FlexCenter from "~/components/FlexCenter";
 import { Loader } from "~/components/Loader";
-import Nav from "~/components/Nav";
+import NavBar from "~/components/NavBar";
 import Spacer from "~/components/Spacer";
 import managersData from "~/data/managers.json";
 import { getLeague, init } from "~/services/api";
@@ -48,13 +48,8 @@ export const loader: LoaderFunction = async ({ params }) => {
 const Header = styled.nav`
   width: 100%;
   background-color: ${colors.purple};
-  padding: 10px 0 6px;
-`;
-
-const Banner = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 0 0 6px;
+  margin-top: -2px;
 `;
 
 const Title = styled.h1`
@@ -106,12 +101,10 @@ const Layout: React.FC<LayoutProps> = (props) => {
 
   return (
     <>
-      <Nav />
+      <NavBar bg={colors.purple}>
+        <Title children={name} />
+      </NavBar>
       <Header>
-        <Banner>
-          <Title children={name} />
-        </Banner>
-        <Spacer height={5} />
         <NavButtons>
           <NavButton children="Standings" to="standings" />
           <NavButton children="Fixtures" to="fixtures" />

@@ -5,7 +5,7 @@ import {
   redirect,
   useActionData,
 } from "remix";
-import Nav from "~/components/Nav";
+import NavBar from "~/components/NavBar";
 import { useProfileData } from "~/hooks/useRouteData";
 import { createUserSession } from "~/services/session.server";
 import { readRequestFormData } from "~/util/readFormData";
@@ -32,9 +32,7 @@ export default function Index() {
 
   return (
     <>
-      <div style={{ backgroundColor: "black", color: "white", height: 40 }}>
-        <Nav />
-      </div>
+      <NavBar />
       {data ? <Home data={data} /> : <Login />}
     </>
   );
