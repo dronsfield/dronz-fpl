@@ -1,9 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import PicksPitch from "~/components/PicksPitch";
 import Section from "~/components/Section";
+import Spacer from "~/components/Spacer";
 import Table from "~/components/Table";
 import { useLeagueData } from "~/hooks/useRouteData";
-import { Player } from "~/services/api";
+import { PickType, Player } from "~/services/api";
 import { sortBy } from "~/util/sortBy";
 
 const headers = ["Player", "Pos", "Price", "FPLBOYS", "Overall"] as const;
@@ -49,14 +51,30 @@ const TemplateTeam: React.FC<{}> = (props) => {
     setData(grouped);
   }, [managers, players]);
 
+  const picks = React.useMemo(() => {
+    const withCost = data.map((item) => ({ ...item, cost: item.player.cost }));
+    const sorted = sortBy(withCost, "cost");
+    return sorted.map((item) => {
+      const { player, pickCount } = item;
+      return {
+        player,
+        pickType: "STARTING" as PickType,
+        value: `x${pickCount}`,
+      };
+    });
+  }, [data]);
+
   const totalCost = data
     .reduce((currentTotalCost: number, { player }) => {
       return currentTotalCost + player.cost;
     }, 0)
     .toFixed(1);
 
+  if (!data.length) return null;
   return (
     <Section>
+      <PicksPitch picks={picks} />
+      <Spacer height={16} />
       <Table
         data={data}
         headers={headers}

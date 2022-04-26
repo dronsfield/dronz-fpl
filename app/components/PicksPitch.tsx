@@ -52,7 +52,6 @@ const PlayerName = styled.div`
 const PickValue = styled.div`
   font-weight: bold;
   font-size: 10px;
-  text-transform: uppercase;
 `;
 
 export interface PlayerBlockProps {
