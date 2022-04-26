@@ -70,7 +70,7 @@ const Played: React.FC<{}> = (props) => {
       }> = [];
       Object.keys(picks).forEach((playerIdStr) => {
         const playerId = Number(playerIdStr);
-        const pickType = picks[playerId];
+        const pickType = picks[playerId].pickType;
         const player = players[playerId];
         if (!player) return;
         const teamId = player.teamId;

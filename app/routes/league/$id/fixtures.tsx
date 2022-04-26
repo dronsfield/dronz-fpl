@@ -253,7 +253,7 @@ function useFixturesWithPicks() {
       pickedPlayerIds.forEach((playerId) => {
         const player = players[playerId];
         if (!player) return;
-        const pickType = picks[playerId];
+        const pickType = picks[playerId].pickType;
         const teamId = player.teamId;
         if (picksByTeam[teamId]) {
           if (picksByTeam[teamId][playerId]) {
@@ -363,6 +363,7 @@ const FixturePicks: React.FC<{}> = (props) => {
         <SectionTitle>past:</SectionTitle>
         {past.map((fixture) => renderFixture({ fixture }))}
       </Section>
+      <Spacer height={100} />
     </StateContext.Provider>
   );
 };

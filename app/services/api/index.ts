@@ -20,9 +20,11 @@ import {
   fetchBootstrap,
   fetchFixtures,
   fetchLeague,
+  fetchLive,
   fetchManagerInfo,
   FixtureRT,
   HistoryRT,
+  LiveStatsRT,
   ManagerInfoRT,
   PickRT,
   TeamRT,
@@ -40,7 +42,10 @@ function parseCurrentEventId(events: EventRT[]): number {
   }
   return currentEventId;
 }
-function parsePlayerFromElement(element: ElementRT): Player {
+function parsePlayerFromElement(
+  element: ElementRT,
+  live: { [key: string]: { stats: LiveStatsRT } }
+): Player {
   const {
     id,
     first_name,
@@ -64,6 +69,7 @@ function parsePlayerFromElement(element: ElementRT): Player {
     selectedBy: selected_by_percent,
     position,
     cost,
+    gameweekStats: live[id].stats,
   };
 }
 function parseTeam(team: TeamRT): Team {
@@ -149,11 +155,16 @@ function parseManagerProfile(managerInfo: ManagerInfoRT): ManagerProfile {
 
 export async function init() {
   const bootstrap = await fetchBootstrap();
-  const playerList = bootstrap.elements.map(parsePlayerFromElement);
+  const currentEventId = parseCurrentEventId(bootstrap.events);
+  const liveList = (await fetchLive({ eventId: currentEventId })).elements;
+  const live = keyBy(liveList, "id");
+  const playerList = bootstrap.elements.map((element) =>
+    parsePlayerFromElement(element, live)
+  );
   const players = keyBy(playerList, "id");
   const teamList = bootstrap.teams.map(parseTeam);
   const teams = keyBy(teamList, "id");
-  const currentEventId = parseCurrentEventId(bootstrap.events);
+
   const fixturesResponse = await fetchFixtures({
     eventId: currentEventId || 1,
   });
@@ -187,7 +198,10 @@ export async function getLeague(
     } = managersDict[result.entry];
 
     const picks = gw.picks.reduce((acc, pick) => {
-      acc[pick.element] = getPickType(pick);
+      acc[pick.element] = {
+        pickType: getPickType(pick),
+        position: pick.position,
+      };
       return acc;
     }, {} as Manager["picks"]);
 

@@ -1,4 +1,4 @@
-import { ItemsOf } from "~/util/utilityTypes";
+import { ItemsOf, Maybe } from "~/util/utilityTypes";
 
 export const playerPositions = ["GKP", "DEF", "MID", "FWD"] as const;
 export type PlayerPosition = ItemsOf<typeof playerPositions> | "???";
@@ -12,6 +12,7 @@ export interface Player {
   selectedBy: string;
   position: PlayerPosition;
   cost: number;
+  gameweekStats: { [key: string]: Maybe<string | number | boolean> };
 }
 export type Players = { [id: number]: Player };
 export interface Team {
@@ -43,7 +44,10 @@ export interface Manager {
   totalMoney: number;
   bankMoney: number;
   picks: {
-    [id: number]: PickType;
+    [id: number]: {
+      pickType: PickType;
+      position: number;
+    };
   };
   transfers: {
     in: number[];

@@ -91,9 +91,10 @@ interface TableProps<
   cellWidths?: Record<ItemsOf<Headers>, CellWidths>;
 }
 
-function Table<RowData extends object, Headers extends readonly string[]>(
-  props: TableProps<RowData, Headers>
-): React.ReactElement {
+function TableRenderer<
+  RowData extends object,
+  Headers extends readonly string[]
+>(props: TableProps<RowData, Headers>): React.ReactElement {
   let {
     data,
     headers,
@@ -146,17 +147,26 @@ function Table<RowData extends object, Headers extends readonly string[]>(
   );
 }
 
-Object.assign(Table, {
+const ComponentsObject = {
   Table: _Table,
   Row,
   HeaderRow,
   Cell,
   HeaderCell,
-});
+};
 
-export default React.memo(Table) as <
+let MemoizedTableRenderer: any = React.memo(TableRenderer);
+
+Object.assign(MemoizedTableRenderer, ComponentsObject);
+
+let Table = MemoizedTableRenderer as (<
   RowData extends object,
   Headers extends readonly string[]
 >(
   props: TableProps<RowData, Headers>
-) => React.ReactElement;
+) => React.ReactElement) &
+  typeof ComponentsObject;
+
+export default Table;
+
+// export default React.memo(Table)

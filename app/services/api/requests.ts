@@ -159,6 +159,20 @@ export const LeagueWithManagersRT = LeagueRT.And(
 );
 export type LeagueWithManagersRT = Static<typeof LeagueWithManagersRT>;
 
+export const LiveStatsRT = Dictionary(String.Or(Number).Or(Boolean), String);
+export type LiveStatsRT = Static<typeof LiveStatsRT>;
+
+export const LiveElementRT = Record({
+  id: Number,
+  stats: LiveStatsRT,
+});
+export type LiveElementRT = Static<typeof LiveElementRT>;
+
+export const LiveRT = Record({
+  elements: Array(LiveElementRT),
+});
+export type LiveRT = Static<typeof LiveRT>;
+
 // ------------------------------------------------------------
 // EXPIRY FUNCTIONS
 // ------------------------------------------------------------
@@ -185,12 +199,13 @@ export function fetchBootstrap() {
   const rt = BootstrapRT;
 
   return cacheFn({
-    rt: BootstrapRT,
+    rt,
     fn: () => runtypeFetch(rt, url),
     key: `boostrap`,
     expireAt: expireAt2am(),
   });
 }
+
 export async function fetchLeague(opts: { leagueId: number; eventId: number }) {
   return cacheFn({
     rt: LeagueWithManagersRT,
@@ -231,7 +246,7 @@ export function fetchFixtures(opts: { eventId: number }) {
   const rt = Array(FixtureRT);
 
   return cacheFn({
-    rt: Array(FixtureRT),
+    rt,
     fn: () => runtypeFetch(rt, url),
     key: `fixtures/${opts.eventId}`,
     expireAt: null,
@@ -243,9 +258,21 @@ export function fetchManagerInfo(opts: { managerId: number }) {
   const rt = ManagerInfoRT;
 
   return cacheFn({
-    rt: ManagerInfoRT,
+    rt,
     fn: () => runtypeFetch(rt, url),
     key: `manager-info/${opts.managerId}`,
+    expireAt: null,
+  });
+}
+
+export function fetchLive(opts: { eventId: number }) {
+  const url = `${BASE_URL}/event/${opts.eventId}/live`;
+  const rt = LiveRT;
+
+  return cacheFn({
+    rt,
+    fn: () => runtypeFetch(rt, url),
+    key: `live/${opts.eventId}}`,
     expireAt: null,
   });
 }

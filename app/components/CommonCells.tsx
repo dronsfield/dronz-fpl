@@ -1,4 +1,5 @@
 import React from "react";
+import { useParams } from "remix";
 import styled from "styled-components";
 import { Manager } from "~/services/api";
 import colors from "~/style/colors";
@@ -50,10 +51,11 @@ export const ManagerCell: React.FC<{
   currentEventId: number;
 }> = (props) => {
   const { manager, currentEventId } = props;
+  const { id: leagueId } = useParams<{ id: string }>();
   return (
     <PlainLink
       children={formatName(manager.name)}
-      to={`https://fantasy.premierleague.com/entry/${manager.id}/event/${currentEventId}`}
+      to={`/league/${leagueId}/manager/${manager.id}`}
     />
   );
 };

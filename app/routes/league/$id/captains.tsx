@@ -18,12 +18,11 @@ const Captains: React.FC<{}> = (props) => {
       let viceId: number = 0;
       Object.keys(picks).forEach((playerIdStr) => {
         const playerId = Number(playerIdStr);
-        const pickType = picks[playerId];
+        const pickType = picks[playerId].pickType;
         if (pickType === "CAPTAIN") captainId = playerId;
         if (pickType === "VICE") viceId = playerId;
       });
       return {
-        // name: formatName(manager.name),
         manager,
         captain: players[captainId]?.webName,
         vice: players[viceId]?.webName,

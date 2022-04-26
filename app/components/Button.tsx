@@ -39,6 +39,7 @@ const RootComp: React.FC<RootCompProps> = (props) => {
 
 const BaseButton = styled(RootComp)<{ $variant?: Variant }>`
   ${normalizeButton};
+  display: inline-block;
   padding: 4px 6px;
   border-radius: 4px;
   font-weight: bold;
