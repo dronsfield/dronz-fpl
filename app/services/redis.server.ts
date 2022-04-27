@@ -26,7 +26,7 @@ export async function cacheFn<R>(opts: {
 
     try {
       if (!expireAt) throw new Error("no expireAt");
-      const cacheDuration = logDuration(`${key} - redis.get`);
+      const cacheDuration = logDuration(`cacheFn - ${key} - redis.get`);
       const result = await redis.get(key);
       cacheDuration.end();
       if (result) {
@@ -38,7 +38,7 @@ export async function cacheFn<R>(opts: {
         throw new Error("not cached");
       }
     } catch (err) {
-      const fnDuration = logDuration(`${key} - fn()`);
+      const fnDuration = logDuration(`cacheFn - ${key} - fn()`);
       const result = await fn();
       fnDuration.end();
       try {

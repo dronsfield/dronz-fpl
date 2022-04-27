@@ -27,7 +27,7 @@ export const leagueLoader: LoaderFunction = async ({ params }) => {
   const id = Number(params.id);
   invariant(id, "expected params.id");
 
-  const duration = logDuration(`getLeagueData`);
+  const duration = logDuration(`leagueLoader`);
   const currentEventId = await getCurrentEventId();
   const leagueData = await getLeague(id, currentEventId);
 

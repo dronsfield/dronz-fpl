@@ -1,13 +1,11 @@
 import React from "react";
-import { LoaderFunction, redirect } from "remix";
-
-export const loader: LoaderFunction = ({ params }) => {
-  return redirect(`/league/${params.id}/standings`);
-};
+import { useParams } from "remix";
+import ClientRedirect from "~/components/ClientRedirect";
 
 export interface IndexProps {}
 const Index: React.FC<IndexProps> = (props) => {
-  return null;
+  const params = useParams();
+  return <ClientRedirect to={`/league/${params.id}/standings`} />;
 };
 
 export default Index;

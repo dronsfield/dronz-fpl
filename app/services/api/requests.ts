@@ -288,7 +288,7 @@ export function fetchLive(opts: { eventId: number }) {
   return cacheFn({
     rt,
     fn: () => runtypeFetch(rt, url),
-    key: `live/${opts.eventId}}`,
+    key: `live/${opts.eventId}`,
     expireAt: null,
   });
 }

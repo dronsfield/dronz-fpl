@@ -9,6 +9,7 @@ import {
   Team,
 } from "~/services/api";
 import { getUser } from "~/services/session.server";
+import { logDuration } from "~/util/logDuration";
 
 export interface RootLoaderData {
   profile: ManagerProfile | null;
@@ -25,6 +26,7 @@ export interface RootLoaderData {
 }
 
 export const rootLoader: LoaderFunction = async ({ request }) => {
+  const duration = logDuration("rootLoader");
   const [profile, bootstrap] = await Promise.all([
     (async () => {
       const user = await getUser(request);
@@ -36,5 +38,6 @@ export const rootLoader: LoaderFunction = async ({ request }) => {
     })(),
   ]);
   const data: RootLoaderData = { profile, bootstrap };
+  duration.end();
   return data;
 };
