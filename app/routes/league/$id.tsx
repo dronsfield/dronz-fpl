@@ -43,20 +43,20 @@ const NavButton = styled(Button).attrs({
   margin: 3px 3px;
   color: white;
 
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.2) !important; //sc-bug
   transition: 0.1s linear all;
   -webkit-tap-highlight-color: transparent;
 
   &.active {
-    background-color: white;
+    background-color: white !important; //sc-bug
     color: ${colors.purple};
   }
 
   &:focus {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.4) !important; //sc-bug
   }
   &.active:focus {
-    background-color: white;
+    background-color: white !important; //sc-bug
   }
 `;
 
