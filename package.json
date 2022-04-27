@@ -21,7 +21,7 @@
     "react-dom": "^17.0.2",
     "remix": "^1.2.2",
     "runtypes": "^6.5.1",
-    "styled-components": "^5.3.3",
+    "styled-components": "^5.1.1",
     "tiny-invariant": "^1.2.0"
   },
   "devDependencies": {
