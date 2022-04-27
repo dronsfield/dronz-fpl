@@ -20,7 +20,7 @@ export async function cacheFn<R>(opts: {
   rt: Runtype<R>;
   fn: () => Promise<R>;
   expireAt: number | null;
-}) {
+}): Promise<R> {
   try {
     const { key, rt, fn, expireAt } = opts;
 
@@ -38,7 +38,6 @@ export async function cacheFn<R>(opts: {
         throw new Error("not cached");
       }
     } catch (err) {
-      console.log("CACHE FETCH ERROR", err);
       const fnDuration = logDuration(`${key} - fn()`);
       const result = await fn();
       fnDuration.end();
