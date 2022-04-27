@@ -12,6 +12,7 @@ import managersData from "~/data/managers.json";
 import { getLeague, init } from "~/services/api";
 import colors from "~/style/colors";
 import { BuyInManager, calculatePrizes } from "~/util/calculatePrizes";
+import { logDuration } from "~/util/logDuration";
 
 const buyInsById: { [id: string]: number } = {};
 managersData.forEach((manager) => {
@@ -19,6 +20,7 @@ managersData.forEach((manager) => {
 });
 
 export const getData = async (id: number) => {
+  const duration = logDuration(`getLeagueData`);
   const initData = await init();
   const leagueData = await getLeague(id, initData.currentEventId);
 
@@ -30,13 +32,14 @@ export const getData = async (id: number) => {
     return { ...manager, buyIn };
   });
   const prizeCalculation = calculatePrizes(buyInManagers);
-
-  return {
+  const allData = {
     ...initData,
     ...leagueData,
     managers: prizeCalculation.managers,
     prizeCalculation,
   };
+  duration.end();
+  return allData;
 };
 
 export const loader: LoaderFunction = async ({ params }) => {

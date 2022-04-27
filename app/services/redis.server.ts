@@ -38,6 +38,7 @@ export async function cacheFn<R>(opts: {
         throw new Error("not cached");
       }
     } catch (err) {
+      console.log("CACHE FETCH ERROR", err);
       const fnDuration = logDuration(`${key} - fn()`);
       const result = await fn();
       fnDuration.end();
