@@ -104,7 +104,7 @@ const Standings: React.FC<{}> = (props) => {
           variant="PRIMARY"
         />
       </Section>
-      {isFplboys ? <Calculation data={data} /> : null}
+      {isFplboys ? <Calculation /> : null}
     </>
   );
 };

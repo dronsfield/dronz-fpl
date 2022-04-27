@@ -1,7 +1,7 @@
 import React from "react";
 import { useMatches } from "remix";
-import { LeagueData } from "~/routes/league/$id";
-import { ManagerProfile } from "~/services/api";
+import { LeagueLoaderData } from "~/loaders/leagueLoader";
+import { RootLoaderData } from "~/loaders/rootLoader";
 
 export function useRouteData<Data>(id: string) {
   const matches = useMatches();
@@ -16,9 +16,15 @@ export function useRouteData<Data>(id: string) {
 }
 
 export function useLeagueData() {
-  return useRouteData<LeagueData>("routes/league/$id");
+  const leagueLoaderData = useRouteData<LeagueLoaderData>("routes/league/$id");
+  const rootLoaderData = useRouteData<RootLoaderData>("root");
+  return {
+    ...rootLoaderData.bootstrap,
+    ...leagueLoaderData,
+  };
 }
 
 export function useProfileData() {
-  return useRouteData<ManagerProfile | null>("root");
+  const rootLoaderData = useRouteData<RootLoaderData>("root");
+  return rootLoaderData.profile;
 }

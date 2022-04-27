@@ -17,7 +17,9 @@ import {
 import {
   ElementRT,
   EventRT,
+  EventStatusRT,
   fetchBootstrap,
+  fetchEventStatus,
   fetchFixtures,
   fetchLeague,
   fetchLive,
@@ -41,6 +43,9 @@ function parseCurrentEventId(events: EventRT[]): number {
     }
   }
   return currentEventId;
+}
+function parseCurrentEventIdFromStatus(statusResp: EventStatusRT): number {
+  return statusResp.status[0]?.event || 1;
 }
 function parsePlayerFromElement(
   element: ElementRT,
@@ -153,31 +158,35 @@ function parseManagerProfile(managerInfo: ManagerInfoRT): ManagerProfile {
   };
 }
 
-export async function init() {
-  const bootstrap = await fetchBootstrap();
-  const currentEventId = parseCurrentEventId(bootstrap.events);
-  const liveList = (await fetchLive({ eventId: currentEventId })).elements;
-  const live = keyBy(liveList, "id");
-  const playerList = bootstrap.elements.map((element) =>
-    parsePlayerFromElement(element, live)
-  );
-  const players = keyBy(playerList, "id");
-  const teamList = bootstrap.teams.map(parseTeam);
-  const teams = keyBy(teamList, "id");
-
-  const fixturesResponse = await fetchFixtures({
-    eventId: currentEventId || 1,
-  });
-  const fixtures = fixturesResponse.map((fixture) =>
-    parseFixture(fixture, teams)
-  );
-  return { players, teams, currentEventId, fixtures };
-}
-
 function getPickType(pick: PickRT): PickType {
   if (pick.is_captain) return "CAPTAIN";
   if (pick.is_vice_captain) return "VICE";
   return pick.position <= 11 ? "STARTING" : "BENCHED";
+}
+
+export async function getCurrentEventId() {
+  return parseCurrentEventIdFromStatus(await fetchEventStatus());
+}
+
+export async function getBootstrap(currentEventId: number) {
+  const [bootstrapResponse, liveResponse, fixturesResponse] = await Promise.all(
+    [
+      fetchBootstrap(),
+      fetchLive({ eventId: currentEventId }),
+      fetchFixtures({ eventId: currentEventId }),
+    ]
+  );
+  const live = keyBy(liveResponse.elements, "id");
+  const playerList = bootstrapResponse.elements.map((element) =>
+    parsePlayerFromElement(element, live)
+  );
+  const players = keyBy(playerList, "id");
+  const teamList = bootstrapResponse.teams.map(parseTeam);
+  const teams = keyBy(teamList, "id");
+  const fixtures = fixturesResponse.map((fixture) =>
+    parseFixture(fixture, teams)
+  );
+  return { players, teams, fixtures, currentEventId };
 }
 
 export async function getLeague(

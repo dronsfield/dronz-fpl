@@ -1,16 +1,15 @@
 import React from "react";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
-import { LeagueData } from "~/routes/league/$id";
+import { useLeagueData } from "~/hooks/useRouteData";
 import { formatName } from "~/util/formatName";
 
 const lilSpacer = <Spacer height={5} />;
 
-const Calculation: React.FC<{ data: LeagueData }> = (props) => {
-  const { data } = props;
+const Calculation: React.FC<{}> = (props) => {
   const {
     prizeCalculation: { buyIns, totalPrize, prizes, pots },
-  } = data;
+  } = useLeagueData();
 
   return (
     <Section>

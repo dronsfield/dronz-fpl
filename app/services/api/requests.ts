@@ -20,6 +20,11 @@ const BASE_URL = "https://fantasy.premierleague.com/api";
 // FPL API RESPONSE RUNTYPES
 // ------------------------------------------------------------
 
+export const EventStatusRT = Record({
+  status: Array(Record({ event: Number })),
+});
+export type EventStatusRT = Static<typeof EventStatusRT>;
+
 export const ElementRT = Record({
   id: Number,
   first_name: String,
@@ -193,6 +198,17 @@ function expireAt2am() {
 // ------------------------------------------------------------
 // FETCHERS
 // ------------------------------------------------------------
+
+export function fetchEventStatus() {
+  const url = `${BASE_URL}/event-status/`;
+  const rt = EventStatusRT;
+  return cacheFn({
+    rt,
+    fn: () => runtypeFetch(rt, url),
+    key: `event-status`,
+    expireAt: null,
+  });
+}
 
 export function fetchBootstrap() {
   const url = `${BASE_URL}/bootstrap-static/`;

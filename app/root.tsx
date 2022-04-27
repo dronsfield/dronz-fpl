@@ -5,7 +5,6 @@ import {
   Links,
   LinksFunction,
   LiveReload,
-  LoaderFunction,
   Meta,
   MetaFunction,
   Outlet,
@@ -14,18 +13,12 @@ import {
   useCatch,
 } from "remix";
 import NavTray from "./components/NavTray";
-import { getManagerProfile } from "./services/api";
-import { getUser } from "./services/session.server";
+import { rootLoader } from "./loaders/rootLoader";
 import GlobalStyle from "./style/global";
 
 dayjs.extend(utc);
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getUser(request);
-  const profile = user ? await getManagerProfile(user.userId) : null;
-  return profile;
-};
-
+export const loader = rootLoader;
 export const meta: MetaFunction = () => {
   return { title: "FPL.DRONZ" };
 };

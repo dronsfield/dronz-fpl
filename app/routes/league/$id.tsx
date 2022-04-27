@@ -1,52 +1,16 @@
 import React from "react";
-import { LoaderFunction, Outlet, useLoaderData, useTransition } from "remix";
+import { Outlet, useTransition } from "remix";
 import styled from "styled-components";
-import invariant from "tiny-invariant";
-import appConfig from "~/appConfig";
 import Button from "~/components/Button";
 import FlexCenter from "~/components/FlexCenter";
 import { Loader } from "~/components/Loader";
 import NavBar from "~/components/NavBar";
 import Spacer from "~/components/Spacer";
-import managersData from "~/data/managers.json";
-import { getLeague, init } from "~/services/api";
+import { useLeagueData } from "~/hooks/useRouteData";
+import { leagueLoader } from "~/loaders/leagueLoader";
 import colors from "~/style/colors";
-import { BuyInManager, calculatePrizes } from "~/util/calculatePrizes";
-import { logDuration } from "~/util/logDuration";
 
-const buyInsById: { [id: string]: number } = {};
-managersData.forEach((manager) => {
-  buyInsById[manager.id] = manager.datePaid ? manager.buyIn : 0;
-});
-
-export const getData = async (id: number) => {
-  const duration = logDuration(`getLeagueData`);
-  const initData = await init();
-  const leagueData = await getLeague(id, initData.currentEventId);
-
-  const buyInManagers: BuyInManager[] = leagueData.managers.map((manager) => {
-    const buyIn =
-      leagueData.id === appConfig.LEAGUE_ID
-        ? buyInsById[String(manager.id)] || 0
-        : 0;
-    return { ...manager, buyIn };
-  });
-  const prizeCalculation = calculatePrizes(buyInManagers);
-  const allData = {
-    ...initData,
-    ...leagueData,
-    managers: prizeCalculation.managers,
-    prizeCalculation,
-  };
-  duration.end();
-  return allData;
-};
-
-export const loader: LoaderFunction = async ({ params }) => {
-  const id = Number(params.id);
-  invariant(id, "expected params.id");
-  return getData(id);
-};
+export const loader = leagueLoader;
 
 const Header = styled.nav`
   width: 100%;
@@ -125,14 +89,12 @@ const Layout: React.FC<LayoutProps> = (props) => {
     </>
   );
 };
-
-export type LeagueData = Awaited<ReturnType<typeof getData>>;
 export interface LeagueProps {
   foo: string;
 }
 const League: React.FC<LeagueProps> = (props) => {
-  const data = useLoaderData<LeagueData>();
   const transition = useTransition();
+  const data = useLeagueData();
 
   return (
     <Layout name={data.name}>
@@ -142,7 +104,7 @@ const League: React.FC<LeagueProps> = (props) => {
           <Loader size={36} color={colors.darkPurple} />
         </FlexCenter>
       ) : (
-        <Outlet context={data} />
+        <Outlet />
       )}
     </Layout>
   );
