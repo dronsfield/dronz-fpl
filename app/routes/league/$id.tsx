@@ -39,17 +39,16 @@ const NavButton = styled(Button).attrs({
   isNav: true,
 })`
   text-transform: uppercase;
-
   margin: 3px 3px;
-  color: white;
 
+  color: white !important; //sc-bug
   background-color: rgba(255, 255, 255, 0.2) !important; //sc-bug
   transition: 0.1s linear all;
   -webkit-tap-highlight-color: transparent;
 
   &.active {
     background-color: white !important; //sc-bug
-    color: ${colors.purple};
+    color: ${colors.purple} !important; //sc-bug
   }
 
   &:focus {
