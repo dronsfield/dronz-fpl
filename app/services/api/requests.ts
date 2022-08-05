@@ -134,7 +134,7 @@ export type HistoryRT = Static<typeof HistoryRT>;
 export const ManagerInfoRT = Record({
   player_first_name: String,
   player_last_name: String,
-  summary_overall_rank: Number,
+  summary_overall_rank: Number.Or(Null),
   leagues: Record({
     classic: Array(
       Record({

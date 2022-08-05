@@ -149,7 +149,7 @@ function parseChips(history: HistoryRT): Chip[] {
 function parseManagerProfile(managerInfo: ManagerInfoRT): ManagerProfile {
   return {
     name: `${managerInfo.player_first_name} ${managerInfo.player_last_name}`,
-    overallRank: managerInfo.summary_overall_rank,
+    overallRank: managerInfo.summary_overall_rank || 0,
     leagues: managerInfo.leagues.classic.map((item) => ({
       id: item.id,
       name: item.name,
@@ -199,6 +199,7 @@ export async function getLeague(
     standings: { results },
     managers: managersDict,
   } = league;
+  console.log({ results });
   const managers = results.slice(0, appConfig.MAX_MANAGERS).map((result) => {
     const {
       gw,
