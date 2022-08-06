@@ -1,110 +1,102 @@
 [
   {
-    "name": "Josh D",
-    "id": "10670",
-    "buyIn": 40,
-    "datePaid": "2021-08-08"
+    "name": "james clement",
+    "buyIn": 0
   },
   {
-    "name": "Rob J",
-    "id": "49702",
-    "buyIn": 40,
-    "datePaid": "2021-08-09"
+    "name": "ashley watson",
+    "buyIn": 10
   },
   {
-    "name": "Geoff G",
-    "id": "262050",
-    "buyIn": 20,
-    "datePaid": "2021-08-09"
+    "name": "pearce finnemore",
+    "buyIn": 0
   },
   {
-    "name": "Andy P",
-    "id": "3950562",
-    "buyIn": 20,
-    "datePaid": "2021-08-10"
+    "name": "oscar koronka",
+    "buyIn": 0
   },
   {
-    "name": "Mark P",
-    "id": "2076645",
-    "buyIn": 40,
-    "datePaid": "2021-08-10"
+    "name": "kieran lawrence",
+    "buyIn": 0
   },
   {
-    "name": "Dan V",
-    "id": "29002",
-    "buyIn": 20,
-    "datePaid": "2021-08-11"
+    "name": "paul cooper",
+    "buyIn": 0
   },
   {
-    "name": "Matt V",
-    "id": "58460",
-    "buyIn": 20,
-    "datePaid": "2021-08-11"
+    "name": "ben odart",
+    "buyIn": 0
   },
   {
-    "name": "Ben J",
-    "id": "1335082",
-    "buyIn": 40,
-    "datePaid": "2021-08-11"
+    "name": "dan voller",
+    "buyIn": 20
   },
   {
-    "name": "Ben O",
-    "id": "997642",
-    "buyIn": 40,
-    "datePaid": "2021-08-11"
+    "name": "noah baker",
+    "buyIn": 0
   },
   {
-    "name": "Callum  G",
-    "id": "5238451",
-    "buyIn": 5,
-    "datePaid": "2021-08-11"
+    "name": "andrew reeves",
+    "buyIn": 10
   },
   {
-    "name": "Paul  C",
-    "id": "4007337",
-    "buyIn": 20,
-    "datePaid": "2021-08-20"
+    "name": "mark pugh",
+    "buyIn": 10
   },
   {
-    "name": "Oscar  K",
-    "id": "4450189",
-    "buyIn": 20,
-    "datePaid": "2021-08-27"
+    "name": "callum gordon",
+    "buyIn": 0
   },
   {
-    "name": "Max  CC",
-    "id": "5333256",
-    "buyIn": 5,
-    "datePaid": "2021-08-22"
+    "name": "will jones",
+    "buyIn": 0
   },
   {
-    "name": "Noah Baker",
-    "id": "2313889",
-    "buyIn": 5,
-    "datePaid": "2021-08-20"
+    "name": "louis goldstein",
+    "buyIn": 5
   },
   {
-    "name": "James Clement",
-    "id": "1546295",
-    "buyIn": 20,
-    "datePaid": "2021-08-20"
+    "name": "josh dronsfield",
+    "buyIn": 40
   },
   {
-    "name": "Kieran Lawrence",
-    "id": "1914967",
-    "buyIn": 20,
-    "datePaid": "2021-08-20"
+    "name": "rob johnson",
+    "buyIn": 40
   },
   {
-    "name": "Pearce Finnemore",
-    "id": "1372644",
-    "buyIn": 5,
-    "datePaid": "2021-08-21"
+    "name": "ben jones",
+    "buyIn": 40
   },
   {
-    "name": "Sam  Raynes",
-    "id": "1866564",
-    "buyIn": 10,
-    "datePaid": "2021-08-27"
+    "name": "euan buckland",
+    "buyIn": 0
+  },
+  {
+    "name": "david solomons",
+    "buyIn": 10
+  },
+  {
+    "name": "matt voller",
+    "buyIn": 10
+  },
+  {
+    "name": "matthew wernert",
+    "buyIn": 20
+  },
+  {
+    "name": "max clayton clowes",
+    "buyIn": 0
+  },
+  {
+    "name": "andy pugh",
+    "buyIn": 10
+  },
+  {
+    "name": "geoffrey garner",
+    "buyIn": 20
+  },
+  {
+    "name": "patrick finnegan",
+    "buyIn": 40
   }
 ]

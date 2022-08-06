@@ -11,9 +11,9 @@ import {
 } from "~/util/calculatePrizes";
 import { logDuration } from "~/util/logDuration";
 
-const buyInsById: { [id: string]: number } = {};
+const buyInsByName: { [id: string]: number } = {};
 managersData.forEach((manager) => {
-  buyInsById[manager.id] = manager.datePaid ? manager.buyIn : 0;
+  buyInsByName[String(manager.name).toLowerCase()] = manager.buyIn || 0;
 });
 
 export interface LeagueLoaderData {
@@ -34,7 +34,7 @@ export const leagueLoader: LoaderFunction = async ({ params }) => {
   const buyInManagers: BuyInManager[] = leagueData.managers.map((manager) => {
     const buyIn =
       leagueData.id === appConfig.LEAGUE_ID
-        ? buyInsById[String(manager.id)] || 0
+        ? buyInsByName[String(manager.name).toLowerCase()] || 0
         : 0;
     return { ...manager, buyIn };
   });
