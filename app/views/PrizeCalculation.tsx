@@ -13,7 +13,15 @@ const Calculation: React.FC<{}> = (props) => {
 
   return (
     <Section>
-      <h3>Prize calculation breakdown:</h3>
+      <h3>Prize calculation breakdown</h3>
+      {lilSpacer}
+      <div>
+        <strong>Podium split per pot</strong>
+        {lilSpacer}
+        <div>#1: 50%</div>
+        <div>#2: 30%</div>
+        <div>#3: 20%</div>
+      </div>
       {lilSpacer}
       <div>
         {buyIns.map((buyIn, index) => {
