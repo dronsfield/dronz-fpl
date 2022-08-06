@@ -22,7 +22,7 @@ const Calculation: React.FC<{}> = (props) => {
         <div>#2: 30%</div>
         <div>#3: 20%</div>
       </div>
-      {lilSpacer}
+      <Spacer height={20} />
       <div>
         {buyIns.map((buyIn, index) => {
           const { totalPrize, managers, prizes } = pots[buyIn];
