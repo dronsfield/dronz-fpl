@@ -1,30 +1,26 @@
 [
   {
-    "name": "james clement",
-    "buyIn": 0
+    "name": "andrew reeves",
+    "buyIn": 10
+  },
+  {
+    "name": "andy pugh",
+    "buyIn": 10
   },
   {
     "name": "ashley watson",
     "buyIn": 10
   },
   {
-    "name": "pearce finnemore",
-    "buyIn": 0
-  },
-  {
-    "name": "oscar koronka",
-    "buyIn": 0
-  },
-  {
-    "name": "kieran lawrence",
-    "buyIn": 0
-  },
-  {
-    "name": "paul cooper",
-    "buyIn": 0
+    "name": "ben jones",
+    "buyIn": 40
   },
   {
     "name": "ben odart",
+    "buyIn": 0
+  },
+  {
+    "name": "callum gordon",
     "buyIn": 0
   },
   {
@@ -32,23 +28,27 @@
     "buyIn": 20
   },
   {
-    "name": "noah baker",
-    "buyIn": 0
-  },
-  {
-    "name": "andrew reeves",
+    "name": "david solomons",
     "buyIn": 10
   },
   {
-    "name": "mark pugh",
-    "buyIn": 10
-  },
-  {
-    "name": "callum gordon",
+    "name": "euan buckland",
     "buyIn": 0
   },
   {
-    "name": "will jones",
+    "name": "geoffrey garner",
+    "buyIn": 20
+  },
+  {
+    "name": "james clement",
+    "buyIn": 0
+  },
+  {
+    "name": "josh dronsfield",
+    "buyIn": 40
+  },
+  {
+    "name": "kieran lawrence",
     "buyIn": 0
   },
   {
@@ -56,23 +56,7 @@
     "buyIn": 5
   },
   {
-    "name": "josh dronsfield",
-    "buyIn": 40
-  },
-  {
-    "name": "rob johnson",
-    "buyIn": 40
-  },
-  {
-    "name": "ben jones",
-    "buyIn": 40
-  },
-  {
-    "name": "euan buckland",
-    "buyIn": 0
-  },
-  {
-    "name": "david solomons",
+    "name": "mark pugh",
     "buyIn": 10
   },
   {
@@ -88,15 +72,35 @@
     "buyIn": 0
   },
   {
-    "name": "andy pugh",
-    "buyIn": 10
+    "name": "noah baker",
+    "buyIn": 0
   },
   {
-    "name": "geoffrey garner",
-    "buyIn": 20
+    "name": "oscar koronka",
+    "buyIn": 0
   },
   {
     "name": "patrick finnegan",
     "buyIn": 40
+  },
+  {
+    "name": "paul cooper",
+    "buyIn": 0
+  },
+  {
+    "name": "pearce finnemore",
+    "buyIn": 10
+  },
+  {
+    "name": "rob johnson",
+    "buyIn": 40
+  },
+  {
+    "name": "sam lovell",
+    "buyIn": 0
+  },
+  {
+    "name": "will jones",
+    "buyIn": 10
   }
 ]
