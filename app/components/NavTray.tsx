@@ -7,6 +7,7 @@ import { normalizeList } from "~/style/mixins";
 import { HamburgerButton, HamburgerFake } from "./Hamburger";
 import LoaderLink from "./LoaderLink";
 import Spacer from "./Spacer";
+import { sortBy } from "~/util/sortBy";
 
 const NavList = styled.ul`
   ${normalizeList};
@@ -69,9 +70,10 @@ const NavTray: React.FC<NavTrayProps> = (props) => {
   const data = useProfileData();
 
   const validLeagues = React.useMemo(() => {
-    return data?.leagues.filter(
+    
+    return sortBy(data?.leagues.filter(
       (league) => league.managerRank <= appConfig.MAX_MANAGERS
-    );
+    ), "name");
   }, [data]);
 
   const onLoadEnd = () => setIsOpen(false);
