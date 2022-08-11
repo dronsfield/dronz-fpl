@@ -74,7 +74,7 @@ function parsePlayerFromElement(
     id,
     firstName: first_name,
     lastName: second_name,
-    webName: web_name,
+    webName: transformWebName(web_name),
     teamId: team,
     teamCode: team_code,
     selectedBy: selected_by_percent,
