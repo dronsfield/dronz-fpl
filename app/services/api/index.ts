@@ -64,6 +64,8 @@ function parsePlayerFromElement(
   } = element;
   const position = playerPositions[element_type - 1] || "???";
   const cost = 0.1 * now_cost;
+  const liveForPlayer = live[id]
+  if (!liveForPlayer) console.log(`no live data for ${web_name}`)
   return {
     id,
     firstName: first_name,
@@ -74,7 +76,7 @@ function parsePlayerFromElement(
     selectedBy: selected_by_percent,
     position,
     cost,
-    gameweekStats: live[id].stats,
+    gameweekStats: liveForPlayer?.stats || {},
   };
 }
 function parseTeam(team: TeamRT): Team {
