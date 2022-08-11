@@ -244,7 +244,7 @@ export function fetchBootstrap() {
             selected_by_percent,
             element_type,
             now_cost,
-          } = event
+          } = element
           return {
             id,
             first_name,
