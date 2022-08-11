@@ -12,6 +12,7 @@ import {
 } from "runtypes";
 import appConfig from "~/appConfig";
 import { runtypeFetch } from "~/util/runtypeFetch";
+import betterFetch from "../../util/betterFetch";
 import { cacheFn } from "../redis.server";
 
 const BASE_URL = "https://fantasy.premierleague.com/api";
@@ -217,7 +218,63 @@ export function fetchBootstrap() {
   return cacheFn({
     rt,
     fn: () => runtypeFetch(rt, url),
-    key: `boostrap`,
+
+    fn: () => betterFetch(url).then(resp => {
+      const trimmed = {
+        events: resp.events.map(event => {
+          const {
+            id,
+            finished,
+            is_current,
+          } = event
+          return {
+            id,
+            finished,
+            is_current,
+          }
+        }),
+        elements: resp.elements.map(element => {
+          const {
+            id,
+            first_name,
+            second_name,
+            web_name,
+            team,
+            team_code,
+            selected_by_percent,
+            element_type,
+            now_cost,
+          } = event
+          return {
+            id,
+            first_name,
+            second_name,
+            web_name,
+            team,
+            team_code,
+            selected_by_percent,
+            element_type,
+            now_cost,
+          }
+        }),
+        teams: resp.teams.map(team => {
+          const {
+            code,
+            id,
+            name,
+            short_name,
+          } = team
+          return {
+            code,
+            id,
+            name,
+            short_name,
+          }
+        })
+      }
+      return rt.check(trimmed)
+    }),
+    key: `bootstrap`,
     expireAt: expireAt2am(),
   });
 }
