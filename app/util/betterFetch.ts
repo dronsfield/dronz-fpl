@@ -74,8 +74,11 @@ async function betterFetch<T>(
     }
     return data
   } catch (err: any) {
-    if (err && resp) {
-      console.log("resp body:", String((resp as any).body))
+    console.log("betterFetch caught error", err)
+    if (err) {
+      console.log("resp body:", String((resp as any)?.body))
+      console.log("resp status:", resp?.status)
+      console.log("resp:", resp)
     }
     throw err
   }
