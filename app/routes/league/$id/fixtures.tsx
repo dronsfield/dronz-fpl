@@ -27,7 +27,7 @@ interface StateContextValue {
 }
 const defaultStateContextValue: StateContextValue = {
   playerId: undefined,
-  setPlayerId: () => {},
+  setPlayerId: () => { },
 };
 const StateContext = React.createContext<StateContextValue>(
   defaultStateContextValue
@@ -210,8 +210,8 @@ const TeamPicks: React.FC<{
                         pickType === "CAPTAIN"
                           ? " [C]"
                           : pickType === "VICE"
-                          ? " [V]"
-                          : "";
+                            ? " [V]"
+                            : "";
                       return (
                         <ManagerName
                           children={formatName(name) + suffix}
@@ -355,14 +355,18 @@ const FixturePicks: React.FC<{}> = (props) => {
 
   return (
     <StateContext.Provider value={{ playerId, setPlayerId }}>
-      <Section>
-        <SectionTitle>today + future:</SectionTitle>
-        {current.map((fixture) => renderFixture({ fixture }))}
-      </Section>
-      <Section>
-        <SectionTitle>past:</SectionTitle>
+      {current.length ? <>
+        <Section>
+          <SectionTitle>today + future:</SectionTitle>
+          {current.map((fixture) => renderFixture({ fixture }))}
+        </Section>
+        <Section>
+          <SectionTitle>past:</SectionTitle>
+          {past.map((fixture) => renderFixture({ fixture }))}
+        </Section>
+      </> : <Section>
         {past.map((fixture) => renderFixture({ fixture }))}
-      </Section>
+      </Section>}
       <Spacer height={100} />
     </StateContext.Provider>
   );

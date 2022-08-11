@@ -53,7 +53,7 @@ const TemplateTeam: React.FC<{}> = (props) => {
 
   const picks = React.useMemo(() => {
     const withCost = data.map((item) => ({ ...item, cost: item.player.cost }));
-    const sorted = sortBy(withCost, "cost");
+    const sorted = sortBy(withCost, "cost", true);
     return sorted.map((item) => {
       const { player, pickCount } = item;
       return {
