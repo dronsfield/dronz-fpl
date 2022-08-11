@@ -49,14 +49,13 @@ function makeCellWidthStyle(cellWidth: CellWidth) {
 const cellStyle = css<CellProps>`
   ${(p) => `
   ${makeCellWidthStyle(p.widths[0])}
-  ${
-    p.widths[1]
+  ${p.widths[1]
       ? `
   @media (min-width: 600px) {
     ${makeCellWidthStyle(p.widths[1])}
   }`
       : ""
-  }
+    }
   `}
   box-sizing: content-box;
   padding: 8px 4px;
@@ -75,17 +74,13 @@ const Cell = styled.td<CellProps>`
 
 const HeaderCell = styled.th<CellProps & { onClick?: any }>`
   content: "debugging, header cell";
-  font-weight: bold;
-  font-size: 10px;
-  text-transform: uppercase;
-  text-align: left;
   ${cellStyle};
 `;
 
 interface TableProps<
   RowData extends object,
   Headers extends readonly string[]
-> {
+  > {
   data: RowData[];
   headers: Headers;
   renderCell: (header: ItemsOf<Headers>, rowData: RowData) => React.ReactNode;
@@ -123,6 +118,14 @@ function TableRenderer<
                 children={renderHeader(header)}
                 widths={cellWidths[header]}
                 key={header}
+                style={{
+                  // workaround for weird SC bug that will use header className
+                  // for normal cells after page change
+                  fontWeight: "bold",
+                  fontSize: "10px",
+                  textTransform: "uppercase",
+                  textAlign: "left",
+                }}
               />
             );
           })}
@@ -164,7 +167,7 @@ Object.assign(MemoizedTableRenderer, ComponentsObject);
 let Table = MemoizedTableRenderer as (<
   RowData extends object,
   Headers extends readonly string[]
->(
+  >(
   props: TableProps<RowData, Headers>
 ) => React.ReactElement) &
   typeof ComponentsObject;
