@@ -4,7 +4,7 @@ import styled from "styled-components";
 const srcBase = `https://fantasy.premierleague.com/dist/img/shirts/standard/`;
 
 const ShirtImg = styled.img`
-  height: 28px;
+  height: 32px;
   width: auto;
 `;
 

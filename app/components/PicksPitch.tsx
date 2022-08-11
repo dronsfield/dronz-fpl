@@ -34,7 +34,8 @@ const PickRow = styled(FlexRow)`
 const PlayerBlockContainer = styled(FlexCenter).attrs({ as: "button" })`
   ${normalizeButton};
   cursor: default;
-  width: 5em;
+  width: 20%;
+  max-width: 70px;
   padding: 0 0.2em;
 `;
 
@@ -45,7 +46,7 @@ const PlayerName = styled.div`
   text-overflow: ellipsis;
   overflow: hidden;
   font-weight: bold;
-  font-size: 10px;
+  font-size: 9px;
   text-transform: uppercase;
 `;
 

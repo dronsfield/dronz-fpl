@@ -47,6 +47,10 @@ function parseCurrentEventId(events: EventRT[]): number {
 function parseCurrentEventIdFromStatus(statusResp: EventStatusRT): number {
   return statusResp.status[0]?.event || 1;
 }
+function transformWebName(web_name: string) {
+  if (web_name === "Alexander-Arnold") return "Trent"
+  return web_name
+}
 function parsePlayerFromElement(
   element: ElementRT,
   live: { [key: string]: { stats: LiveStatsRT } }
