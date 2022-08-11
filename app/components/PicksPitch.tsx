@@ -66,7 +66,7 @@ const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
         teamCode={pick.player.teamCode}
         isGoalkeeper={pick.player.position === "GKP"}
       />
-      <Spacer height={2} />
+      <Spacer height={4} />
       <PlayerName>{pick.player.webName}</PlayerName>
       {pick.value !== undefined ? <PickValue>{pick.value}</PickValue> : null}
     </PlayerBlockContainer>
