@@ -73,7 +73,7 @@ const NavTray: React.FC<NavTrayProps> = (props) => {
     
     return sortBy(data?.leagues.filter(
       (league) => league.managerRank <= appConfig.MAX_MANAGERS
-    ), "name");
+    ) || [], "name");
   }, [data]);
 
   const onLoadEnd = () => setIsOpen(false);
