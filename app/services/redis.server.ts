@@ -15,12 +15,15 @@ function cacheLog(type: "HIT" | "MISSED" | "PASSED", url: string) {
   // console.log(JSON.stringify(__cacheCounter));
 }
 
+const DISABLE_CACHE = true
+
 export async function cacheFn<R>(opts: {
   key: string;
   rt: Runtype<R>;
   fn: () => Promise<R>;
   expireAt: number | null;
 }): Promise<R> {
+  if (DISABLE_CACHE) return fn() 
   try {
     const { key, rt, fn, expireAt } = opts;
 
