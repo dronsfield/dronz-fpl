@@ -23,7 +23,7 @@ export async function cacheFn<R>(opts: {
   fn: () => Promise<R>;
   expireAt: number | null;
 }): Promise<R> {
-  if (DISABLE_CACHE) return fn() 
+  if (DISABLE_CACHE) return opts.fn() 
   try {
     const { key, rt, fn, expireAt } = opts;
 
