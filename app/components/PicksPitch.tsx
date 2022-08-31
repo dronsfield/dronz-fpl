@@ -59,8 +59,16 @@ const PickValue = styled.div`
 export interface PlayerBlockProps {
   pick: Pick;
 }
+
 const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
   const { pick } = props;
+  const calculatedPoints = () => {
+    const { value, multiplier } = pick;
+    if (value !== undefined && multiplier !== 0 && multiplier !== undefined) {
+      return (value as number) * multiplier;
+    }
+    return value;
+  };
   return (
     <PlayerBlockContainer>
       <Shirt
@@ -71,8 +79,8 @@ const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
       <PlayerName>
         {pick.player.webName} {pick.multiplier === (2 || 3) ? "(C)" : ""}
       </PlayerName>
-      {pick.value !== undefined && pick.multiplier ? (
-        <PickValue>{(pick.value as number) * pick.multiplier}</PickValue>
+      {pick.value !== undefined ? (
+        <PickValue>{calculatedPoints()}</PickValue>
       ) : null}
     </PlayerBlockContainer>
   );
