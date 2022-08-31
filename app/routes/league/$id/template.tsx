@@ -8,7 +8,14 @@ import { useLeagueData } from "~/hooks/useRouteData";
 import { PickType, Player } from "~/services/api";
 import { sortBy } from "~/util/sortBy";
 
-const headers = ["Player", "Pos", "Price", "FPLBOYS", "Overall"] as const;
+const headers = [
+  "Player",
+  "Team",
+  "Pos",
+  "Price",
+  "FPLBOYS",
+  "Overall",
+] as const;
 
 interface TemplateData {
   player: Player;
@@ -18,6 +25,10 @@ interface TemplateData {
 const TotalCost = styled.div`
   padding: 9px;
   font-weight: bold;
+`;
+
+const BadgeIcon = styled.img`
+  width: 15px;
 `;
 
 const TemplateTeam: React.FC<{}> = (props) => {
@@ -82,6 +93,12 @@ const TemplateTeam: React.FC<{}> = (props) => {
           switch (header) {
             case "Player":
               return player.webName;
+            case "Team":
+              return (
+                <BadgeIcon
+                  src={`https://resources.premierleague.com/premierleague/badges/100/t${player.teamCode}.png`}
+                />
+              );
             case "Pos":
               return player.position;
             case "Price":
@@ -97,6 +114,7 @@ const TemplateTeam: React.FC<{}> = (props) => {
         }}
         cellWidths={{
           Player: ["auto"],
+          Team: ["auto"],
           Pos: ["auto"],
           Price: ["auto"],
           FPLBOYS: ["auto"],
