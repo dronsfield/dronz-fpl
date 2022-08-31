@@ -58,11 +58,9 @@ const PickValue = styled.div`
 
 export interface PlayerBlockProps {
   pick: Pick;
-  isManagerPage?: boolean;
 }
 const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
-  const { pick, isManagerPage } = props;
-  console.log(pick.multiplier);
+  const { pick } = props;
   return (
     <PlayerBlockContainer>
       <Shirt
@@ -110,13 +108,7 @@ const PicksPitch: React.FC<PicksPitchProps> = (props) => {
         return (
           <PickRow key={index} style={{ opacity: index === 4 ? 0.5 : 1 }}>
             {row.map((pick) => {
-              return (
-                <PlayerBlock
-                  pick={pick}
-                  key={pick.player.id}
-                  isManagerPage={pick.pickType === "CAPTAIN"}
-                />
-              );
+              return <PlayerBlock pick={pick} key={pick.player.id} />;
             })}
           </PickRow>
         );
