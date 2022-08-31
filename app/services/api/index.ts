@@ -48,8 +48,8 @@ function parseCurrentEventIdFromStatus(statusResp: EventStatusRT): number {
   return statusResp.status[0]?.event || 1;
 }
 function transformWebName(web_name: string) {
-  if (web_name === "Alexander-Arnold") return "Trent"
-  return web_name
+  if (web_name === "Alexander-Arnold") return "Trent";
+  return web_name;
 }
 function parsePlayerFromElement(
   element: ElementRT,
@@ -68,8 +68,8 @@ function parsePlayerFromElement(
   } = element;
   const position = playerPositions[element_type - 1] || "???";
   const cost = 0.1 * now_cost;
-  const liveForPlayer = live[id]
-  if (!liveForPlayer) console.log(`no live data for ${web_name}`)
+  const liveForPlayer = live[id];
+  if (!liveForPlayer) console.log(`no live data for ${web_name}`);
   return {
     id,
     firstName: first_name,
@@ -217,6 +217,7 @@ export async function getLeague(
       acc[pick.element] = {
         pickType: getPickType(pick),
         position: pick.position,
+        multiplier: pick.multiplier,
       };
       return acc;
     }, {} as Manager["picks"]);

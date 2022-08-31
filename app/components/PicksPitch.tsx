@@ -22,6 +22,7 @@ interface Pick {
   pickType: PickType;
   position?: number;
   value?: Maybe<string | number | boolean>;
+  multiplier?: number;
 }
 
 const Pitch = styled.div``;
@@ -57,10 +58,11 @@ const PickValue = styled.div`
 
 export interface PlayerBlockProps {
   pick: Pick;
+  isManagerPage?: boolean;
 }
 const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
-  const { pick } = props;
-
+  const { pick, isManagerPage } = props;
+  console.log(pick.multiplier);
   return (
     <PlayerBlockContainer>
       <Shirt
@@ -68,14 +70,19 @@ const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
         isGoalkeeper={pick.player.position === "GKP"}
       />
       <Spacer height={4} />
-      <PlayerName>{pick.player.webName}</PlayerName>
-      {pick.value !== undefined ? <PickValue>{pick.value}</PickValue> : null}
+      <PlayerName>
+        {pick.player.webName} {pick.multiplier === (2 || 3) ? "(C)" : ""}
+      </PlayerName>
+      {pick.value !== undefined && pick.multiplier ? (
+        <PickValue>{(pick.value as number) * pick.multiplier}</PickValue>
+      ) : null}
     </PlayerBlockContainer>
   );
 };
 
 export interface PicksPitchProps {
   picks: Array<Pick>;
+  isManagerPage?: boolean;
 }
 const PicksPitch: React.FC<PicksPitchProps> = (props) => {
   const { picks } = props;
@@ -103,7 +110,13 @@ const PicksPitch: React.FC<PicksPitchProps> = (props) => {
         return (
           <PickRow key={index} style={{ opacity: index === 4 ? 0.5 : 1 }}>
             {row.map((pick) => {
-              return <PlayerBlock pick={pick} key={pick.player.id} />;
+              return (
+                <PlayerBlock
+                  pick={pick}
+                  key={pick.player.id}
+                  isManagerPage={pick.pickType === "CAPTAIN"}
+                />
+              );
             })}
           </PickRow>
         );

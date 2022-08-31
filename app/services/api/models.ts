@@ -47,6 +47,7 @@ export interface Manager {
     [id: number]: {
       pickType: PickType;
       position: number;
+      multiplier: number;
     };
   };
   transfers: {
