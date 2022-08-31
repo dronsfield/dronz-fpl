@@ -71,8 +71,8 @@ const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
       <PlayerName>
         {pick.player.webName} {pick.multiplier === (2 || 3) ? "(C)" : ""}
       </PlayerName>
-      {pick.value !== undefined && pick.multiplier ? (
-        <PickValue>{(pick.value as number) * pick.multiplier}</PickValue>
+      {pick.value !== undefined && pick.multiplier !== undefined ? (
+        <PickValue>{pick.value}</PickValue>
       ) : null}
     </PlayerBlockContainer>
   );
