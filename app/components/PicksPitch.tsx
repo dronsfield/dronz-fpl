@@ -22,6 +22,7 @@ interface Pick {
   pickType: PickType;
   position?: number;
   value?: Maybe<string | number | boolean>;
+  multiplier?: number;
 }
 
 const Pitch = styled.div``;
@@ -60,7 +61,6 @@ export interface PlayerBlockProps {
 }
 const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
   const { pick } = props;
-
   return (
     <PlayerBlockContainer>
       <Shirt
@@ -68,14 +68,19 @@ const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
         isGoalkeeper={pick.player.position === "GKP"}
       />
       <Spacer height={4} />
-      <PlayerName>{pick.player.webName}</PlayerName>
-      {pick.value !== undefined ? <PickValue>{pick.value}</PickValue> : null}
+      <PlayerName>
+        {pick.player.webName} {pick.multiplier === (2 || 3) ? "(C)" : ""}
+      </PlayerName>
+      {pick.value !== undefined && pick.multiplier ? (
+        <PickValue>{(pick.value as number) * pick.multiplier}</PickValue>
+      ) : null}
     </PlayerBlockContainer>
   );
 };
 
 export interface PicksPitchProps {
   picks: Array<Pick>;
+  isManagerPage?: boolean;
 }
 const PicksPitch: React.FC<PicksPitchProps> = (props) => {
   const { picks } = props;

@@ -37,11 +37,12 @@ const Manager: React.FC<ManagerProps> = (props) => {
     const managerPicks = manager?.picks || {};
     const picks = getKeys(managerPicks).map((playerId) => {
       const player = players[playerId];
-      const { pickType, position } = managerPicks[playerId];
+      const { pickType, position, multiplier } = managerPicks[playerId];
       return {
         player,
         pickType,
         position,
+        multiplier,
         value: player.gameweekStats.total_points,
       };
     });
@@ -58,7 +59,7 @@ const Manager: React.FC<ManagerProps> = (props) => {
         <ManagerTeamName children={manager.teamName} />
       </TextContainer>
       <Spacer height={16} />
-      <PicksPitch picks={picks} />
+      <PicksPitch picks={picks} isManagerPage={true} />
       <Spacer height={16} />
       <KeyValueTable
         items={[
