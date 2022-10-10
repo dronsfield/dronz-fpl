@@ -22,6 +22,7 @@ export interface RootLoaderData {
     };
     fixtures: Fixture[];
     currentEventId: number;
+    avgPoints: number;
   };
 }
 

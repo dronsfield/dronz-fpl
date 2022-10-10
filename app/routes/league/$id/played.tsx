@@ -1,12 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 import { ManagerCell } from "~/components/CommonCells";
+import FlexAround from "~/components/FlexAround";
+import { AveragePoints } from "~/components/AveragePoints";
 import Section from "~/components/Section";
 import Table from "~/components/Table";
 import { useLeagueData } from "~/hooks/useRouteData";
 import { FixtureTeam, PickType, Player } from "~/services/api/models";
 import colors from "~/style/colors";
-import { avgPoints } from "~/util/calcAvgPoints";
+import { calcAvgPoints } from "~/util/calcAvgPoints";
 import { sortBy } from "~/util/sortBy";
 import { ItemsOf } from "~/util/utilityTypes";
 
@@ -40,9 +42,12 @@ const PlayerName = styled.span<{
 `;
 
 const Played: React.FC<{}> = (props) => {
-  const { managers, currentEventId, players, fixtures } = useLeagueData();
-  console.log(managers);
-  console.log(avgPoints(managers.map((manager) => manager.eventPoints)));
+  const { managers, currentEventId, players, fixtures, avgPoints } =
+    useLeagueData();
+
+  const avgLeaguePoints = calcAvgPoints(
+    managers.map((manager) => manager.eventPoints)
+  );
 
   const data = React.useMemo(() => {
     const teamFixtureStatuses: { [teamId: number]: TeamFixtureStatus } = {};
@@ -115,6 +120,10 @@ const Played: React.FC<{}> = (props) => {
 
   return (
     <Section>
+      <FlexAround>
+        <AveragePoints context="league" points={avgPoints.toString()} />
+        <AveragePoints context="fpl" points={avgLeaguePoints} />
+      </FlexAround>
       <Table
         data={data}
         headers={headers}
