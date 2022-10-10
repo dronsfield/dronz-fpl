@@ -51,6 +51,7 @@ export const EventRT = Record({
   id: Number,
   finished: Boolean,
   is_current: Boolean,
+  average_entry_score: Number,
 });
 export type EventRT = Static<typeof EventRT>;
 
@@ -224,11 +225,12 @@ export function fetchBootstrap() {
       betterFetch(url).then((resp) => {
         const trimmed = {
           events: resp.events.map((event) => {
-            const { id, finished, is_current } = event;
+            const { id, finished, is_current, average_entry_score } = event;
             return {
               id,
               finished,
               is_current,
+              average_entry_score,
             };
           }),
           elements: resp.elements.map((element) => {

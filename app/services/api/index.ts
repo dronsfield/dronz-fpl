@@ -192,7 +192,10 @@ export async function getBootstrap(currentEventId: number) {
   const fixtures = fixturesResponse.map((fixture) =>
     parseFixture(fixture, teams)
   );
-  return { players, teams, fixtures, currentEventId };
+  // mb hacky but I think the eventId will always be < 1?
+  const avgPoints =
+    bootstrapResponse.events[currentEventId - 1]?.average_entry_score || 0;
+  return { players, teams, fixtures, currentEventId, avgPoints };
 }
 
 export async function getLeague(
