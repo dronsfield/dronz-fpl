@@ -121,8 +121,8 @@ const Played: React.FC<{}> = (props) => {
   return (
     <Section>
       <FlexAround>
-        <AveragePoints context="league" points={avgPoints.toString()} />
-        <AveragePoints context="fpl" points={avgLeaguePoints} />
+        <AveragePoints context="fpl" points={avgPoints.toString()} />
+        <AveragePoints context="league" points={avgLeaguePoints} />
       </FlexAround>
       <Table
         data={data}
