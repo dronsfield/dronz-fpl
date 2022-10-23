@@ -22,6 +22,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
   const data = useProfileData();
+  console.log({ data })
 
   return (
     <>

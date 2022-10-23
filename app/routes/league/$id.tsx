@@ -6,11 +6,9 @@ import FlexCenter from "~/components/FlexCenter";
 import { Loader } from "~/components/Loader";
 import NavBar from "~/components/NavBar";
 import Spacer from "~/components/Spacer";
-import { useLeagueData } from "~/hooks/useRouteData";
+import {useLeagueData, useLeagueLoaderQuery} from "~/hooks/useRouteData";
 import { leagueLoader } from "~/loaders/leagueLoader";
 import colors from "~/style/colors";
-
-export const loader = leagueLoader;
 
 const Header = styled.nav`
   width: 100%;
@@ -93,11 +91,15 @@ export interface LeagueProps {
 }
 const League: React.FC<LeagueProps> = (props) => {
   const transition = useTransition();
-  const data = useLeagueData();
+  const leagueQuery = useLeagueLoaderQuery();
+
+  if (!leagueQuery.data && leagueQuery.error) {
+    throw leagueQuery.error
+  }
 
   return (
-    <Layout name={data.name}>
-      {transition.state !== "idle" ? (
+    <Layout name={leagueQuery.data?.name || "..."}>
+      {transition.state !== "idle" || !leagueQuery.data ? (
         <FlexCenter>
           <Spacer height={32} />
           <Loader size={36} color={colors.darkPurple} />

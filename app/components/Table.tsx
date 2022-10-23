@@ -68,12 +68,10 @@ const cellStyle = css<CellProps>`
 `;
 
 const Cell = styled.td<CellProps>`
-  content: "debugging, normal cell";
   ${cellStyle};
 `;
 
 const HeaderCell = styled.th<CellProps & { onClick?: any }>`
-  content: "debugging, header cell";
   ${cellStyle};
 `;
 

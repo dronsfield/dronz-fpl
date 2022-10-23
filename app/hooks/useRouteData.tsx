@@ -1,30 +1,54 @@
 import React from "react";
-import { useMatches } from "remix";
-import { LeagueLoaderData } from "~/loaders/leagueLoader";
-import { RootLoaderData } from "~/loaders/rootLoader";
+import {useMatches, useParams} from "remix";
+import {leagueLoader, LeagueLoaderData} from "~/loaders/leagueLoader";
+import {rootLoader, RootLoaderData} from "~/loaders/rootLoader";
+import {QueryObserverResult, useQuery} from "@tanstack/react-query";
+import {useUser} from "~/hooks/useUser";
+import dayjs from "dayjs";
 
-export function useRouteData<Data>(id: string) {
-  const matches = useMatches();
-  const data = React.useMemo(() => {
-    for (let ii = 0; ii < matches.length; ii++) {
-      const match = matches[ii];
-      if (match.id === id) return match.data as Data;
-    }
-  }, [matches]);
-  if (data === undefined) throw new Error(`No data for route "${id}"`);
-  return data;
+const logQuery = (query: QueryObserverResult, label: string) => {
+
+  console.log(`${label}\n` + JSON.stringify({
+    hasData: !!query.data,
+    updatedAt: query.dataUpdatedAt ? dayjs(query.dataUpdatedAt).fromNow() : null,
+    isFetching: query.isFetching,
+
+  }, null, 2))
+
+}
+
+export function useRootLoaderQuery() {
+  const user = useUser()
+  const query = useQuery({
+    queryKey: ["root", user?.userId],
+    queryFn: () => rootLoader(user)
+  })
+  logQuery(query, "rootQuery")
+
+  return query
+}
+
+export function useLeagueLoaderQuery() {
+  const { id = "" } = useParams()
+  const query = useQuery({
+    queryKey: ["league", id],
+    queryFn: () => leagueLoader({ params: { id }})
+  })
+  logQuery(query, "leagueQuery")
+
+  return query
 }
 
 export function useLeagueData() {
-  const leagueLoaderData = useRouteData<LeagueLoaderData>("routes/league/$id");
-  const rootLoaderData = useRouteData<RootLoaderData>("root");
-  return {
-    ...rootLoaderData.bootstrap,
-    ...leagueLoaderData,
-  };
+  const leagueQuery = useLeagueLoaderQuery()
+
+  const rootQuery = useRootLoaderQuery()
+  if (!leagueQuery.data || !rootQuery.data) throw new Error("expected league data!")
+  return {...rootQuery.data.bootstrap, ...leagueQuery.data}
 }
 
 export function useProfileData() {
-  const rootLoaderData = useRouteData<RootLoaderData>("root");
-  return rootLoaderData.profile;
+  const rootQuery = useRootLoaderQuery()
+  return rootQuery.data?.profile || null
+
 }

@@ -2,7 +2,6 @@ import { LoaderFunction } from "remix";
 import invariant from "tiny-invariant";
 import appConfig from "~/appConfig";
 import managersData from "~/data/managers.json";
-import { getCurrentEventId, getLeague } from "~/services/api";
 import {
   BuyInManager,
   calculatePrizes,
@@ -13,6 +12,7 @@ import { logDuration } from "~/util/logDuration";
 import {runtypeFetch} from "~/util/runtypeFetch";
 import {Array} from "runtypes";
 import {GameweekRT, HistoryRT, LeagueRT, ManagersRT, TransferRT} from "~/services/api/requests";
+import {randomKey} from "~/util/randomKey";
 
 const buyInsByName: { [id: string]: number } = {};
 managersData.forEach((manager) => {

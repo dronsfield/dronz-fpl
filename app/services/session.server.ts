@@ -29,7 +29,8 @@ export async function getUserId(request: Request) {
   return userId;
 }
 
-export async function getUser(request: Request) {
+export type User = { userId: number } | null
+export async function getUser(request: Request): Promise<User> {
   const userId = await getUserId(request);
   if (!userId) return null;
   return { userId };

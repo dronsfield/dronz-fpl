@@ -202,7 +202,7 @@ function expireAt2am() {
 // ------------------------------------------------------------
 
 export function fetchEventStatus() {
-  const url = `/api/event-status`;
+  const url = `${window.location.origin}/api/event-status`;
   const rt = EventStatusRT;
   return cacheFn({
     rt,
@@ -213,7 +213,7 @@ export function fetchEventStatus() {
 }
 
 export function fetchBootstrap() {
-  const url = `/api/bootstrap`;
+  const url = `${window.location.origin}/api/bootstrap`;
   const rt = BootstrapRT;
   return cacheFn({
     rt,
@@ -224,18 +224,20 @@ export function fetchBootstrap() {
 }
 
 export async function fetchLeague(opts: { leagueId: number; eventId: number }) {
-  const url = `/api/league/${opts.leagueId}/${opts.eventId}`
+  const url = `${window.location.origin}/api/league/${opts.leagueId}/${opts.eventId}`
   const rt = LeagueWithManagersRT
+  console.log("inside fetchLeague")
   return cacheFn({
     rt,
     key: `league/${opts.leagueId}`,
-    expireAt: expireAtHalfHour(),
-    fn: () => runtypeFetch(rt, url)
+    // expireAt: expireAtHalfHour(),
+    fn: () => runtypeFetch(rt, url),
+    expireAt: null,
   })
 }
 
 export function fetchFixtures(opts: { eventId: number }) {
-  const url = `/api/fixtures/${opts.eventId}`;
+  const url = `${window.location.origin}/api/fixtures/${opts.eventId}`;
   const rt = Array(FixtureRT);
   return cacheFn({
     rt,
@@ -246,7 +248,7 @@ export function fetchFixtures(opts: { eventId: number }) {
 }
 
 export function fetchManagerInfo(opts: { managerId: number }) {
-  const url = `/api/manager-info/${opts.managerId}/`;
+  const url = `${window.location.origin}/api/manager-info/${opts.managerId}/`;
   const rt = ManagerInfoRT;
 
   return cacheFn({
@@ -258,7 +260,7 @@ export function fetchManagerInfo(opts: { managerId: number }) {
 }
 
 export function fetchLive(opts: { eventId: number }) {
-  const url = `/api/live/${opts.eventId}`;
+  const url = `${window.location.origin}/api/live/${opts.eventId}`;
   const rt = LiveRT;
 
   return cacheFn({

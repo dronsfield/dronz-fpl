@@ -199,6 +199,7 @@ export async function getLeague(
   leagueId: number,
   currentEventId: number
 ): Promise<League> {
+  console.log("hello????")
   const league = await fetchLeague({ leagueId, eventId: currentEventId });
   const {
     league: { name, id },

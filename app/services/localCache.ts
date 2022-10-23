@@ -1,8 +1,9 @@
 import {Runtype} from "runtypes";
 import {logDuration} from "~/util/logDuration";
 import dayjs from "dayjs";
+import wait from "~/util/wait";
 
-const DISABLE_CACHE = true
+const DISABLE_CACHE = false
 
 const CACHE_SPLITTER = "|c/A|c/H|e|"
 
@@ -10,7 +11,7 @@ const __cacheCounter: any = {};
 function cacheLog(type: "HIT" | "MISSED" | "PASSED", url: string) {
   console.log(`${type}: ${url}`);
   __cacheCounter[type] = (__cacheCounter[type] || 0) + 1;
-  console.log(JSON.stringify(__cacheCounter));
+  // console.log(JSON.stringify(__cacheCounter));
 }
 
 export async function cacheFn<R>(opts: {
@@ -25,14 +26,15 @@ export async function cacheFn<R>(opts: {
 
     try {
       if (!expireAt) throw new Error("no expireAt");
-      const cacheDuration = logDuration(`cacheFn - ${key} - redis.get`);
+      // const cacheDuration = logDuration(`cacheFn - ${key} - localStorage.getItem`);
       const result = await localStorage.getItem(key);
-      cacheDuration.end();
+      // cacheDuration.end();
       if (result) {
         const [expiryStr, data] = result.split(CACHE_SPLITTER)
         const expiry = Number(expiryStr);
         const now = dayjs().utc().unix();
         if (!expiry || expiry < now) {
+          localStorage.removeItem(key)
           throw new Error("cache expired")
         }
         const parsed = JSON.parse(data);
@@ -43,9 +45,10 @@ export async function cacheFn<R>(opts: {
         throw new Error("not cached");
       }
     } catch (err) {
-      const fnDuration = logDuration(`cacheFn - ${key} - fn()`);
+      // const fnDuration = logDuration(`cacheFn - ${key} - fn()`);
       const result = await fn();
-      fnDuration.end();
+      await wait(1000)
+      // fnDuration.end();
       try {
         if (expireAt) {
           localStorage.setItem(key, expireAt + CACHE_SPLITTER + JSON.stringify(result))
@@ -54,7 +57,6 @@ export async function cacheFn<R>(opts: {
           cacheLog(`PASSED`, key);
         }
       } catch (err) {
-        // in case of redis errors
         console.log("UNEXPECTED LOCALSTORAGE ERROR", err);
       }
       return result;
