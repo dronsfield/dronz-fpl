@@ -2,11 +2,13 @@ import Redis from "ioredis";
 import { Runtype } from "runtypes";
 import { logDuration } from "~/util/logDuration";
 
+const DISABLE_CACHE = true
+
 const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379";
 console.log({ REDIS_URL });
 
-const redis = new Redis(REDIS_URL);
-export default redis;
+// const redis = new Redis(REDIS_URL);
+// export default redis;
 
 const __cacheCounter: any = {};
 function cacheLog(type: "HIT" | "MISSED" | "PASSED", url: string) {
@@ -15,7 +17,7 @@ function cacheLog(type: "HIT" | "MISSED" | "PASSED", url: string) {
   // console.log(JSON.stringify(__cacheCounter));
 }
 
-const DISABLE_CACHE = true
+
 
 export async function cacheFn<R>(opts: {
   key: string;

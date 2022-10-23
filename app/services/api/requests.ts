@@ -11,18 +11,18 @@ import {
   String,
 } from "runtypes";
 import appConfig from "~/appConfig";
-import { runtypeFetch } from "~/util/runtypeFetch";
+import {runtypeFetch} from "~/util/runtypeFetch";
 import betterFetch from "../../util/betterFetch";
-import { cacheFn } from "../redis.server";
+import {cacheFn} from "../redis.server";
 
-const BASE_URL = "https://fantasy.premierleague.com/api";
+const BASE_URL = appConfig.BASE_URL
 
 // ------------------------------------------------------------
 // FPL API RESPONSE RUNTYPES
 // ------------------------------------------------------------
 
 export const EventStatusRT = Record({
-  status: Array(Record({ event: Number })),
+  status: Array(Record({event: Number})),
 });
 export type EventStatusRT = Static<typeof EventStatusRT>;
 
@@ -62,16 +62,16 @@ export const BootstrapRT = Record({
 export type BootstrapRT = Static<typeof BootstrapRT>;
 
 export const LeagueRT = Record({
-  league: Record({ id: Number, name: String }),
+  league: Record({id: Number, name: String}),
   standings: Record({
     results: Array(
-      Record({
-        entry: Number,
-        entry_name: String,
-        player_name: String,
-        rank: Number,
-        total: Number,
-      })
+        Record({
+          entry: Number,
+          entry_name: String,
+          player_name: String,
+          rank: Number,
+          total: Number,
+        })
     ),
   }),
 });
@@ -106,14 +106,14 @@ export const TransferRT = Record({
 });
 export type TransferRT = Static<typeof TransferRT>;
 
-export const StatRT = Record({ value: Number, element: Number });
+export const StatRT = Record({value: Number, element: Number});
 export const FixtureRT = Record({
   id: Number,
   kickoff_time: String,
   finished_provisional: Boolean,
   started: Boolean,
   stats: Array(
-    Record({ identifier: String, a: Array(StatRT), h: Array(StatRT) })
+      Record({identifier: String, a: Array(StatRT), h: Array(StatRT)})
   ),
   team_h: Number,
   team_h_score: Number.Or(Null),
@@ -125,10 +125,10 @@ export type FixtureRT = Static<typeof FixtureRT>;
 
 export const HistoryRT = Record({
   chips: Array(
-    Record({
-      event: Number,
-      name: String,
-    })
+      Record({
+        event: Number,
+        name: String,
+      })
   ),
 });
 export type HistoryRT = Static<typeof HistoryRT>;
@@ -139,11 +139,11 @@ export const ManagerInfoRT = Record({
   summary_overall_rank: Number.Or(Null),
   leagues: Record({
     classic: Array(
-      Record({
-        id: Number,
-        name: String,
-        entry_rank: Number,
-      })
+        Record({
+          id: Number,
+          name: String,
+          entry_rank: Number,
+        })
     ),
   }),
 });
@@ -160,9 +160,9 @@ const ManagersRT = Dictionary(ManagerRT, Number);
 export type ManagersRT = Static<typeof ManagersRT>;
 
 export const LeagueWithManagersRT = LeagueRT.And(
-  Record({
-    managers: ManagersRT,
-  })
+    Record({
+      managers: ManagersRT,
+    })
 );
 export type LeagueWithManagersRT = Static<typeof LeagueWithManagersRT>;
 
@@ -187,10 +187,10 @@ export type LiveRT = Static<typeof LiveRT>;
 function expireAtHalfHour() {
   const now = dayjs();
   return now
-    .utc()
-    .startOf("minute")
-    .set("minute", Math.ceil(now.get("minute") / 30) * 30)
-    .unix();
+  .utc()
+  .startOf("minute")
+  .set("minute", Math.ceil(now.get("minute") / 30) * 30)
+  .unix();
 }
 
 function expireAt2am() {
@@ -202,7 +202,7 @@ function expireAt2am() {
 // ------------------------------------------------------------
 
 export function fetchEventStatus() {
-  const url = `${BASE_URL}/event-status/`;
+  const url = `/api/event-status`;
   const rt = EventStatusRT;
   return cacheFn({
     rt,
@@ -213,104 +213,30 @@ export function fetchEventStatus() {
 }
 
 export function fetchBootstrap() {
-  const url = `${BASE_URL}/bootstrap-static/`;
+  const url = `/api/bootstrap`;
   const rt = BootstrapRT;
-
   return cacheFn({
     rt,
     fn: () => runtypeFetch(rt, url),
-
-    fn: () =>
-      betterFetch(url).then((resp) => {
-        const trimmed = {
-          events: resp.events.map((event) => {
-            const { id, finished, is_current } = event;
-            return {
-              id,
-              finished,
-              is_current,
-            };
-          }),
-          elements: resp.elements.map((element) => {
-            const {
-              id,
-              first_name,
-              second_name,
-              web_name,
-              team,
-              team_code,
-              selected_by_percent,
-              element_type,
-              now_cost,
-            } = element;
-            return {
-              id,
-              first_name,
-              second_name,
-              web_name,
-              team,
-              team_code,
-              selected_by_percent,
-              element_type,
-              now_cost,
-            };
-          }),
-          teams: resp.teams.map((team) => {
-            const { code, id, name, short_name } = team;
-            return {
-              code,
-              id,
-              name,
-              short_name,
-            };
-          }),
-        };
-        return rt.check(trimmed);
-      }),
     key: `bootstrap`,
     expireAt: expireAt2am(),
   });
 }
 
 export async function fetchLeague(opts: { leagueId: number; eventId: number }) {
+  const url = `/api/league/${opts.leagueId}/${opts.eventId}`
+  const rt = LeagueWithManagersRT
   return cacheFn({
-    rt: LeagueWithManagersRT,
+    rt,
     key: `league/${opts.leagueId}`,
     expireAt: expireAtHalfHour(),
-    fn: async () => {
-      const url = `${BASE_URL}/leagues-classic/${opts.leagueId}/standings/`;
-      const rt = LeagueRT;
-
-      const league = await runtypeFetch(rt, url);
-      const results = league.standings.results;
-
-      const managers: ManagersRT = {};
-      await Promise.all(
-        results.slice(0, appConfig.MAX_MANAGERS).map(async (result) => {
-          const managerId = result.entry;
-          const [gw, transfers, history] = await Promise.all([
-            runtypeFetch(
-              GameweekRT,
-              `${BASE_URL}/entry/${managerId}/event/${opts.eventId}/picks/`
-            ),
-            runtypeFetch(
-              Array(TransferRT),
-              `${BASE_URL}/entry/${managerId}/transfers/`
-            ),
-            runtypeFetch(HistoryRT, `${BASE_URL}/entry/${managerId}/history/`),
-          ]);
-          managers[managerId] = { gw, transfers, history };
-        })
-      );
-      return { ...league, managers };
-    },
-  });
+    fn: () => runtypeFetch(rt, url)
+  })
 }
 
 export function fetchFixtures(opts: { eventId: number }) {
-  const url = `${BASE_URL}/fixtures/?event=${opts.eventId}`;
+  const url = `/api/fixtures/${opts.eventId}`;
   const rt = Array(FixtureRT);
-
   return cacheFn({
     rt,
     fn: () => runtypeFetch(rt, url),
@@ -320,7 +246,7 @@ export function fetchFixtures(opts: { eventId: number }) {
 }
 
 export function fetchManagerInfo(opts: { managerId: number }) {
-  const url = `${BASE_URL}/entry/${opts.managerId}/`;
+  const url = `/api/manager-info/${opts.managerId}/`;
   const rt = ManagerInfoRT;
 
   return cacheFn({
@@ -332,7 +258,7 @@ export function fetchManagerInfo(opts: { managerId: number }) {
 }
 
 export function fetchLive(opts: { eventId: number }) {
-  const url = `${BASE_URL}/event/${opts.eventId}/live`;
+  const url = `/api/live/${opts.eventId}`;
   const rt = LiveRT;
 
   return cacheFn({

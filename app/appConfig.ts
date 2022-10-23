@@ -11,5 +11,6 @@ function craEnv(suffix: string) {
 const appConfig = {
   LEAGUE_ID: 272162,
   MAX_MANAGERS: 40,
+  BASE_URL: "https://fantasy.premierleague.com/api"
 };
 export default appConfig;
