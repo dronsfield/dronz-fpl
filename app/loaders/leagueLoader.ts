@@ -10,7 +10,7 @@ import {
   PrizeCalculation,
 } from "~/util/calculatePrizes";
 import { logDuration } from "~/util/logDuration";
-import {Params} from "react-router";
+import { Params } from "react-router";
 
 const buyInsByName: { [id: string]: number } = {};
 managersData.forEach((manager) => {
@@ -25,7 +25,7 @@ export interface LeagueLoaderData {
 }
 
 export const leagueLoader = async ({ params }: { params: Params }) => {
-  console.log("leagueLoader???")
+  console.log("exec loader: league");
   const id = Number(params.id);
   invariant(id, "expected params.id");
 

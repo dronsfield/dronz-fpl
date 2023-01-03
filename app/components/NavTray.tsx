@@ -70,10 +70,12 @@ const NavTray: React.FC<NavTrayProps> = (props) => {
   const data = useProfileData();
 
   const validLeagues = React.useMemo(() => {
-    
-    return sortBy(data?.leagues.filter(
-      (league) => league.managerRank <= appConfig.MAX_MANAGERS
-    ) || [], "name");
+    return sortBy(
+      data?.leagues.filter(
+        (league) => league.managerRank <= appConfig.MAX_MANAGERS
+      ) || [],
+      "name"
+    );
   }, [data]);
 
   const onLoadEnd = () => setIsOpen(false);

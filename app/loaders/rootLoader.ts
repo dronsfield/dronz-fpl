@@ -8,7 +8,7 @@ import {
   Player,
   Team,
 } from "~/services/api";
-import {getUser, User} from "~/services/session.server";
+import { getUser, User } from "~/services/session.server";
 import { logDuration } from "~/util/logDuration";
 
 export interface RootLoaderData {
@@ -27,6 +27,7 @@ export interface RootLoaderData {
 
 // export const rootLoader: LoaderFunction = async ({ request }) => {
 export const rootLoader = async (user: User) => {
+  console.log("exec loader: root");
   // const duration = logDuration("rootLoader");
 
   const [profile, bootstrap] = await Promise.all([

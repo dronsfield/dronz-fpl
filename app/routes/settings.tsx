@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { ErrorBoundaryComponent } from "remix";
 import NavBar from "~/components/NavBar";
 import Section from "~/components/Section";
@@ -5,11 +6,23 @@ import { useProfileData } from "~/hooks/useRouteData";
 
 export default function Settings() {
   const data = useProfileData();
+  const queryClient = useQueryClient();
+
+  const handleClearCache = () => {
+    localStorage.clear();
+    queryClient.invalidateQueries({ refetchType: "all" });
+  };
 
   return (
     <>
       <NavBar />
-      <Section>This page hasn't been built yet :)</Section>
+      <Section>
+        <div>
+          <button type="button" onClick={handleClearCache}>
+            Clear cached data
+          </button>
+        </div>
+      </Section>
     </>
   );
 }

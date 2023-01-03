@@ -1,15 +1,15 @@
-import {Runtype} from "runtypes";
-import {logDuration} from "~/util/logDuration";
+import { Runtype } from "runtypes";
+import { logDuration } from "~/util/logDuration";
 import dayjs from "dayjs";
 import wait from "~/util/wait";
 
-const DISABLE_CACHE = false
+const DISABLE_CACHE = false;
 
-const CACHE_SPLITTER = "|c/A|c/H|e|"
+const CACHE_SPLITTER = "|c/A|c/H|e|";
 
 const __cacheCounter: any = {};
 function cacheLog(type: "HIT" | "MISSED" | "PASSED", url: string) {
-  console.log(`${type}: ${url}`);
+  console.log(`CACHE ${type}: ${url}`);
   __cacheCounter[type] = (__cacheCounter[type] || 0) + 1;
   // console.log(JSON.stringify(__cacheCounter));
 }
@@ -20,7 +20,7 @@ export async function cacheFn<R>(opts: {
   fn: () => Promise<R>;
   expireAt: number | null;
 }): Promise<R> {
-  if (DISABLE_CACHE) return opts.fn()
+  if (DISABLE_CACHE) return opts.fn();
   try {
     const { key, rt, fn, expireAt } = opts;
 
@@ -30,12 +30,12 @@ export async function cacheFn<R>(opts: {
       const result = await localStorage.getItem(key);
       // cacheDuration.end();
       if (result) {
-        const [expiryStr, data] = result.split(CACHE_SPLITTER)
+        const [expiryStr, data] = result.split(CACHE_SPLITTER);
         const expiry = Number(expiryStr);
         const now = dayjs().utc().unix();
         if (!expiry || expiry < now) {
-          localStorage.removeItem(key)
-          throw new Error("cache expired")
+          localStorage.removeItem(key);
+          throw new Error("cache expired");
         }
         const parsed = JSON.parse(data);
         const checked = rt.check(parsed);
@@ -47,11 +47,13 @@ export async function cacheFn<R>(opts: {
     } catch (err) {
       // const fnDuration = logDuration(`cacheFn - ${key} - fn()`);
       const result = await fn();
-      await wait(1000)
       // fnDuration.end();
       try {
         if (expireAt) {
-          localStorage.setItem(key, expireAt + CACHE_SPLITTER + JSON.stringify(result))
+          localStorage.setItem(
+            key,
+            expireAt + CACHE_SPLITTER + JSON.stringify(result)
+          );
           cacheLog(`MISSED`, key);
         } else {
           cacheLog(`PASSED`, key);
@@ -65,5 +67,4 @@ export async function cacheFn<R>(opts: {
     console.log("UNEXPECTED CACHEFETCH ERROR", err);
     throw err;
   }
-
 }

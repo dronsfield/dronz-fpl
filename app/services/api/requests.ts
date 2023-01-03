@@ -11,18 +11,18 @@ import {
   String,
 } from "runtypes";
 import appConfig from "~/appConfig";
-import {runtypeFetch} from "~/util/runtypeFetch";
+import { runtypeFetch } from "~/util/runtypeFetch";
 import betterFetch from "../../util/betterFetch";
-import {cacheFn} from "../localCache";
+import { cacheFn } from "../localCache";
 
-const BASE_URL = appConfig.BASE_URL
+const BASE_URL = appConfig.BASE_URL;
 
 // ------------------------------------------------------------
 // FPL API RESPONSE RUNTYPES
 // ------------------------------------------------------------
 
 export const EventStatusRT = Record({
-  status: Array(Record({event: Number})),
+  status: Array(Record({ event: Number })),
 });
 export type EventStatusRT = Static<typeof EventStatusRT>;
 
@@ -62,16 +62,16 @@ export const BootstrapRT = Record({
 export type BootstrapRT = Static<typeof BootstrapRT>;
 
 export const LeagueRT = Record({
-  league: Record({id: Number, name: String}),
+  league: Record({ id: Number, name: String }),
   standings: Record({
     results: Array(
-        Record({
-          entry: Number,
-          entry_name: String,
-          player_name: String,
-          rank: Number,
-          total: Number,
-        })
+      Record({
+        entry: Number,
+        entry_name: String,
+        player_name: String,
+        rank: Number,
+        total: Number,
+      })
     ),
   }),
 });
@@ -106,14 +106,14 @@ export const TransferRT = Record({
 });
 export type TransferRT = Static<typeof TransferRT>;
 
-export const StatRT = Record({value: Number, element: Number});
+export const StatRT = Record({ value: Number, element: Number });
 export const FixtureRT = Record({
   id: Number,
   kickoff_time: String,
   finished_provisional: Boolean,
   started: Boolean,
   stats: Array(
-      Record({identifier: String, a: Array(StatRT), h: Array(StatRT)})
+    Record({ identifier: String, a: Array(StatRT), h: Array(StatRT) })
   ),
   team_h: Number,
   team_h_score: Number.Or(Null),
@@ -125,10 +125,10 @@ export type FixtureRT = Static<typeof FixtureRT>;
 
 export const HistoryRT = Record({
   chips: Array(
-      Record({
-        event: Number,
-        name: String,
-      })
+    Record({
+      event: Number,
+      name: String,
+    })
   ),
 });
 export type HistoryRT = Static<typeof HistoryRT>;
@@ -139,11 +139,11 @@ export const ManagerInfoRT = Record({
   summary_overall_rank: Number.Or(Null),
   leagues: Record({
     classic: Array(
-        Record({
-          id: Number,
-          name: String,
-          entry_rank: Number,
-        })
+      Record({
+        id: Number,
+        name: String,
+        entry_rank: Number,
+      })
     ),
   }),
 });
@@ -160,9 +160,9 @@ const ManagersRT = Dictionary(ManagerRT, Number);
 export type ManagersRT = Static<typeof ManagersRT>;
 
 export const LeagueWithManagersRT = LeagueRT.And(
-    Record({
-      managers: ManagersRT,
-    })
+  Record({
+    managers: ManagersRT,
+  })
 );
 export type LeagueWithManagersRT = Static<typeof LeagueWithManagersRT>;
 
@@ -187,10 +187,10 @@ export type LiveRT = Static<typeof LiveRT>;
 function expireAtHalfHour() {
   const now = dayjs();
   return now
-  .utc()
-  .startOf("minute")
-  .set("minute", Math.ceil(now.get("minute") / 30) * 30)
-  .unix();
+    .utc()
+    .startOf("minute")
+    .set("minute", Math.ceil(now.get("minute") / 30) * 30)
+    .unix();
 }
 
 function expireAt2am() {
@@ -224,16 +224,15 @@ export function fetchBootstrap() {
 }
 
 export async function fetchLeague(opts: { leagueId: number; eventId: number }) {
-  const url = `${window.location.origin}/api/league/${opts.leagueId}/${opts.eventId}`
-  const rt = LeagueWithManagersRT
-  console.log("inside fetchLeague")
+  const url = `${window.location.origin}/api/league/${opts.leagueId}/${opts.eventId}`;
+  const rt = LeagueWithManagersRT;
   return cacheFn({
     rt,
     key: `league/${opts.leagueId}`,
     // expireAt: expireAtHalfHour(),
     fn: () => runtypeFetch(rt, url),
     expireAt: null,
-  })
+  });
 }
 
 export function fetchFixtures(opts: { eventId: number }) {

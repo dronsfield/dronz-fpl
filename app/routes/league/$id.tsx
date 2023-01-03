@@ -6,7 +6,7 @@ import FlexCenter from "~/components/FlexCenter";
 import { Loader } from "~/components/Loader";
 import NavBar from "~/components/NavBar";
 import Spacer from "~/components/Spacer";
-import {useLeagueData, useLeagueLoaderQuery} from "~/hooks/useRouteData";
+import { useLeagueData, useLeagueLoaderQuery } from "~/hooks/useRouteData";
 import { leagueLoader } from "~/loaders/leagueLoader";
 import colors from "~/style/colors";
 
@@ -91,10 +91,10 @@ export interface LeagueProps {
 }
 const League: React.FC<LeagueProps> = (props) => {
   const transition = useTransition();
-  const leagueQuery = useLeagueLoaderQuery();
+  const leagueQuery = useLeagueLoaderQuery(true);
 
   if (!leagueQuery.data && leagueQuery.error) {
-    throw leagueQuery.error
+    throw leagueQuery.error;
   }
 
   return (

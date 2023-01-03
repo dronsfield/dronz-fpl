@@ -199,14 +199,12 @@ export async function getLeague(
   leagueId: number,
   currentEventId: number
 ): Promise<League> {
-  console.log("hello????")
   const league = await fetchLeague({ leagueId, eventId: currentEventId });
   const {
     league: { name, id },
     standings: { results },
     managers: managersDict,
   } = league;
-  console.log({ results });
   const managers = results.slice(0, appConfig.MAX_MANAGERS).map((result) => {
     const {
       gw,

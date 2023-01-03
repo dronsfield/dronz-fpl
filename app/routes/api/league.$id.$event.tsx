@@ -9,10 +9,18 @@ import {
   PrizeCalculation,
 } from "~/util/calculatePrizes";
 import { logDuration } from "~/util/logDuration";
-import {runtypeFetch} from "~/util/runtypeFetch";
-import {Array} from "runtypes";
-import {GameweekRT, HistoryRT, LeagueRT, ManagersRT, TransferRT} from "~/services/api/requests";
-import {randomKey} from "~/util/randomKey";
+import { runtypeFetch } from "~/util/runtypeFetch";
+import { Array } from "runtypes";
+import {
+  GameweekRT,
+  HistoryRT,
+  LeagueRT,
+  ManagersRT,
+  TransferRT,
+} from "~/services/api/requests";
+import { randomKey } from "~/util/randomKey";
+
+// TODO: separate standings (update frequently) from manager picks/transfers/history (update per gw?)
 
 const buyInsByName: { [id: string]: number } = {};
 managersData.forEach((manager) => {
@@ -35,21 +43,24 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   const managers: ManagersRT = {};
   await Promise.all(
-      results.slice(0, appConfig.MAX_MANAGERS).map(async (result) => {
-        const managerId = result.entry;
-        const [gw, transfers, history] = await Promise.all([
-          runtypeFetch(
-              GameweekRT,
-              `${appConfig.BASE_URL}/entry/${managerId}/event/${params.event}/picks/`
-          ),
-          runtypeFetch(
-              Array(TransferRT),
-              `${appConfig.BASE_URL}/entry/${managerId}/transfers/`
-          ),
-          runtypeFetch(HistoryRT, `${appConfig.BASE_URL}/entry/${managerId}/history/`),
-        ]);
-        managers[managerId] = { gw, transfers, history };
-      })
+    results.slice(0, appConfig.MAX_MANAGERS).map(async (result) => {
+      const managerId = result.entry;
+      const [gw, transfers, history] = await Promise.all([
+        runtypeFetch(
+          GameweekRT,
+          `${appConfig.BASE_URL}/entry/${managerId}/event/${params.event}/picks/`
+        ),
+        runtypeFetch(
+          Array(TransferRT),
+          `${appConfig.BASE_URL}/entry/${managerId}/transfers/`
+        ),
+        runtypeFetch(
+          HistoryRT,
+          `${appConfig.BASE_URL}/entry/${managerId}/history/`
+        ),
+      ]);
+      managers[managerId] = { gw, transfers, history };
+    })
   );
   return { ...league, managers };
 };
