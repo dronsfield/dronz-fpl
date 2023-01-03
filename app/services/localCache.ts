@@ -47,6 +47,7 @@ export async function cacheFn<R>(opts: {
     } catch (err) {
       // const fnDuration = logDuration(`cacheFn - ${key} - fn()`);
       const result = await fn();
+      // await wait(500);
       // fnDuration.end();
       try {
         if (expireAt) {

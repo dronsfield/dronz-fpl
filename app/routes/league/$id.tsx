@@ -1,12 +1,12 @@
 import React from "react";
-import { Outlet, useTransition } from "remix";
+import { Outlet, useParams, useTransition } from "remix";
 import styled from "styled-components";
 import Button from "~/components/Button";
 import FlexCenter from "~/components/FlexCenter";
 import { Loader } from "~/components/Loader";
 import NavBar from "~/components/NavBar";
 import Spacer from "~/components/Spacer";
-import { useLeagueData, useLeagueLoaderQuery } from "~/hooks/useRouteData";
+import { useLeagueLoaderQuery, useProfileData } from "~/hooks/useRouteData";
 import { leagueLoader } from "~/loaders/leagueLoader";
 import colors from "~/style/colors";
 
@@ -91,14 +91,21 @@ export interface LeagueProps {
 }
 const League: React.FC<LeagueProps> = (props) => {
   const transition = useTransition();
+  const { id = "" } = useParams();
   const leagueQuery = useLeagueLoaderQuery(true);
+  const profile = useProfileData();
 
   if (!leagueQuery.data && leagueQuery.error) {
     throw leagueQuery.error;
   }
 
+  const leagueName =
+    leagueQuery.data?.name ||
+    profile?.leagues.find((league) => league.id === Number(id))?.name ||
+    "...";
+
   return (
-    <Layout name={leagueQuery.data?.name || "..."}>
+    <Layout name={leagueName}>
       {transition.state !== "idle" || !leagueQuery.data ? (
         <FlexCenter>
           <Spacer height={32} />
