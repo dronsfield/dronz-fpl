@@ -32,7 +32,11 @@ export const rootLoader = async (user: User) => {
 
   const [profile, bootstrap] = await Promise.all([
     (async () => {
-      return user ? await getManagerProfile(user.userId) : null;
+      try {
+        return user ? await getManagerProfile(user.userId) : null;
+      } catch (err) {
+        return null;
+      }
     })(),
     (async () => {
       const currentEventId = await getCurrentEventId();

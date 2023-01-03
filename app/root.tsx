@@ -15,14 +15,8 @@ import {
   useLoaderData,
 } from "remix";
 import NavTray from "./components/NavTray";
-import { rootLoader } from "./loaders/rootLoader";
 import GlobalStyle from "./style/global";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { getUser } from "~/services/session.server";
 import { useRootLoaderQuery } from "~/hooks/useRouteData";
 import { Loader } from "~/components/Loader";
@@ -94,7 +88,7 @@ export const links: LinksFunction = () => {
   ];
 };
 
-const RootLoader = styled(Loader)`
+const RootSpinner = styled(Loader)`
   position: fixed;
   top: 50%;
   left: 50%;
@@ -115,7 +109,7 @@ const Layout: React.FC<{}> = (props) => {
       </>
     );
   } else if (rootQuery.isLoading) {
-    return <RootLoader size={36} color={colors.purple} />;
+    return <RootSpinner size={36} color={colors.purple} />;
   } else if (rootQuery.error) {
     throw rootQuery.error;
   } else {

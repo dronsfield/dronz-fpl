@@ -12,7 +12,6 @@ import {
 } from "runtypes";
 import appConfig from "~/appConfig";
 import { runtypeFetch } from "~/util/runtypeFetch";
-import betterFetch from "../../util/betterFetch";
 import { cacheFn } from "../localCache";
 
 const BASE_URL = appConfig.BASE_URL;

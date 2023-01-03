@@ -1,15 +1,15 @@
-import {LoaderFunction} from "remix";
-import {BootstrapRT, EventStatusRT} from "~/services/api/requests";
-import {runtypeFetch} from "~/util/runtypeFetch";
+import { LoaderFunction } from "remix";
+import { BootstrapRT, EventStatusRT } from "~/services/api/requests";
+import { runtypeFetch } from "~/util/runtypeFetch";
 import appConfig from "~/appConfig";
 import betterFetch from "~/util/betterFetch";
 
 export const loader: LoaderFunction = async () => {
   const url = `${appConfig.BASE_URL}/bootstrap-static/`;
   const rt = BootstrapRT;
-  return betterFetch(url).then((resp) => {
+  return betterFetch<any>(url).then((resp) => {
     const trimmed = {
-      events: resp.events.map((event) => {
+      events: resp.events.map((event: any) => {
         const { id, finished, is_current } = event;
         return {
           id,
@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async () => {
           is_current,
         };
       }),
-      elements: resp.elements.map((element) => {
+      elements: resp.elements.map((element: any) => {
         const {
           id,
           first_name,
@@ -41,7 +41,7 @@ export const loader: LoaderFunction = async () => {
           now_cost,
         };
       }),
-      teams: resp.teams.map((team) => {
+      teams: resp.teams.map((team: any) => {
         const { code, id, name, short_name } = team;
         return {
           code,
@@ -52,5 +52,5 @@ export const loader: LoaderFunction = async () => {
       }),
     };
     return rt.check(trimmed);
-  })
-}
+  });
+};
