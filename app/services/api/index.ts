@@ -23,11 +23,13 @@ import {
   fetchFixtures,
   fetchLeague,
   fetchLive,
+  fetchManager,
   fetchManagerInfo,
   FixtureRT,
   HistoryRT,
   LiveStatsRT,
   ManagerInfoRT,
+  ManagersRT,
   PickRT,
   TeamRT,
   TransferRT,
@@ -200,17 +202,31 @@ export async function getLeague(
   currentEventId: number
 ): Promise<League> {
   const league = await fetchLeague({ leagueId, eventId: currentEventId });
+
+  const _managers: ManagersRT = {};
+  await Promise.all(
+    league.standings.results
+      .slice(0, appConfig.MAX_MANAGERS)
+      .map(async (result) => {
+        const managerId = result.entry;
+        const manager = await fetchManager({
+          managerId,
+          eventId: currentEventId,
+        });
+        _managers[managerId] = manager;
+      })
+  );
+
   const {
     league: { name, id },
     standings: { results },
-    managers: managersDict,
   } = league;
   const managers = results.slice(0, appConfig.MAX_MANAGERS).map((result) => {
     const {
       gw,
       transfers: transfersResponse,
       history: historyResponse,
-    } = managersDict[result.entry];
+    } = _managers[result.entry];
 
     const picks = gw.picks.reduce((acc, pick) => {
       acc[pick.element] = {

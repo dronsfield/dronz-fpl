@@ -224,13 +224,26 @@ export function fetchBootstrap() {
 
 export async function fetchLeague(opts: { leagueId: number; eventId: number }) {
   const url = `${window.location.origin}/api/league/${opts.leagueId}/${opts.eventId}`;
-  const rt = LeagueWithManagersRT;
+  const rt = LeagueRT;
   return cacheFn({
     rt,
-    key: `league/${opts.leagueId}`,
-    // expireAt: expireAtHalfHour(),
+    key: `league/${opts.leagueId}/${opts.eventId}`,
     fn: () => runtypeFetch(rt, url),
     expireAt: null,
+  });
+}
+
+export async function fetchManager(opts: {
+  managerId: number;
+  eventId: number;
+}) {
+  const url = `${window.location.origin}/api/manager/${opts.managerId}/${opts.eventId}`;
+  const rt = ManagerRT;
+  return cacheFn({
+    rt,
+    key: `manager/${opts.managerId}/${opts.eventId}`,
+    fn: () => runtypeFetch(rt, url),
+    expireAt: expireAtHalfHour(),
   });
 }
 

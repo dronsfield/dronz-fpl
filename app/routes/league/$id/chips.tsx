@@ -9,13 +9,13 @@ import { Manager } from "~/services/api/models";
 import colors from "~/style/colors";
 import { ItemsOf } from "~/util/utilityTypes";
 
-const chipKeys = ["wc1", "wc2", "fh", "fh2", "tc", "bb"] as const;
+const chipKeys = ["wc1", "wc2", "fh", "tc", "bb"] as const;
 type ChipKey = ItemsOf<typeof chipKeys>;
 const chipLabels = {
   wc1: "Wildcard 1",
   wc2: "Wildcard 2",
   fh: "Free Hit",
-  fh2: "Free Hit 2",
+  // fh2: "Free Hit 2",
   tc: "Triple Captain",
   bb: "Bench Boost",
 } as const;
@@ -66,7 +66,7 @@ const Chips: React.FC<{}> = () => {
           } else if (name === "freehit") {
             fhIndex++;
             if (fhIndex === 1) return "fh";
-            if (fhIndex === 2) return "fh2";
+            // if (fhIndex === 2) return "fh2";
           } else if (name === "bboost") {
             return "bb";
           }
