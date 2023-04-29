@@ -1,7 +1,7 @@
 import React from "react";
 
 export interface ExampleProps {
-  foo: string;
+  foo?: string;
 }
 
 const Example: React.FC<ExampleProps> = (props) => {

@@ -20,7 +20,7 @@ interface RootCompProps {
   to?: string;
   onClick?: (event: React.MouseEvent) => void;
   className?: string;
-  type?: "submit" | "button";
+  type?: "submit" | "button" | "reset";
   disabled?: boolean;
   replace?: boolean;
   isNav?: boolean;

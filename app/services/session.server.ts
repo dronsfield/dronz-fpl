@@ -4,7 +4,11 @@ const sessionSecret = process.env.SESSION_SECRET || "lul";
 if (!sessionSecret) throw new Error("SESSION_SECRET required");
 
 export const storage = createCookieSessionStorage({
-  cookie: { name: "fpl.dronz", secure: true, maxAge: 60 * 60 * 24 * 365 },
+  cookie: {
+    name: "fpl.dronz",
+    secure: process.env.NODE_ENV !== "development",
+    maxAge: 60 * 60 * 24 * 365,
+  },
 });
 
 export async function createUserSession(userId: number, redirectTo: string) {
@@ -29,7 +33,7 @@ export async function getUserId(request: Request) {
   return userId;
 }
 
-export type User = { userId: number } | null
+export type User = { userId: number } | null;
 export async function getUser(request: Request): Promise<User> {
   const userId = await getUserId(request);
   if (!userId) return null;

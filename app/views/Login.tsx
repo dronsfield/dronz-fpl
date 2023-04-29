@@ -2,12 +2,16 @@ import React from "react";
 import { Form, useTransition } from "remix";
 import styled from "styled-components";
 import Background from "~/components/Background";
+import { Dialog } from "~/components/Dialog";
 import { Loader } from "~/components/Loader";
+import LoginInstructions from "~/components/LoginInstructions";
+import { ModalTrigger } from "~/components/ModalTrigger";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import colors from "~/style/colors";
 import { normalizeButton, normalizeInput } from "~/style/mixins";
 import { readTransitionFormData } from "~/util/readFormData";
+import Button from "~/components/Button";
 
 const ViewContainer = styled(Section)`
   padding: 40px;
@@ -26,6 +30,8 @@ const InputContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: stretch;
+  width: 100%;
+  max-width: 400px;
 `;
 
 const TextInput = styled.input`
@@ -36,10 +42,10 @@ const TextInput = styled.input`
   font-size: 16px;
   padding: 10px;
   flex: 1;
-  text-transform: uppercase;
   &::placeholder {
     color: currentColor;
     opacity: 0.5;
+    text-transform: uppercase;
   }
   border-radius: 5px 0 0 5px;
   &:focus {
@@ -47,7 +53,7 @@ const TextInput = styled.input`
   }
 `;
 
-const Button = styled.button`
+const InputButton = styled.button`
   ${normalizeButton};
   background-color: rgba(255, 255, 255, 1);
   color: white;
@@ -62,11 +68,19 @@ const Button = styled.button`
   justify-content: center;
 `;
 
+const InstructionsButton = styled.button`
+  ${normalizeButton};
+  color: white;
+  text-decoration: underline;
+  font-size: 0.9em;
+`;
+
 export interface LoginProps {
   foo?: string;
+  formError?: string;
 }
 const Login: React.FC<LoginProps> = (props) => {
-  const { foo } = props;
+  const { formError } = props;
   const transition = useTransition();
 
   const isButtonLoading = (xd: string) =>
@@ -75,7 +89,7 @@ const Login: React.FC<LoginProps> = (props) => {
 
   const getButton = (xd: string) => {
     return (
-      <Button
+      <InputButton
         type="submit"
         children={isButtonLoading(xd) ? <Loader size={14} /> : "GO"}
       />
@@ -89,13 +103,36 @@ const Login: React.FC<LoginProps> = (props) => {
         <FormBlock method="post">
           <input type="hidden" name="xd" value="user" />
           <div style={{ maxWidth: 220 }}>
-            enter your personal FPL ID to view all your mini-leagues
+            log in with your FPL ID or URL to view all your mini-leagues
           </div>
           <Spacer height={10} />
           <InputContainer>
-            <TextInput type="number" name="id" required placeholder="your ID" />
+            <TextInput type="text" name="id" placeholder="your ID" />
             {getButton("user")}
           </InputContainer>
+          <Spacer height={10} />
+
+          <ModalTrigger
+            isDismissable
+            label="view instructions"
+            renderTrigger={(props) => (
+              <InstructionsButton
+                onClick={(evt) => props.onPress?.(evt as any)}
+                type="button"
+                children="view instructions"
+              />
+            )}
+            renderModal={(close) => (
+              <Dialog>
+                <LoginInstructions />
+                <Button
+                  onClick={close}
+                  children="Close instructions"
+                  variant="PRIMARY"
+                />
+              </Dialog>
+            )}
+          />
         </FormBlock>
 
         {/* <Form method="post">
@@ -103,23 +140,21 @@ const Login: React.FC<LoginProps> = (props) => {
           <input type="text" name="id" required placeholder="League ID" />
           <button type="submit" children="GO" />
         </Form> */}
-        <Spacer height={32} />
+        <Spacer height={48} />
         <FormBlock method="post">
           <input type="hidden" name="xd" value="league" />
           <div style={{ maxWidth: 180 }}>
-            or view a specific league by entering its ID
+            or view a single league by entering its ID or URL
           </div>
           <Spacer height={10} />
           <InputContainer>
-            <TextInput
-              type="number"
-              name="id"
-              required
-              placeholder="league ID"
-            />
+            <TextInput type="text" name="id" required placeholder="league ID" />
             {getButton("league")}
           </InputContainer>
         </FormBlock>
+
+        <Spacer height={48} />
+        {formError ? <div>Invalid submission!!</div> : null}
       </ViewContainer>
     </>
   );
