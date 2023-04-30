@@ -1,6 +1,12 @@
 import { capitalCase } from "change-case";
 import React from "react";
-import { useParams } from "remix";
+import {
+  useHref,
+  useLocation,
+  useMatches,
+  useParams,
+  useResolvedPath,
+} from "remix";
 import styled from "styled-components";
 import Button from "~/components/Button";
 import KeyValueTable from "~/components/KeyValueTable";
@@ -8,6 +14,7 @@ import PicksPitch from "~/components/PicksPitch";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import { useLeagueData } from "~/hooks/useRouteData";
+import { getPitchPicks } from "~/services/api";
 import { getKeys } from "~/util/getKeys";
 
 const TextContainer = styled.div`
@@ -27,6 +34,7 @@ const ManagerTeamName = styled.h3`
 export interface ManagerProps {}
 const Manager: React.FC<ManagerProps> = (props) => {
   const { managerId } = useParams<{ managerId: string }>();
+  const location = useLocation();
 
   const { managers, players, currentEventId } = useLeagueData();
 
@@ -34,18 +42,7 @@ const Manager: React.FC<ManagerProps> = (props) => {
     const manager = managers.find((manager) => {
       return String(manager.id) === String(managerId);
     });
-    const managerPicks = manager?.picks || {};
-    const picks = getKeys(managerPicks).map((playerId) => {
-      const player = players[playerId];
-      const { pickType, position, multiplier } = managerPicks[playerId];
-      return {
-        player,
-        pickType,
-        position,
-        multiplier,
-        value: player.gameweekStats.total_points,
-      };
-    });
+    const picks = getPitchPicks(manager, players);
     return { manager, picks };
   }, [managers]);
 
@@ -91,6 +88,11 @@ const Manager: React.FC<ManagerProps> = (props) => {
       <Button
         to={`https://fantasy.premierleague.com/entry/${manager.id}/event/${currentEventId}`}
         children="Open in official FPL site"
+        variant="PRIMARY"
+      />
+      <Button
+        to={`${location.pathname}/compare`}
+        children="Compare with my team"
         variant="PRIMARY"
       />
     </Section>

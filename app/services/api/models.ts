@@ -2,6 +2,13 @@ import { ItemsOf, Maybe } from "~/util/utilityTypes";
 
 export const playerPositions = ["GKP", "DEF", "MID", "FWD"] as const;
 export type PlayerPosition = ItemsOf<typeof playerPositions> | "???";
+export const positionIndexes: Record<PlayerPosition, number | null> = {
+  GKP: 0,
+  DEF: 1,
+  MID: 2,
+  FWD: 3,
+  "???": null,
+};
 export interface Player {
   id: number;
   firstName: string;
@@ -86,7 +93,16 @@ export interface ManagerLeague {
   managerRank: number;
 }
 export interface ManagerProfile {
+  id: number;
   name: string;
   overallRank: number;
   leagues: Array<ManagerLeague>;
+}
+
+export interface PitchPick {
+  player: Player;
+  pickType: PickType;
+  position?: number;
+  value?: Maybe<string | number | boolean>;
+  multiplier?: number;
 }

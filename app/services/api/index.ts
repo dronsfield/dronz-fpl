@@ -9,6 +9,7 @@ import {
   Manager,
   ManagerProfile,
   PickType,
+  PitchPick,
   Player,
   playerPositions,
   Team,
@@ -34,6 +35,7 @@ import {
   TeamRT,
   TransferRT,
 } from "./requests";
+import { getKeys } from "~/util/getKeys";
 export * from "./models";
 
 function parseCurrentEventId(events: EventRT[]): number {
@@ -154,8 +156,12 @@ function parseChips(history: HistoryRT): Chip[] {
     name: chip.name,
   }));
 }
-function parseManagerProfile(managerInfo: ManagerInfoRT): ManagerProfile {
+function parseManagerProfile(
+  managerId: number,
+  managerInfo: ManagerInfoRT
+): ManagerProfile {
   return {
+    id: managerId,
     name: `${managerInfo.player_first_name} ${managerInfo.player_last_name}`,
     overallRank: managerInfo.summary_overall_rank || 0,
     leagues: managerInfo.leagues.classic.map((item) => ({
@@ -170,6 +176,27 @@ function getPickType(pick: PickRT): PickType {
   if (pick.is_captain) return "CAPTAIN";
   if (pick.is_vice_captain) return "VICE";
   return pick.position <= 11 ? "STARTING" : "BENCHED";
+}
+
+export function getPitchPicks(
+  manager: Manager | undefined,
+  players: {
+    [id: number]: Player;
+  }
+): Array<PitchPick> {
+  const managerPicks = manager?.picks || {};
+  const picks = getKeys(managerPicks).map((playerId) => {
+    const player = players[playerId];
+    const { pickType, position, multiplier } = managerPicks[playerId];
+    return {
+      player,
+      pickType,
+      position,
+      multiplier,
+      value: player.gameweekStats.total_points,
+    };
+  });
+  return picks;
 }
 
 export async function getCurrentEventId() {
@@ -266,5 +293,5 @@ export async function getLeague(
 
 export async function getManagerProfile(managerId: number) {
   const data = await fetchManagerInfo({ managerId });
-  return parseManagerProfile(data);
+  return parseManagerProfile(managerId, data);
 }

@@ -1,29 +1,19 @@
 import React from "react";
 import styled from "styled-components";
 import FlexRow from "~/components/FlexRow";
-import { PickType, Player, PlayerPosition } from "~/services/api";
+import {
+  PickType,
+  Player,
+  PlayerPosition,
+  PitchPick,
+  positionIndexes,
+} from "~/services/api";
 import { normalizeButton } from "~/style/mixins";
 import { sortBy } from "~/util/sortBy";
 import { Maybe } from "~/util/utilityTypes";
 import FlexCenter from "./FlexCenter";
 import Shirt from "./Shirt";
 import Spacer from "./Spacer";
-
-const positionRows: Record<PlayerPosition, number | null> = {
-  GKP: 0,
-  DEF: 1,
-  MID: 2,
-  FWD: 3,
-  "???": null,
-};
-
-interface Pick {
-  player: Player;
-  pickType: PickType;
-  position?: number;
-  value?: Maybe<string | number | boolean>;
-  multiplier?: number;
-}
 
 const Pitch = styled.div``;
 
@@ -32,12 +22,16 @@ const PickRow = styled(FlexRow)`
   padding: 0.5em 0;
 `;
 
+const PlayerBlockWrapper = styled(FlexCenter)`
+  width: 20%;
+  max-width: 70px;
+`;
+
 const PlayerBlockContainer = styled(FlexCenter).attrs({ as: "button" })`
   ${normalizeButton};
   cursor: default;
-  width: 20%;
   max-width: 70px;
-  padding: 0 0.2em;
+  padding: 0 3px;
 `;
 
 const PlayerName = styled.div`
@@ -57,10 +51,10 @@ const PickValue = styled.div`
 `;
 
 export interface PlayerBlockProps {
-  pick: Pick;
+  pick: PitchPick;
 }
 
-const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
+export const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
   const { pick } = props;
   const calculatedPoints = () => {
     const { value, multiplier } = pick;
@@ -70,7 +64,9 @@ const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
     return value;
   };
   return (
-    <PlayerBlockContainer>
+    <PlayerBlockContainer
+      style={pick.pickType === "BENCHED" ? { opacity: 0.5 } : undefined}
+    >
       <Shirt
         teamCode={pick.player.teamCode}
         isGoalkeeper={pick.player.position === "GKP"}
@@ -87,19 +83,19 @@ const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
 };
 
 export interface PicksPitchProps {
-  picks: Array<Pick>;
+  picks: Array<PitchPick>;
   isManagerPage?: boolean;
 }
 const PicksPitch: React.FC<PicksPitchProps> = (props) => {
   const { picks } = props;
   const rows = React.useMemo(() => {
-    const rows = new Array(5).fill(0).map(() => [] as Pick[]);
+    const rows = new Array(5).fill(0).map(() => [] as PitchPick[]);
     picks.forEach((pick) => {
       const { player, pickType, position } = pick;
       if (pickType === "BENCHED") {
         rows[4].push(pick);
       } else {
-        const rowIndex = positionRows[player.position];
+        const rowIndex = positionIndexes[player.position];
         if (rowIndex !== null) {
           rows[rowIndex].push(pick);
         }
@@ -114,9 +110,13 @@ const PicksPitch: React.FC<PicksPitchProps> = (props) => {
     <Pitch>
       {rows.map((row, index) => {
         return (
-          <PickRow key={index} style={{ opacity: index === 4 ? 0.5 : 1 }}>
+          <PickRow key={index}>
             {row.map((pick) => {
-              return <PlayerBlock pick={pick} key={pick.player.id} />;
+              return (
+                <PlayerBlockWrapper>
+                  <PlayerBlock pick={pick} key={pick.player.id} />
+                </PlayerBlockWrapper>
+              );
             })}
           </PickRow>
         );
