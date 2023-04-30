@@ -112,8 +112,9 @@ const Compare: React.FC<CompareProps> = (props) => {
   return (
     <Section>
       <p style={{ textAlign: "center" }}>
-        Differences between your team and {formatName(theirManager.name)}'s
-        team:
+        These are the differences between your team and{" "}
+        {formatName(theirManager.name)}'s team. Players that you both own and
+        that earn the same points for both of you are hidden.
       </p>
       <Container>
         <Column>
