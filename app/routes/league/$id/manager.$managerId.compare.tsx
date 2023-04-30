@@ -46,7 +46,7 @@ const filterPicks = (picks: PitchPick[], refPicks: PitchPick[]) => {
       !refPicks.find(
         (refPick) =>
           pick.player.id === refPick.player.id &&
-          pick.pickType === refPick.pickType
+          pick.multiplier === refPick.multiplier
       )
   );
 };
