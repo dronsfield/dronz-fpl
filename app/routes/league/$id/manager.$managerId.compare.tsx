@@ -12,6 +12,9 @@ import styled from "styled-components";
 import { PlayerBlock } from "~/components/PicksPitch";
 import Section from "~/components/Section";
 import FlexCenter from "~/components/FlexCenter";
+import { ManagerCell } from "~/components/CommonCells";
+import Spacer from "~/components/Spacer";
+import { formatName } from "~/util/formatName";
 
 const Container = styled.div`
   display: flex;
@@ -23,10 +26,12 @@ const Container = styled.div`
 const Column = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  font-weight: bold;
 `;
 
 const PlayerWrapper = styled(FlexCenter)`
-  padding: 8px;
+  padding: 8px 16px;
 `;
 
 const pickSortProp = [
@@ -62,10 +67,11 @@ export interface CompareProps {
 const Compare: React.FC<CompareProps> = (props) => {
   const { managerId } = useParams<{ managerId: string }>();
 
-  const { managers, players, currentEventId } = useLeagueData();
+  const { managers, players, currentEventId, fixturesPerTeam } =
+    useLeagueData();
   const profile = useProfileData();
 
-  const { myPicks, theirPicks } = React.useMemo(() => {
+  const { myManager, theirManager, myPicks, theirPicks } = React.useMemo(() => {
     let myManager: Manager | undefined;
     let theirManager: Manager | undefined;
     managers.forEach((manager) => {
@@ -75,10 +81,11 @@ const Compare: React.FC<CompareProps> = (props) => {
         myManager = manager;
       }
     });
-    if (!myManager || !theirManager) return { myPicks: [], theirPicks: [] };
+    if (!myManager || !theirManager)
+      return { myManager, theirManager, myPicks: [], theirPicks: [] };
 
-    const _myPicks = getPitchPicks(myManager, players);
-    const _theirPicks = getPitchPicks(theirManager, players);
+    const _myPicks = getPitchPicks(myManager, players, fixturesPerTeam);
+    const _theirPicks = getPitchPicks(theirManager, players, fixturesPerTeam);
 
     const myFilteredPicks = filterPicks(_myPicks, _theirPicks);
     const theirFilteredPicks = filterPicks(_theirPicks, _myPicks);
@@ -86,14 +93,39 @@ const Compare: React.FC<CompareProps> = (props) => {
     const mySortedPicks = sortBy(myFilteredPicks, pickSortProp);
     const theirSortedPicks = sortBy(theirFilteredPicks, pickSortProp);
 
-    return { myPicks: mySortedPicks, theirPicks: theirSortedPicks };
+    return {
+      myManager,
+      theirManager,
+      myPicks: mySortedPicks,
+      theirPicks: theirSortedPicks,
+    };
   }, [managers]);
+
+  if (!myManager || !theirManager) {
+    return (
+      <Section>
+        <div>Failed to create comparison. Are you logged in?</div>
+      </Section>
+    );
+  }
 
   return (
     <Section>
+      <p style={{ textAlign: "center" }}>
+        Differences between your team and {formatName(theirManager.name)}'s
+        team:
+      </p>
       <Container>
-        <Column>{renderPicks(myPicks)}</Column>
-        <Column>{renderPicks(theirPicks)}</Column>
+        <Column>
+          <ManagerCell manager={myManager} currentEventId={currentEventId} />
+          <Spacer height={4} />
+          {renderPicks(myPicks)}
+        </Column>
+        <Column>
+          <ManagerCell manager={theirManager} currentEventId={currentEventId} />
+          <Spacer height={4} />
+          {renderPicks(theirPicks)}
+        </Column>
       </Container>
     </Section>
   );

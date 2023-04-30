@@ -106,3 +106,12 @@ export interface PitchPick {
   value?: Maybe<string | number | boolean>;
   multiplier?: number;
 }
+
+export interface BasicFixtureInfoPerTeam {
+  [teamId: number]: Array<{
+    started: boolean;
+    isHome: boolean;
+    opponent: Team;
+    shorthand: string;
+  }>;
+}

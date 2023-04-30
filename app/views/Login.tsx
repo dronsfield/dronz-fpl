@@ -125,11 +125,9 @@ const Login: React.FC<LoginProps> = (props) => {
             renderModal={(close) => (
               <Dialog>
                 <LoginInstructions />
-                <Button
-                  onClick={close}
-                  children="Close instructions"
-                  variant="PRIMARY"
-                />
+                <div style={{ textAlign: "center", marginTop: 16 }}>
+                  <Button onClick={close} children="close" variant="PRIMARY" />
+                </div>
               </Dialog>
             )}
           />

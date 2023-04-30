@@ -6,5 +6,6 @@ const colors = {
   darkPurple: `rgb(55, 0, 60)`,
   green: "green",
   grey: "#bbb",
+  playerGreen: "#46C484",
 };
 export default colors;

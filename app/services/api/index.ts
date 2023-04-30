@@ -1,6 +1,7 @@
 import appConfig from "~/appConfig";
 import { keyBy } from "~/util/keyBy";
 import {
+  BasicFixtureInfoPerTeam,
   Chip,
   Fixture,
   FixtureTeam,
@@ -178,22 +179,67 @@ function getPickType(pick: PickRT): PickType {
   return pick.position <= 11 ? "STARTING" : "BENCHED";
 }
 
+export function getBasicFixtureInfoPerTeam(fixtures: Fixture[]) {
+  const output: BasicFixtureInfoPerTeam = {};
+
+  const addFixtureForTeam = (fixture: Fixture, isHome: boolean) => {
+    const us = fixture[isHome ? "home" : "away"];
+    const them = fixture[!isHome ? "home" : "away"];
+
+    output[us.teamId] = [
+      ...(output[us.teamId] || []),
+      {
+        started: fixture.started,
+        isHome: isHome,
+        opponent: them.team,
+        shorthand: `${them.team.shortName} (${isHome ? "H" : "A"})`,
+      },
+    ];
+  };
+
+  fixtures.forEach((fixture) => {
+    addFixtureForTeam(fixture, true);
+    addFixtureForTeam(fixture, false);
+  });
+
+  return output;
+}
+
 export function getPitchPicks(
   manager: Manager | undefined,
   players: {
     [id: number]: Player;
-  }
+  },
+  basicFixtureInfoPerTeam: BasicFixtureInfoPerTeam
 ): Array<PitchPick> {
   const managerPicks = manager?.picks || {};
   const picks = getKeys(managerPicks).map((playerId) => {
     const player = players[playerId];
     const { pickType, position, multiplier } = managerPicks[playerId];
+
+    const basicFixtureInfo = basicFixtureInfoPerTeam[player.teamId];
+    const firstFixture = basicFixtureInfo[0];
+    const _points = player.gameweekStats.total_points;
+    const points =
+      typeof _points === "number" && multiplier
+        ? _points * multiplier
+        : _points;
+
+    const value = [
+      firstFixture ? (firstFixture.started ? points : undefined) : "-",
+      ...basicFixtureInfo.map((fix) =>
+        fix.started ? undefined : fix.shorthand
+      ),
+    ]
+      .filter((val) => val !== undefined)
+      .join(", ");
+
     return {
       player,
       pickType,
       position,
       multiplier,
-      value: player.gameweekStats.total_points,
+      value,
     };
   });
   return picks;
@@ -221,7 +267,8 @@ export async function getBootstrap(currentEventId: number) {
   const fixtures = fixturesResponse.map((fixture) =>
     parseFixture(fixture, teams)
   );
-  return { players, teams, fixtures, currentEventId };
+  const fixturesPerTeam = getBasicFixtureInfoPerTeam(fixtures);
+  return { players, teams, fixtures, currentEventId, fixturesPerTeam };
 }
 
 export async function getLeague(

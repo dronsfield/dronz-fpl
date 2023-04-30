@@ -34,6 +34,8 @@ export function Modal(props: ModalProps) {
           ref={ref}
           style={{
             background: "white",
+            padding: 32,
+            maxWidth: "90vw",
           }}
         >
           {children}

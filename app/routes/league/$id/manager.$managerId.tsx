@@ -13,7 +13,7 @@ import KeyValueTable from "~/components/KeyValueTable";
 import PicksPitch from "~/components/PicksPitch";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
-import { useLeagueData } from "~/hooks/useRouteData";
+import { useLeagueData, useProfileData } from "~/hooks/useRouteData";
 import { getPitchPicks } from "~/services/api";
 import { getKeys } from "~/util/getKeys";
 
@@ -35,14 +35,16 @@ export interface ManagerProps {}
 const Manager: React.FC<ManagerProps> = (props) => {
   const { managerId } = useParams<{ managerId: string }>();
   const location = useLocation();
+  const profile = useProfileData();
 
-  const { managers, players, currentEventId } = useLeagueData();
+  const { managers, players, currentEventId, fixturesPerTeam } =
+    useLeagueData();
 
   const { manager, picks } = React.useMemo(() => {
     const manager = managers.find((manager) => {
       return String(manager.id) === String(managerId);
     });
-    const picks = getPitchPicks(manager, players);
+    const picks = getPitchPicks(manager, players, fixturesPerTeam);
     return { manager, picks };
   }, [managers]);
 
@@ -90,11 +92,14 @@ const Manager: React.FC<ManagerProps> = (props) => {
         children="Open in official FPL site"
         variant="PRIMARY"
       />
-      <Button
-        to={`${location.pathname}/compare`}
-        children="Compare with my team"
-        variant="PRIMARY"
-      />
+      <Spacer inline width={8} />
+      {profile?.id && String(profile.id) !== String(managerId) ? (
+        <Button
+          to={`${location.pathname}/compare`}
+          children="Compare with my team"
+          variant="PRIMARY"
+        />
+      ) : null}
     </Section>
   );
 };

@@ -9,7 +9,7 @@ export interface LoginInstructionsProps {}
 const LoginInstructions: React.FC<LoginInstructionsProps> = (props) => {
   return (
     <Container>
-      <ol>
+      <ol style={{ margin: 0, paddingInlineStart: 16 }}>
         <li>
           Login to{" "}
           <a href="https://fantasy.premierleague.com" target="_blank">

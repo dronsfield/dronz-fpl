@@ -1,5 +1,6 @@
 import { LoaderFunction } from "remix";
 import {
+  BasicFixtureInfoPerTeam,
   Fixture,
   getBootstrap,
   getCurrentEventId,
@@ -22,6 +23,7 @@ export interface RootLoaderData {
     };
     fixtures: Fixture[];
     currentEventId: number;
+    fixturesPerTeam: BasicFixtureInfoPerTeam;
   };
 }
 

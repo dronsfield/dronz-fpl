@@ -134,7 +134,7 @@ const App: React.FC<{}> = (props) => {
       <body>
         <PersistQueryClientProvider
           client={queryClient}
-          persistOptions={{ persister }}
+          persistOptions={{ persister, buster: "1" }}
         >
           <UserContext.Provider value={user}>
             <Layout>{children}</Layout>
