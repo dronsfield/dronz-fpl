@@ -223,7 +223,7 @@ export function getPitchPicks(
     const points =
       typeof _points === "number" && multiplier
         ? _points * multiplier
-        : _points;
+        : Number(_points) || 0;
 
     const value = [
       firstFixture ? (firstFixture.started ? points : undefined) : "-",
@@ -237,6 +237,7 @@ export function getPitchPicks(
     return {
       player,
       pickType,
+      points,
       position,
       multiplier,
       value,

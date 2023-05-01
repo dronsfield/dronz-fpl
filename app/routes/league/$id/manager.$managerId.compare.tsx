@@ -27,7 +27,7 @@ const Column = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-weight: bold;
+  // font-weight: bold;
 `;
 
 const PlayerWrapper = styled(FlexCenter)`
@@ -37,7 +37,7 @@ const PlayerWrapper = styled(FlexCenter)`
 const pickSortProp = [
   (pick: PitchPick) => (pick.pickType === "BENCHED" ? 1 : 0),
   (pick: PitchPick) => positionIndexes[pick.player.position],
-  (pick: PitchPick) => pick.player.cost,
+  (pick: PitchPick) => pick.player.cost * -1,
   (pick: PitchPick) => pick.player.id,
 ];
 const filterPicks = (picks: PitchPick[], refPicks: PitchPick[]) => {
@@ -60,6 +60,14 @@ const renderPicks = (picks: PitchPick[]) => (
     ))}
   </>
 );
+
+const calculatePoints = (picks: PitchPick[]) => {
+  let total = 0;
+  picks.forEach((pick) => {
+    total += pick.points || 0;
+  });
+  return total;
+};
 
 export interface CompareProps {
   foo?: string;
@@ -118,12 +126,21 @@ const Compare: React.FC<CompareProps> = (props) => {
       </p>
       <Container>
         <Column>
-          <ManagerCell manager={myManager} currentEventId={currentEventId} />
+          <strong>
+            <ManagerCell manager={myManager} currentEventId={currentEventId} />
+          </strong>
+          <div>{calculatePoints(myPicks)}</div>
           <Spacer height={4} />
           {renderPicks(myPicks)}
         </Column>
         <Column>
-          <ManagerCell manager={theirManager} currentEventId={currentEventId} />
+          <strong>
+            <ManagerCell
+              manager={theirManager}
+              currentEventId={currentEventId}
+            />
+          </strong>
+          <div>{calculatePoints(theirPicks)}</div>
           <Spacer height={4} />
           {renderPicks(theirPicks)}
         </Column>

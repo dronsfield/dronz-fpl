@@ -102,6 +102,7 @@ export interface ManagerProfile {
 export interface PitchPick {
   player: Player;
   pickType: PickType;
+  points?: number;
   position?: number;
   value?: Maybe<string | number | boolean>;
   multiplier?: number;
