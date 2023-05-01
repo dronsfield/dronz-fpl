@@ -13,13 +13,12 @@ import { PlayerBlock } from "~/components/PicksPitch";
 import Section from "~/components/Section";
 import FlexCenter from "~/components/FlexCenter";
 import { ManagerCell } from "~/components/CommonCells";
-import Spacer from "~/components/Spacer";
 import { formatName } from "~/util/formatName";
 
 const Container = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
 `;
 
@@ -30,8 +29,16 @@ const Column = styled.div`
   // font-weight: bold;
 `;
 
+const Row = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+`;
+
 const PlayerWrapper = styled(FlexCenter)`
-  padding: 8px 16px;
+  padding: 6px 0;
+  width: 94px;
 `;
 
 const pickSortProp = [
@@ -51,20 +58,12 @@ const filterPicks = (picks: PitchPick[], refPicks: PitchPick[]) => {
   );
 };
 
-const renderPicks = (picks: PitchPick[]) => (
-  <>
-    {picks.map((pick) => (
-      <PlayerWrapper key={pick.player.id}>
-        <PlayerBlock pick={pick} />
-      </PlayerWrapper>
-    ))}
-  </>
-);
-
 const calculatePoints = (picks: PitchPick[]) => {
   let total = 0;
   picks.forEach((pick) => {
-    total += pick.points || 0;
+    if (pick.pickType !== "BENCHED") {
+      total += pick.points || 0;
+    }
   });
   return total;
 };
@@ -120,30 +119,42 @@ const Compare: React.FC<CompareProps> = (props) => {
   return (
     <Section>
       <p style={{ textAlign: "center" }}>
-        These are the differences between your team and{" "}
+        These are the {myPicks.length} differences between your team and{" "}
         {formatName(theirManager.name)}'s team. Players that you both own and
         that earn the same points for both of you are hidden.
       </p>
       <Container>
-        <Column>
-          <strong>
-            <ManagerCell manager={myManager} currentEventId={currentEventId} />
-          </strong>
-          <div>{calculatePoints(myPicks)}</div>
-          <Spacer height={4} />
-          {renderPicks(myPicks)}
-        </Column>
-        <Column>
-          <strong>
-            <ManagerCell
-              manager={theirManager}
-              currentEventId={currentEventId}
-            />
-          </strong>
-          <div>{calculatePoints(theirPicks)}</div>
-          <Spacer height={4} />
-          {renderPicks(theirPicks)}
-        </Column>
+        <Row>
+          <PlayerWrapper>
+            <strong>
+              <ManagerCell
+                manager={myManager}
+                currentEventId={currentEventId}
+              />
+            </strong>
+            <div>{calculatePoints(myPicks)}</div>
+          </PlayerWrapper>
+          <PlayerWrapper>
+            <strong>
+              <ManagerCell
+                manager={theirManager}
+                currentEventId={currentEventId}
+              />
+            </strong>
+            <div>{calculatePoints(theirPicks)}</div>
+          </PlayerWrapper>
+        </Row>
+        {myPicks.map((myPick, index) => (
+          <Row key={index}>
+            <PlayerWrapper>
+              <PlayerBlock pick={myPick} />
+            </PlayerWrapper>
+
+            <PlayerWrapper>
+              <PlayerBlock pick={theirPicks[index]} />
+            </PlayerWrapper>
+          </Row>
+        ))}
       </Container>
     </Section>
   );
