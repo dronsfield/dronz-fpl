@@ -5,6 +5,7 @@ import Button from "~/components/Button";
 import FlexCenter from "~/components/FlexCenter";
 import { Loader } from "~/components/Loader";
 import NavBar from "~/components/NavBar";
+import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import { useLeagueLoaderQuery, useProfileData } from "~/hooks/useRouteData";
 import { leagueLoader } from "~/loaders/leagueLoader";
@@ -95,10 +96,6 @@ const League: React.FC<LeagueProps> = (props) => {
   const leagueQuery = useLeagueLoaderQuery(true);
   const profile = useProfileData();
 
-  if (!leagueQuery.data && leagueQuery.error) {
-    throw leagueQuery.error;
-  }
-
   const leagueName =
     leagueQuery.data?.name ||
     profile?.leagues.find((league) => league.id === Number(id))?.name ||
@@ -106,14 +103,20 @@ const League: React.FC<LeagueProps> = (props) => {
 
   return (
     <Layout name={leagueName}>
-      {transition.state !== "idle" || !leagueQuery.data ? (
+      {leagueQuery.data ? (
+        <Outlet />
+      ) : transition.state !== "idle" ? (
         <FlexCenter>
           <Spacer height={32} />
           <Loader size={36} color={colors.darkPurple} />
         </FlexCenter>
-      ) : (
-        <Outlet />
-      )}
+      ) : leagueQuery.error ? (
+        <Section>
+          <div style={{ textAlign: "center" }}>
+            Something went wrong. Refresh?
+          </div>
+        </Section>
+      ) : null}
     </Layout>
   );
 };
