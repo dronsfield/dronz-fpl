@@ -22,6 +22,7 @@ export interface LeagueLoaderData {
   name: string;
   managers: ManagerWithPrize[];
   prizeCalculation: PrizeCalculation;
+  stale: boolean;
 }
 
 export const leagueLoader = async ({ params }: { params: Params }) => {
@@ -29,8 +30,12 @@ export const leagueLoader = async ({ params }: { params: Params }) => {
   const id = Number(params.id);
   invariant(id, "expected params.id");
 
+  let stale = false;
+
   const duration = logDuration(`leagueLoader`);
-  const currentEventId = await getCurrentEventId();
+  const currentEventIdResponse = await getCurrentEventId();
+  const currentEventId = currentEventIdResponse.data;
+  if (currentEventIdResponse.stale) stale = true;
   const leagueData = await getLeague(id, currentEventId);
 
   const buyInManagers: BuyInManager[] = leagueData.managers.map((manager) => {

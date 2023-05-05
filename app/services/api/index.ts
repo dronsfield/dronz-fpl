@@ -247,7 +247,11 @@ export function getPitchPicks(
 }
 
 export async function getCurrentEventId() {
-  return parseCurrentEventIdFromStatus(await fetchEventStatus());
+  const eventStatusResponse = await fetchEventStatus();
+  return {
+    data: parseCurrentEventIdFromStatus(eventStatusResponse.data),
+    stale: eventStatusResponse.stale,
+  };
 }
 
 export async function getBootstrap(currentEventId: number) {
@@ -258,44 +262,58 @@ export async function getBootstrap(currentEventId: number) {
       fetchFixtures({ eventId: currentEventId }),
     ]
   );
-  const live = keyBy(liveResponse.elements, "id");
-  const playerList = bootstrapResponse.elements.map((element) =>
+  const live = keyBy(liveResponse.data.elements, "id");
+  const playerList = bootstrapResponse.data.elements.map((element) =>
     parsePlayerFromElement(element, live)
   );
   const players = keyBy(playerList, "id");
-  const teamList = bootstrapResponse.teams.map(parseTeam);
+  const teamList = bootstrapResponse.data.teams.map(parseTeam);
   const teams = keyBy(teamList, "id");
-  const fixtures = fixturesResponse.map((fixture) =>
+  const fixtures = fixturesResponse.data.map((fixture) =>
     parseFixture(fixture, teams)
   );
   const fixturesPerTeam = getBasicFixtureInfoPerTeam(fixtures);
-  return { players, teams, fixtures, currentEventId, fixturesPerTeam };
+  return {
+    players,
+    teams,
+    fixtures,
+    currentEventId,
+    fixturesPerTeam,
+    stale:
+      bootstrapResponse.stale || liveResponse.stale || fixturesResponse.stale,
+  };
 }
 
 export async function getLeague(
   leagueId: number,
   currentEventId: number
-): Promise<League> {
-  const league = await fetchLeague({ leagueId, eventId: currentEventId });
+): Promise<League & { stale: boolean }> {
+  let stale = false;
+  const leagueResponse = await fetchLeague({
+    leagueId,
+    eventId: currentEventId,
+  });
+  if (leagueResponse.stale) stale = true;
 
   const _managers: ManagersRT = {};
   await Promise.all(
-    league.standings.results
+    leagueResponse.data.standings.results
       .slice(0, appConfig.MAX_MANAGERS)
       .map(async (result) => {
         const managerId = result.entry;
-        const manager = await fetchManager({
+        const managerResponse = await fetchManager({
           managerId,
           eventId: currentEventId,
         });
-        _managers[managerId] = manager;
+        _managers[managerId] = managerResponse.data;
+        if (managerResponse.stale) stale = true;
       })
   );
 
   const {
     league: { name, id },
     standings: { results },
-  } = league;
+  } = leagueResponse.data;
   const managers = results.slice(0, appConfig.MAX_MANAGERS).map((result) => {
     const {
       gw,
@@ -336,10 +354,14 @@ export async function getLeague(
     name,
     id,
     managers,
+    stale,
   };
 }
 
 export async function getManagerProfile(managerId: number) {
-  const data = await fetchManagerInfo({ managerId });
-  return parseManagerProfile(managerId, data);
+  const managerInfoResponse = await fetchManagerInfo({ managerId });
+  return {
+    data: parseManagerProfile(managerId, managerInfoResponse.data),
+    stale: managerInfoResponse.stale,
+  };
 }

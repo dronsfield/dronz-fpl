@@ -5,6 +5,7 @@ import { rootLoader, RootLoaderData } from "~/loaders/rootLoader";
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { useUser } from "~/hooks/useUser";
 import dayjs from "dayjs";
+import { useStale } from "./useStale";
 
 const logQuery = (query: QueryObserverResult, label: string) => {
   if (false) {
@@ -27,10 +28,12 @@ const logQuery = (query: QueryObserverResult, label: string) => {
 
 export function useRootLoaderQuery(triggerFetch = false) {
   const user = useUser();
+  const { setStale } = useStale();
   const query = useQuery({
     queryKey: ["root", user?.userId],
     queryFn: () => rootLoader(user),
     enabled: triggerFetch,
+    onSuccess: (data) => setStale(`root`, data.stale),
   });
   logQuery(query, "rootQuery");
 
@@ -39,10 +42,12 @@ export function useRootLoaderQuery(triggerFetch = false) {
 
 export function useLeagueLoaderQuery(triggerFetch = false) {
   const { id = "" } = useParams();
+  const { setStale } = useStale();
   const query = useQuery({
     queryKey: ["league", id],
     queryFn: () => leagueLoader({ params: { id } }),
     enabled: triggerFetch,
+    onSuccess: (data) => setStale(`league/${id}`, data.stale),
   });
   logQuery(query, "leagueQuery");
 

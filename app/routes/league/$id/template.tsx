@@ -8,7 +8,7 @@ import { useLeagueData } from "~/hooks/useRouteData";
 import { PickType, Player } from "~/services/api";
 import { sortBy } from "~/util/sortBy";
 
-const headers = ["Player", "Pos", "Price", "FPLBOYS", "Overall"] as const;
+const headers = ["Player", "Pos", "Price", "League", "Overall"] as const;
 
 interface TemplateData {
   player: Player;
@@ -86,7 +86,7 @@ const TemplateTeam: React.FC<{}> = (props) => {
               return player.position;
             case "Price":
               return player.cost.toFixed(1);
-            case "FPLBOYS":
+            case "League":
               const ownershipPc = ((pickCount / managers.length) * 100).toFixed(
                 1
               );
@@ -99,7 +99,7 @@ const TemplateTeam: React.FC<{}> = (props) => {
           Player: ["auto"],
           Pos: ["auto"],
           Price: ["auto"],
-          FPLBOYS: ["auto"],
+          League: ["auto"],
           Overall: ["auto"],
         }}
       />

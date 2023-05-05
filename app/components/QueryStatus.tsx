@@ -3,6 +3,7 @@ import styled from "styled-components";
 import colors from "~/style/colors";
 import { Loader } from "~/components/Loader";
 import { useIsFetching } from "@tanstack/react-query";
+import { useStale } from "~/hooks/useStale";
 
 const Container = styled.div`
   position: fixed;
@@ -29,10 +30,21 @@ export interface QueryStatusProps {
 
 const QueryStatus: React.FC<QueryStatusProps> = (props) => {
   const isFetching = useIsFetching();
+  const isStale = useStale().isStale;
+  const isHidden = !isFetching && !isStale;
   return (
-    <Container aria-hidden={!Boolean(isFetching)}>
-      <Loader size={16} color={colors.purple} />
-      <span>Checking for new data...</span>
+    <Container aria-hidden={isHidden}>
+      {isFetching ? (
+        <>
+          <Loader size={16} color={colors.purple} />
+          <span>Checking for new data...</span>
+        </>
+      ) : isStale ? (
+        <span>
+          Some data is stale because of a request error. Refresh to attempt to
+          fix.
+        </span>
+      ) : null}
     </Container>
   );
 };

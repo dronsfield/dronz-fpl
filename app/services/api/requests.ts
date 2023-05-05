@@ -7,12 +7,14 @@ import {
   Null,
   Number,
   Record,
+  Runtype,
   Static,
   String,
 } from "runtypes";
 import appConfig from "~/appConfig";
 import { runtypeFetch } from "~/util/runtypeFetch";
 import { cacheFn } from "../localCache";
+import { ValueOf } from "~/util/utilityTypes";
 
 const BASE_URL = appConfig.BASE_URL;
 
@@ -196,88 +198,128 @@ function expireAt2am() {
   return dayjs().utc().add(1, "day").startOf("hour").set("hour", 2).unix();
 }
 
+function expireAtMinute() {
+  return dayjs().utc().startOf("minute").add(1, "minute").unix();
+}
+
 // ------------------------------------------------------------
 // FETCHERS
 // ------------------------------------------------------------
 
-export function fetchEventStatus() {
-  const url = `${window.location.origin}/api/event-status`;
-  const rt = EventStatusRT;
+export const apiEndpointConfig = {
+  eventStatus: {
+    rt: EventStatusRT,
+    getKey: () => `event-status`,
+    getExpireAt: expireAtMinute,
+  },
+  bootstrap: {
+    rt: BootstrapRT,
+    getKey: () => `bootstrap`,
+    getExpireAt: expireAt2am,
+  },
+  league: {
+    rt: LeagueRT,
+    getKey: (opts: { leagueId: number; eventId: number }) =>
+      `league/${opts.leagueId}/${opts.eventId}`,
+    getExpireAt: expireAtMinute,
+  },
+  manager: {
+    rt: ManagerRT,
+    getKey: (opts: { managerId: number; eventId: number }) =>
+      `manager/${opts.managerId}/${opts.eventId}`,
+    getExpireAt: expireAtHalfHour,
+  },
+  managerInfo: {
+    rt: ManagerInfoRT,
+    getKey: (opts: { managerId: number }) => `manager-info/${opts.managerId}`,
+    getExpireAt: expireAtMinute,
+  },
+  fixtures: {
+    rt: Array(FixtureRT),
+    getKey: (opts: { eventId: number }) => `fixtures/${opts.eventId}`,
+    getExpireAt: expireAtMinute,
+  },
+  live: {
+    rt: LiveRT,
+    getKey: (opts: { eventId: number }) => `live/${opts.eventId}`,
+    getExpireAt: expireAtMinute,
+  },
+};
+
+type ConfigValue<R> = {
+  rt: Runtype<R>;
+  getKey: (opts: any) => string;
+  getExpireAt: () => number | null;
+};
+
+const fetchFromApiAndCache = async <R>(
+  url: string,
+  config: ConfigValue<R>,
+  opts: any
+) => {
   return cacheFn({
-    rt,
-    fn: () => runtypeFetch(rt, url),
-    key: `event-status`,
-    expireAt: null,
+    rt: config.rt,
+    fn: () => runtypeFetch(config.rt, window.location.origin + url),
+    key: config.getKey(opts),
+    expireAt: config.getExpireAt(),
   });
+};
+
+export function fetchEventStatus() {
+  return fetchFromApiAndCache(
+    `/api/event-status`,
+    apiEndpointConfig.eventStatus,
+    {}
+  );
 }
 
 export function fetchBootstrap() {
-  const url = `${window.location.origin}/api/bootstrap`;
-  const rt = BootstrapRT;
-  return cacheFn({
-    rt,
-    fn: () => runtypeFetch(rt, url),
-    key: `bootstrap`,
-    expireAt: expireAt2am(),
-  });
+  return fetchFromApiAndCache(
+    `/api/bootstrap`,
+    apiEndpointConfig.bootstrap,
+    {}
+  );
 }
 
 export async function fetchLeague(opts: { leagueId: number; eventId: number }) {
-  const url = `${window.location.origin}/api/league/${opts.leagueId}/${opts.eventId}`;
-  const rt = LeagueRT;
-  return cacheFn({
-    rt,
-    key: `league/${opts.leagueId}/${opts.eventId}`,
-    fn: () => runtypeFetch(rt, url),
-    expireAt: null,
-  });
+  return fetchFromApiAndCache(
+    `/api/league/${opts.leagueId}/${opts.eventId}`,
+    apiEndpointConfig.league,
+    opts
+  );
 }
 
 export async function fetchManager(opts: {
   managerId: number;
   eventId: number;
 }) {
-  const url = `${window.location.origin}/api/manager/${opts.managerId}/${opts.eventId}`;
-  const rt = ManagerRT;
-  return cacheFn({
-    rt,
-    key: `manager/${opts.managerId}/${opts.eventId}`,
-    fn: () => runtypeFetch(rt, url),
-    expireAt: expireAtHalfHour(),
-  });
-}
-
-export function fetchFixtures(opts: { eventId: number }) {
-  const url = `${window.location.origin}/api/fixtures/${opts.eventId}`;
-  const rt = Array(FixtureRT);
-  return cacheFn({
-    rt,
-    fn: () => runtypeFetch(rt, url),
-    key: `fixtures/${opts.eventId}`,
-    expireAt: null,
-  });
+  return fetchFromApiAndCache(
+    `/api/manager/${opts.managerId}/${opts.eventId}`,
+    apiEndpointConfig.manager,
+    opts
+  );
 }
 
 export function fetchManagerInfo(opts: { managerId: number }) {
-  const url = `${window.location.origin}/api/manager-info/${opts.managerId}/`;
-  const rt = ManagerInfoRT;
+  return fetchFromApiAndCache(
+    `/api/manager-info/${opts.managerId}/`,
+    apiEndpointConfig.managerInfo,
+    opts
+  );
+}
 
-  return cacheFn({
-    rt,
-    fn: () => runtypeFetch(rt, url),
-    key: `manager-info/${opts.managerId}`,
-    expireAt: null,
-  });
+export function fetchFixtures(opts: { eventId: number }) {
+  return fetchFromApiAndCache(
+    `/api/fixtures/${opts.eventId}`,
+    apiEndpointConfig.fixtures,
+    opts
+  );
 }
 
 export function fetchLive(opts: { eventId: number }) {
-  const url = `${window.location.origin}/api/live/${opts.eventId}`;
-  const rt = LiveRT;
-
-  return cacheFn({
-    rt,
-    fn: () => runtypeFetch(rt, url),
-    key: `live/${opts.eventId}`,
-    expireAt: null,
-  });
+  return fetchFromApiAndCache(
+    `/api/live/${opts.eventId}`,
+    apiEndpointConfig.live,
+    opts
+  );
 }

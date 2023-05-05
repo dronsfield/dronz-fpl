@@ -27,6 +27,7 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import styled from "styled-components";
 import QueryStatus from "~/components/QueryStatus";
+import { StaleProvider } from "./hooks/useStale";
 
 dayjs.extend(utc);
 
@@ -111,17 +112,14 @@ const Layout: React.FC<{}> = (props) => {
   } else if (rootQuery.isLoading) {
     return <RootSpinner size={36} color={colors.purple} />;
   } else if (rootQuery.error) {
-    throw rootQuery.error;
+    return <div>Something went wrong. Refresh?</div>;
   } else {
     return null;
   }
 };
 
-const App: React.FC<{}> = (props) => {
+const Document: React.FC<{}> = (props) => {
   const { children } = props;
-  if (typeof window !== "undefined") (window as any).dayjs = dayjs;
-  const user = useLoaderData();
-
   return (
     <html lang="en">
       <head>
@@ -132,14 +130,7 @@ const App: React.FC<{}> = (props) => {
         {typeof document === "undefined" ? "__STYLES__" : null}
       </head>
       <body>
-        <PersistQueryClientProvider
-          client={queryClient}
-          persistOptions={{ persister, buster: "1" }}
-        >
-          <UserContext.Provider value={user}>
-            <Layout>{children}</Layout>
-          </UserContext.Provider>
-        </PersistQueryClientProvider>
+        {children}
         <GlobalStyle />
         <ScrollRestoration />
         <Scripts />
@@ -149,25 +140,46 @@ const App: React.FC<{}> = (props) => {
   );
 };
 
+const App: React.FC<{}> = (props) => {
+  const { children } = props;
+  if (typeof window !== "undefined") (window as any).dayjs = dayjs;
+  const user = useLoaderData();
+
+  return (
+    <Document>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister, buster: "1" }}
+      >
+        <UserContext.Provider value={user}>
+          <StaleProvider>
+            <Layout>{children}</Layout>
+          </StaleProvider>
+        </UserContext.Provider>
+      </PersistQueryClientProvider>
+    </Document>
+  );
+};
+
 export default App;
 
 export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
   console.error(error);
   return (
-    <App>
+    <Document>
       <h1>Error</h1>
-    </App>
+    </Document>
   );
 };
 
 export function CatchBoundary() {
   const caught = useCatch();
   return (
-    <App>
+    <Document>
       <h1>
         {caught.status} {"&&"} {caught.statusText}
       </h1>
       <a href="/" children="Home" />
-    </App>
+    </Document>
   );
 }

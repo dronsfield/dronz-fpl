@@ -7,6 +7,7 @@ import betterFetch from "~/util/betterFetch";
 export const loader: LoaderFunction = async () => {
   const url = `${appConfig.BASE_URL}/bootstrap-static/`;
   const rt = BootstrapRT;
+
   return betterFetch<any>(url).then((resp) => {
     const trimmed = {
       events: resp.events.map((event: any) => {

@@ -25,6 +25,7 @@ export interface RootLoaderData {
     currentEventId: number;
     fixturesPerTeam: BasicFixtureInfoPerTeam;
   };
+  stale: boolean;
 }
 
 // export const rootLoader: LoaderFunction = async ({ request }) => {
@@ -32,20 +33,31 @@ export const rootLoader = async (user: User) => {
   console.log("exec loader: root");
   // const duration = logDuration("rootLoader");
 
+  let stale = false;
+
   const [profile, bootstrap] = await Promise.all([
     (async () => {
       try {
-        return user ? await getManagerProfile(user.userId) : null;
+        if (!user) return null;
+        const managerResponse = await getManagerProfile(user?.userId);
+        if (managerResponse.stale) stale = true;
+        return managerResponse.data;
       } catch (err) {
         return null;
       }
     })(),
     (async () => {
-      const currentEventId = await getCurrentEventId();
-      return getBootstrap(currentEventId);
+      const currentEventIdResponse = await getCurrentEventId();
+      if (currentEventIdResponse.stale) stale = true;
+      const { stale: bootstrapStale, ...bootstrap } = await getBootstrap(
+        currentEventIdResponse.data
+      );
+      if (bootstrapStale) stale = true;
+      return bootstrap;
     })(),
   ]);
-  const data: RootLoaderData = { profile, bootstrap };
+
+  const data: RootLoaderData = { profile, bootstrap, stale };
   // duration.end();
   return data;
 };
