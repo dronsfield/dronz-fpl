@@ -73,11 +73,11 @@ async function betterFetch<T>(
     }
     return data;
   } catch (err: any) {
-    console.log("betterFetch caught error", err);
+    // console.log("betterFetch caught error", err);
     if (err) {
-      console.log("resp body:", String((resp as any)?.body));
-      console.log("resp status:", (resp as any)?.status);
-      console.log("resp:", resp);
+      // console.log("resp body:", String((resp as any)?.body));
+      // console.log("resp status:", (resp as any)?.status);
+      // console.log("resp:", resp);
     }
     throw err;
   }

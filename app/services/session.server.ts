@@ -8,6 +8,7 @@ export const storage = createCookieSessionStorage({
     name: "fpl.dronz",
     secure: process.env.NODE_ENV !== "development",
     maxAge: 60 * 60 * 24 * 365,
+    secrets: ["239iuhsudhf8ie", "lul"],
   },
 });
 
