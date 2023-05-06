@@ -27,7 +27,7 @@ interface StateContextValue {
 }
 const defaultStateContextValue: StateContextValue = {
   playerId: undefined,
-  setPlayerId: () => { },
+  setPlayerId: () => {},
 };
 const StateContext = React.createContext<StateContextValue>(
   defaultStateContextValue
@@ -70,12 +70,16 @@ const PlayerContainer = styled.div<{ alignRight?: boolean }>`
 const PlayerName = styled.button`
   ${normalizeButton}
   ${removeHighlight}
-  font-size: 13px;
+  font-size: 14px;
   padding: 2px 0;
   cursor: pointer;
 `;
 
 const ManagersContainer = styled.div<{ home?: boolean }>`
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 6px;
+  align-items: center;
   position: absolute;
   top: 100%;
   margin-top: -3px;
@@ -86,6 +90,17 @@ const ManagersContainer = styled.div<{ home?: boolean }>`
   border-radius: 4px;
   background-color: white;
   z-index: 1;
+  text-align: left;
+`;
+
+const ManagerRank = styled.div`
+  font-size: 10px;
+  white-space: nowrap;
+  padding: 1px 0;
+
+  opacity: 0.5;
+  // font-weight: bold;
+  // font-style: italic;
 `;
 
 const ManagerName = styled.div<{ pickType: PickType }>`
@@ -210,14 +225,20 @@ const TeamPicks: React.FC<{
                         pickType === "CAPTAIN"
                           ? " [C]"
                           : pickType === "VICE"
-                            ? " [V]"
-                            : "";
+                          ? " [V]"
+                          : "";
                       return (
-                        <ManagerName
-                          children={formatName(name) + suffix}
-                          key={id}
-                          pickType={pickType}
-                        />
+                        <>
+                          <ManagerRank
+                            key={id + "rank"}
+                            children={`#${rank} `}
+                          />
+                          <ManagerName
+                            children={`${formatName(name)}${suffix}`}
+                            key={id + "name"}
+                            pickType={pickType}
+                          />
+                        </>
                       );
                     })}
                   </ManagersContainer>
@@ -355,18 +376,26 @@ const FixturePicks: React.FC<{}> = (props) => {
 
   return (
     <StateContext.Provider value={{ playerId, setPlayerId }}>
-      {current.length ? <>
-        <Section>
-          <SectionTitle>today + future:</SectionTitle>
-          {current.map((fixture) => renderFixture({ fixture }))}
-        </Section>
-        <Section>
-          <SectionTitle>past:</SectionTitle>
-          {past.map((fixture) => renderFixture({ fixture }))}
-        </Section>
-      </> : <Section>
-        {past.map((fixture) => renderFixture({ fixture }))}
-      </Section>}
+      <Section>
+        <div style={{ textAlign: "center" }}>
+          <div>Shows how many managers own each player.</div>
+          <div>Press a player's name to see which managers own them.</div>
+        </div>
+      </Section>
+      {current.length ? (
+        <>
+          <Section>
+            <SectionTitle>today + future:</SectionTitle>
+            {current.map((fixture) => renderFixture({ fixture }))}
+          </Section>
+          <Section>
+            <SectionTitle>past:</SectionTitle>
+            {past.map((fixture) => renderFixture({ fixture }))}
+          </Section>
+        </>
+      ) : (
+        <Section>{past.map((fixture) => renderFixture({ fixture }))}</Section>
+      )}
       <Spacer height={100} />
     </StateContext.Provider>
   );
