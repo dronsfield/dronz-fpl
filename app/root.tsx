@@ -112,7 +112,9 @@ const Layout: React.FC<{}> = (props) => {
   } else if (rootQuery.isLoading) {
     return <RootSpinner size={36} color={colors.purple} />;
   } else if (rootQuery.error) {
-    return <div>Something went wrong. Refresh?</div>;
+    return (
+      <div style={{ textAlign: "center" }}>Something went wrong. Refresh?</div>
+    );
   } else {
     return null;
   }

@@ -15,6 +15,7 @@ import appConfig from "~/appConfig";
 import { runtypeFetch } from "~/util/runtypeFetch";
 import { cacheFn } from "../localCache";
 import { ValueOf } from "~/util/utilityTypes";
+import betterFetch from "~/util/betterFetch";
 
 const BASE_URL = appConfig.BASE_URL;
 
@@ -259,7 +260,11 @@ const fetchFromApiAndCache = async <R>(
 ) => {
   return cacheFn({
     rt: config.rt,
-    fn: () => runtypeFetch(config.rt, window.location.origin + url),
+    fn: () =>
+      runtypeFetch(
+        Record({ data: config.rt, stale: Boolean }),
+        window.location.origin + url
+      ),
     key: config.getKey(opts),
     expireAt: config.getExpireAt(),
   });

@@ -2,6 +2,8 @@ import { renderToString } from "react-dom/server";
 import type { EntryContext } from "remix";
 import { RemixServer } from "remix";
 import { ServerStyleSheet } from "styled-components";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 export default function handleRequest(
   request: Request,
