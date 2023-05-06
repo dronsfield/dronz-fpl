@@ -1,4 +1,4 @@
-import { Runtype } from "runtypes";
+import { Runtype, ValidationError } from "runtypes";
 import { logDuration } from "~/util/logDuration";
 import dayjs from "dayjs";
 import wait from "~/util/wait";
@@ -101,6 +101,10 @@ export function createCachedFnFactory(factoryOpts: {
         log(`returning remote data`);
         return parsed;
       } catch (err) {
+        if (err instanceof ValidationError) {
+          log(`validation error`);
+          // console.log(err);
+        }
         if (cached) {
           log(`failed to get from remote, returning stale cached data`);
           return { data: cached, stale: true };

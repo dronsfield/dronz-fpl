@@ -3,6 +3,7 @@ import { keyBy } from "~/util/keyBy";
 import {
   BasicFixtureInfoPerTeam,
   Chip,
+  ChipKey,
   Fixture,
   FixtureTeam,
   GameweekTransfers,
@@ -137,11 +138,13 @@ function parseFixture(fixture: FixtureRT, teams: Teams): Fixture {
 }
 function parseGameweekTransfers(
   allTransfers: TransferRT[],
+  history: HistoryRT,
   currentEventId: number
 ): GameweekTransfers {
   const transfers: GameweekTransfers = {
     in: [],
     out: [],
+    cost: null,
   };
   allTransfers
     .filter((transferPayload) => transferPayload.event === currentEventId)
@@ -149,13 +152,40 @@ function parseGameweekTransfers(
       transfers.in.push(transferPayload.element_in);
       transfers.out.push(transferPayload.element_out);
     });
+  const cost = history.current.find(
+    (gw) => gw.event === currentEventId
+  )?.event_transfers_cost;
+  transfers.cost = cost || cost === 0 ? cost : null;
   return transfers;
 }
 function parseChips(history: HistoryRT): Chip[] {
-  return history.chips.map((chip) => ({
-    eventId: chip.event,
-    name: chip.name,
-  }));
+  let wcIndex = 0;
+  let fhIndex = 0;
+  return history.chips.map((chip) => {
+    const { event, name } = chip;
+    const key: ChipKey | null = (() => {
+      if (name === "wildcard") {
+        wcIndex++;
+        if (wcIndex === 1) return "wc1";
+        if (wcIndex === 2) return "wc2";
+      } else if (name === "3xc") {
+        return "tc";
+      } else if (name === "freehit") {
+        fhIndex++;
+        if (fhIndex === 1) return "fh";
+        // if (fhIndex === 2) return "fh2";
+      } else if (name === "bboost") {
+        return "bb";
+      }
+      return null;
+    })();
+    return { eventId: event, key };
+  });
+
+  // return history.chips.map((chip) => ({
+  //   eventId: chip.event,
+  //   name: chip.name,
+  // }));
 }
 function parseManagerProfile(
   managerId: number,
@@ -330,7 +360,11 @@ export async function getLeague(
       return acc;
     }, {} as Manager["picks"]);
 
-    const transfers = parseGameweekTransfers(transfersResponse, currentEventId);
+    const transfers = parseGameweekTransfers(
+      transfersResponse,
+      historyResponse,
+      currentEventId
+    );
 
     const chips = parseChips(historyResponse);
 

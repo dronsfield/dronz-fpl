@@ -1,12 +1,12 @@
 import React from "react";
-import { ManagerCell } from "~/components/CommonCells";
+import { ColorSpan, HitsCell, ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Table from "~/components/Table";
 import { useLeagueData } from "~/hooks/useRouteData";
 import { Player } from "~/services/api/models";
 import { sortBy } from "~/util/sortBy";
 
-const TBMHeaders = ["manager", "in", "out"] as const;
+const TBMHeaders = ["manager", "in", "out", "hits"] as const;
 const TransfersByManager: React.FC<{}> = (props) => {
   const { managers, currentEventId, players } = useLeagueData();
   return (
@@ -18,6 +18,8 @@ const TransfersByManager: React.FC<{}> = (props) => {
           return (
             <ManagerCell manager={manager} currentEventId={currentEventId} />
           );
+        } else if (header === "hits") {
+          return <HitsCell manager={manager} />;
         } else {
           const playerIds = manager.transfers[header];
           return playerIds.map((id) => players[id]?.webName).join(", ") || "-";
@@ -27,6 +29,7 @@ const TransfersByManager: React.FC<{}> = (props) => {
         manager: ["nowrap"],
         in: ["auto"],
         out: ["auto"],
+        hits: ["auto"],
       }}
     />
   );

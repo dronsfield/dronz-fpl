@@ -8,7 +8,7 @@ import PlainLink from "./PlainLink";
 
 // MONEY
 
-const MoneySpan = styled.span<{ color?: string }>`
+export const ColorSpan = styled.span<{ color?: string }>`
   ${(p) => (p.color ? `color: ${p.color};` : ``)}
 `;
 
@@ -41,7 +41,7 @@ export const MoneyCell: React.FC<{
   value: number;
 }> = (props) => {
   const { showSign, showColor, value } = props;
-  return <MoneySpan {...formatMoney(value, { showSign, showColor })} />;
+  return <ColorSpan {...formatMoney(value, { showSign, showColor })} />;
 };
 
 // MANAGER
@@ -57,5 +57,16 @@ export const ManagerCell: React.FC<{
       children={formatName(manager.name)}
       to={`/league/${leagueId}/manager/${manager.id}`}
     />
+  );
+};
+
+export const HitsCell: React.FC<{ manager: Manager }> = (props) => {
+  const { manager } = props;
+  const cost = manager.transfers.cost;
+  const hitsText = cost === null ? "?" : Math.round(0.25 * cost);
+  return (
+    <ColorSpan color={cost ? "currentColor" : colors.grey}>
+      {hitsText}
+    </ColorSpan>
   );
 };

@@ -5,20 +5,9 @@ import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import Table from "~/components/Table";
 import { useLeagueData } from "~/hooks/useRouteData";
-import { Manager } from "~/services/api/models";
+import { ChipKey, Manager, chipLabels } from "~/services/api/models";
 import colors from "~/style/colors";
 import { ItemsOf } from "~/util/utilityTypes";
-
-const chipKeys = ["wc1", "wc2", "fh", "tc", "bb"] as const;
-type ChipKey = ItemsOf<typeof chipKeys>;
-const chipLabels = {
-  wc1: "Wildcard 1",
-  wc2: "Wildcard 2",
-  fh: "Free Hit",
-  // fh2: "Free Hit 2",
-  tc: "Triple Captain",
-  bb: "Bench Boost",
-} as const;
 
 function getCellWidths<K extends string>(headers: readonly K[]) {
   return headers.reduce((acc, header) => {
@@ -55,22 +44,7 @@ const Chips: React.FC<{}> = () => {
       let wcIndex = 0;
       let fhIndex = 0;
       chips.forEach((chip) => {
-        const { eventId, name } = chip;
-        const key: SeasonHeader | undefined = (() => {
-          if (name === "wildcard") {
-            wcIndex++;
-            if (wcIndex === 1) return "wc1";
-            if (wcIndex === 2) return "wc2";
-          } else if (name === "3xc") {
-            return "tc";
-          } else if (name === "freehit") {
-            fhIndex++;
-            if (fhIndex === 1) return "fh";
-            // if (fhIndex === 2) return "fh2";
-          } else if (name === "bboost") {
-            return "bb";
-          }
-        })();
+        const { eventId, key } = chip;
         if (key) {
           const value = eventId;
           data[key] = value;

@@ -132,6 +132,16 @@ export const HistoryRT = Record({
       name: String,
     })
   ),
+  current: Array(
+    Record({
+      event: Number,
+      points: Number,
+      total_points: Number,
+      rank: Number.Or(Null),
+      event_transfers: Number,
+      event_transfers_cost: Number,
+    })
+  ),
 });
 export type HistoryRT = Static<typeof HistoryRT>;
 
@@ -200,6 +210,12 @@ function expireAt2am() {
 }
 
 function expireAtMinute() {
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname.startsWith("192.168")
+  ) {
+    return dayjs().utc().startOf("minute").add(5, "minute").unix();
+  }
   return dayjs().utc().startOf("minute").add(1, "minute").unix();
 }
 

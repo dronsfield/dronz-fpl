@@ -9,13 +9,15 @@ import {
 } from "remix";
 import styled from "styled-components";
 import Button from "~/components/Button";
+import { HitsCell } from "~/components/CommonCells";
 import KeyValueTable from "~/components/KeyValueTable";
 import PicksPitch from "~/components/PicksPitch";
 import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import { useLeagueData, useProfileData } from "~/hooks/useRouteData";
-import { getPitchPicks } from "~/services/api";
+import { chipLabels, getPitchPicks } from "~/services/api";
 import { getKeys } from "~/util/getKeys";
+import { sortBy } from "~/util/sortBy";
 
 const TextContainer = styled.div`
   text-align: center;
@@ -40,12 +42,21 @@ const Manager: React.FC<ManagerProps> = (props) => {
   const { managers, players, currentEventId, fixturesPerTeam } =
     useLeagueData();
 
-  const { manager, picks } = React.useMemo(() => {
+  const { manager, picks, chipKey, gwRank } = React.useMemo(() => {
     const manager = managers.find((manager) => {
       return String(manager.id) === String(managerId);
     });
     const picks = getPitchPicks(manager, players, fixturesPerTeam);
-    return { manager, picks };
+    const chipKey = manager?.chips.find(
+      (chip) => chip.eventId === currentEventId
+    )?.key;
+
+    const gwRank =
+      sortBy(managers, "eventPoints").findIndex(
+        (someManager) => manager?.eventPoints === someManager.eventPoints
+      ) + 1;
+
+    return { manager, picks, chipKey, gwRank };
   }, [managers]);
 
   if (!manager) return null;
@@ -63,7 +74,7 @@ const Manager: React.FC<ManagerProps> = (props) => {
       <KeyValueTable
         items={[
           { key: "Gameweek points", value: String(manager.eventPoints) },
-          { key: "Gameweek rank", value: String("TBD") },
+          { key: "Gameweek rank", value: "#" + String(gwRank) },
           { key: "Season points", value: String(manager.totalPoints) },
           { key: "Season rank", value: "#" + String(manager.rank) },
           {
@@ -81,8 +92,12 @@ const Manager: React.FC<ManagerProps> = (props) => {
                 .join(", ") || "-",
           },
           {
+            key: "Hits",
+            value: <HitsCell manager={manager} />,
+          },
+          {
             key: "Chip",
-            value: "TBD",
+            value: chipKey ? chipLabels[chipKey] : "-",
           },
         ]}
       />

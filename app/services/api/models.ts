@@ -33,11 +33,22 @@ export type Teams = { [id: number]: Team };
 export interface GameweekTransfers {
   in: number[];
   out: number[];
+  cost: number | null;
 }
 
+export const chipKeys = ["wc1", "wc2", "fh", "tc", "bb"] as const;
+export type ChipKey = ItemsOf<typeof chipKeys>;
+export const chipLabels = {
+  wc1: "Wildcard 1",
+  wc2: "Wildcard 2",
+  fh: "Free Hit",
+  // fh2: "Free Hit 2",
+  tc: "Triple Captain",
+  bb: "Bench Boost",
+} as const;
 export interface Chip {
   eventId: number;
-  name: string;
+  key: ChipKey | null;
 }
 
 export type PickType = "STARTING" | "BENCHED" | "CAPTAIN" | "VICE";
@@ -57,10 +68,7 @@ export interface Manager {
       multiplier: number;
     };
   };
-  transfers: {
-    in: number[];
-    out: number[];
-  };
+  transfers: GameweekTransfers;
   chips: Chip[];
 }
 export interface League {
