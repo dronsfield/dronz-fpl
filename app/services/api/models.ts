@@ -1,4 +1,5 @@
 import { ItemsOf, Maybe } from "~/util/utilityTypes";
+import { Null, Number } from "runtypes";
 
 export const playerPositions = ["GKP", "DEF", "MID", "FWD"] as const;
 export type PlayerPosition = ItemsOf<typeof playerPositions> | "???";
@@ -70,6 +71,12 @@ export interface Manager {
   };
   transfers: GameweekTransfers;
   chips: Chip[];
+  seasonHistory: Array<{
+    eventId: number;
+    eventPoints: number;
+    totalPoints: number;
+    overallRank: number | null;
+  }>;
 }
 export interface League {
   id: number;

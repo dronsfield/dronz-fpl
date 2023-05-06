@@ -11,6 +11,8 @@
     "postinstall": "remix setup node"
   },
   "dependencies": {
+    "@nivo/bump": "^0.81.0",
+    "@nivo/core": "^0.81.0",
     "@remix-run/react": "1.2.2",
     "@remix-run/vercel": "1.2.2",
     "@tanstack/query-sync-storage-persister": "^4.13.0",

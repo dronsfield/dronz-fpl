@@ -137,7 +137,7 @@ export const HistoryRT = Record({
       event: Number,
       points: Number,
       total_points: Number,
-      rank: Number.Or(Null),
+      overall_rank: Number.Or(Null),
       event_transfers: Number,
       event_transfers_cost: Number,
     })

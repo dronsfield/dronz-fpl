@@ -380,6 +380,14 @@ export async function getLeague(
       picks,
       chips,
       transfers,
+      seasonHistory: historyResponse.current.map((gw) => {
+        return {
+          eventId: gw.event,
+          eventPoints: gw.points,
+          totalPoints: gw.total_points,
+          overallRank: gw.overall_rank,
+        };
+      }),
     };
     return manager;
   });

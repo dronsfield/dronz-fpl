@@ -89,14 +89,16 @@ export function createCachedFnFactory(factoryOpts: {
       try {
         const remoteData = await fn();
         const parsed = parseRemoteData(remoteData);
-        try {
-          await _setItem(
-            key,
-            expireAt + CACHE_SPLITTER + JSON.stringify(parsed.data)
-          );
-        } catch (err) {
-          log(`FAILED TO SET IN CACHE`);
-          console.log(err);
+        if (!parsed.stale) {
+          try {
+            await _setItem(
+              key,
+              expireAt + CACHE_SPLITTER + JSON.stringify(parsed.data)
+            );
+          } catch (err) {
+            log(`FAILED TO SET IN CACHE`);
+            console.log(err);
+          }
         }
         log(`returning remote data`);
         return parsed;
