@@ -43,7 +43,8 @@ const PlayerWrapper = styled(FlexCenter)`
 
 const pickSortProp = [
   (pick: PitchPick) => (pick.pickType === "BENCHED" ? 1 : 0),
-  (pick: PitchPick) => positionIndexes[pick.player.position],
+  // (pick: PitchPick) => positionIndexes[pick.player.position],
+  (pick: PitchPick) => (pick.player.position === "GKP" ? 1 : 0),
   (pick: PitchPick) => pick.player.cost * -1,
   (pick: PitchPick) => pick.player.id,
 ];
@@ -121,7 +122,8 @@ const Compare: React.FC<CompareProps> = (props) => {
       <p style={{ textAlign: "center" }}>
         These are the {myPicks.length} differences between your team and{" "}
         {formatName(theirManager.name)}'s team. Players that you both own and
-        that earn the same points for both of you are hidden.
+        that earn the same points for both of you are hidden. The most expensive
+        players are at the top.
       </p>
       <Container>
         <Row>
