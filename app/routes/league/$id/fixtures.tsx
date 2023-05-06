@@ -8,6 +8,9 @@ import assistIcon from "~/images/assist.svg";
 import goalIcon from "~/images/goal.svg";
 import redCardIcon from "~/images/red-card.svg";
 import yellowCardIcon from "~/images/yellow-card.svg";
+import bp3Icon from "~/images/bp3.svg";
+import bp2Icon from "~/images/bp2.svg";
+import bp1Icon from "~/images/bp1.svg";
 import {
   Fixture,
   FixtureTeam,
@@ -156,6 +159,9 @@ interface FixtureWithPicks extends Fixture {
 }
 
 const statIconMapper: { [identifier: string]: string } = {
+  bp3: bp3Icon,
+  bp2: bp2Icon,
+  bp1: bp1Icon,
   goals_scored: goalIcon,
   assists: assistIcon,
   red_cards: redCardIcon,
@@ -312,12 +318,19 @@ function useFixturesWithPicks() {
         const managerQuantity = picks.length;
 
         const playerStats: PlayerStats = {};
+
         const statIdentifiers = Object.keys(fixtureTeam.stats);
         statIdentifiers.forEach((identifier) => {
           const playerValue = fixtureTeam.stats[identifier].filter(
             (stat) => stat.element === player.id
           )[0]?.value;
           if (playerValue) playerStats[identifier] = playerValue;
+        });
+
+        fixtureTeam.realtimeBonus.forEach(({ element, value }) => {
+          if (element === player.id) {
+            playerStats[`bp${value}`] = 1;
+          }
         });
 
         return {

@@ -91,6 +91,7 @@ export interface FixtureTeam {
   stats: {
     [identifier: string]: { value: number; element: number }[];
   };
+  realtimeBonus: Array<{ value: number; element: number }>;
 }
 export interface Fixture {
   id: number;

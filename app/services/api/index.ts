@@ -38,6 +38,7 @@ import {
   TransferRT,
 } from "./requests";
 import { getKeys } from "~/util/getKeys";
+import { sortBy } from "~/util/sortBy";
 export * from "./models";
 
 function parseCurrentEventId(events: EventRT[]): number {
@@ -112,11 +113,57 @@ function parseFixture(fixture: FixtureRT, teams: Teams): Fixture {
   } = fixture;
   const homeStats: FixtureTeam["stats"] = {};
   const awayStats: FixtureTeam["stats"] = {};
+  const homeRealtimeBonus: FixtureTeam["realtimeBonus"] = [];
+  const awayRealtimeBonus: FixtureTeam["realtimeBonus"] = [];
+
   stats.forEach((stat) => {
     const { identifier, a, h } = stat;
     homeStats[identifier] = h;
     awayStats[identifier] = a;
+
+    if (identifier === "bps") {
+      const all = [
+        ...h.map(({ value, element }) => ({ bps: value, element, home: true })),
+        ...a.map(({ value, element }) => ({
+          bps: value,
+          element,
+          home: false,
+        })),
+      ];
+      const sorted = sortBy(all, "bps", true);
+
+      const top: Array<{
+        bp: number;
+        bps: number;
+        element: number;
+        home: boolean;
+      }> = [];
+
+      for (let ii = 0; ii < sorted.length; ii++) {
+        let bp = 0;
+        const current = sorted[ii];
+        const prev = top.slice(-1)[0];
+        if (prev && current.bps === prev?.bps) {
+          bp = prev.bp;
+        } else {
+          bp = 3 - top.length;
+        }
+        if (bp > 0) {
+          top.push({ ...current, bp });
+        } else {
+          break;
+        }
+      }
+
+      top.forEach(({ bp, element, home }) => {
+        (home ? homeRealtimeBonus : awayRealtimeBonus).push({
+          value: bp,
+          element,
+        });
+      });
+    }
   });
+
   return {
     id,
     kickoffTime: kickoff_time,
@@ -127,12 +174,14 @@ function parseFixture(fixture: FixtureRT, teams: Teams): Fixture {
       team: teams[team_h],
       score: team_h_score,
       stats: homeStats,
+      realtimeBonus: homeRealtimeBonus,
     },
     away: {
       teamId: team_a,
       team: teams[team_a],
       score: team_a_score,
       stats: awayStats,
+      realtimeBonus: awayRealtimeBonus,
     },
   };
 }
