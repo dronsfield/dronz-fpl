@@ -148,14 +148,21 @@ function parseGameweekTransfers(
   };
   allTransfers
     .filter((transferPayload) => transferPayload.event === currentEventId)
-    .map((transferPayload) => {
+    .forEach((transferPayload) => {
       transfers.in.push(transferPayload.element_in);
       transfers.out.push(transferPayload.element_out);
     });
+
+  const filteredIn = transfers.in.filter((id) => !transfers.out.includes(id));
+  const filteredOut = transfers.out.filter((id) => !transfers.in.includes(id));
+  transfers.in = filteredIn;
+  transfers.out = filteredOut;
+
   const cost = history.current.find(
     (gw) => gw.event === currentEventId
   )?.event_transfers_cost;
   transfers.cost = cost || cost === 0 ? cost : null;
+
   return transfers;
 }
 function parseChips(history: HistoryRT): Chip[] {
