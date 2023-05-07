@@ -60,17 +60,17 @@ async function betterFetch<T>(
     const headers = { ...options.headers };
     if (contentTypeHeader) headers["Content-Type"] = contentTypeHeader;
     const fetchOptions = { ...otherOptions, headers };
-    const resp = await fetch(url, fetchOptions);
-    const data = await getResponseData(resp, contentType);
+    resp = await fetch(url, fetchOptions);
     if (!resp.ok) {
       const error = new BetterFetchError({
         url,
         method: options.method || "GET",
         status: resp.status,
-        data,
+        data: await resp.text(),
       });
       throw error;
     }
+    const data = await getResponseData(resp, contentType);
     return data;
   } catch (err: any) {
     // console.log("betterFetch caught error", err);

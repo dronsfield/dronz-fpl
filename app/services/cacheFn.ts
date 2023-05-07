@@ -2,6 +2,7 @@ import { Runtype, ValidationError } from "runtypes";
 import { logDuration } from "~/util/logDuration";
 import dayjs from "dayjs";
 import wait from "~/util/wait";
+import { BetterFetchError } from "~/util/betterFetch";
 
 const DISABLE_CACHE = false;
 
@@ -106,6 +107,10 @@ export function createCachedFnFactory(factoryOpts: {
         if (err instanceof ValidationError) {
           log(`validation error`);
           // console.log(err);
+        }
+        if (err instanceof BetterFetchError) {
+          log(`fetch error`);
+          console.log(err);
         }
         if (cached) {
           log(`failed to get from remote, returning stale cached data`);
