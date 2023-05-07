@@ -4,6 +4,7 @@ import colors from "~/style/colors";
 import { Loader } from "~/components/Loader";
 import { useIsFetching } from "@tanstack/react-query";
 import { useStale } from "~/hooks/useStale";
+import { useDimensions } from "~/hooks/useDimensions";
 
 const Container = styled.div`
   position: fixed;
@@ -32,20 +33,25 @@ const QueryStatus: React.FC<QueryStatusProps> = (props) => {
   const isFetching = useIsFetching();
   const isStale = useStale().isStale;
   const isHidden = !isFetching && !isStale;
+  const ref = React.useRef(null);
+  const { height, width } = useDimensions({ ref, deps: [isStale, isFetching] });
   return (
-    <Container aria-hidden={isHidden}>
-      {isFetching ? (
-        <>
-          <Loader size={16} color={colors.purple} />
-          <span>Checking for new data...</span>
-        </>
-      ) : isStale ? (
-        <span>
-          Some data is stale because of a request error. Refresh to attempt to
-          fix.
-        </span>
-      ) : null}
-    </Container>
+    <>
+      <Container aria-hidden={isHidden} ref={ref}>
+        {isFetching ? (
+          <>
+            <Loader size={16} color={colors.purple} />
+            <span>Checking for new data...</span>
+          </>
+        ) : isStale ? (
+          <span>
+            Some data is stale because of a request error. Refresh to attempt to
+            fix.
+          </span>
+        ) : null}
+      </Container>
+      {isHidden ? null : <div style={{ height, width }} />}
+    </>
   );
 };
 
