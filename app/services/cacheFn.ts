@@ -11,6 +11,7 @@ const CACHE_SPLITTER = "|c/A|c/H|e|";
 export interface CacheFetchResult<R> {
   data: R;
   stale: boolean;
+  fromCache: boolean;
 }
 
 function isCacheFetchResult<R>(
@@ -24,9 +25,13 @@ function parseRemoteData<R>(
   remoteData: R | CacheFetchResult<R>
 ): CacheFetchResult<R> {
   if (isCacheFetchResult(remoteData)) {
-    return { data: remoteData.data, stale: remoteData.stale };
+    return {
+      data: remoteData.data,
+      stale: remoteData.stale,
+      fromCache: remoteData.fromCache,
+    };
   } else {
-    return { data: remoteData, stale: false };
+    return { data: remoteData, stale: false, fromCache: false };
   }
 }
 
@@ -84,7 +89,7 @@ export function createCachedFnFactory(factoryOpts: {
 
       if (cached && !stale) {
         log(`returning cached data`);
-        return { data: cached, stale: false };
+        return { data: cached, stale: false, fromCache: true };
       }
 
       try {
@@ -114,7 +119,7 @@ export function createCachedFnFactory(factoryOpts: {
         }
         if (cached) {
           log(`failed to get from remote, returning stale cached data`);
-          return { data: cached, stale: true };
+          return { data: cached, stale: true, fromCache: true };
         } else {
           log(`failed to get from remote or cache, throwing`);
           throw new Error(
