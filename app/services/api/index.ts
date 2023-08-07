@@ -18,6 +18,7 @@ import {
   Teams,
 } from "./models";
 import {
+  BootstrapRT,
   ElementRT,
   EventRT,
   EventStatusRT,
@@ -53,6 +54,22 @@ function parseCurrentEventId(events: EventRT[]): number {
 }
 function parseCurrentEventIdFromStatus(statusResp: EventStatusRT): number {
   return statusResp.status[0]?.event || 1;
+}
+export function parseCurrentEventIdFromBootstrap(
+  bootstrap: BootstrapRT
+): number {
+  const nowEpoch = new Date().getTime() * 0.001;
+  let eventId: number = 0;
+  bootstrap.events.forEach((event) => {
+    if (
+      !eventId &&
+      event.deadline_time_epoch &&
+      event.deadline_time_epoch > nowEpoch
+    ) {
+      eventId = event.id - 1;
+    }
+  });
+  return eventId || 1;
 }
 function transformWebName(web_name: string) {
   if (web_name === "Alexander-Arnold") return "Trent";
@@ -348,6 +365,8 @@ export async function getBootstrap(currentEventId: number) {
       fetchFixtures({ eventId: currentEventId }),
     ]
   );
+  console.log(parseCurrentEventIdFromBootstrap(bootstrapResponse.data));
+
   const live = keyBy(liveResponse.data.elements, "id");
   const playerList = bootstrapResponse.data.elements.map((element) =>
     parsePlayerFromElement(element, live)

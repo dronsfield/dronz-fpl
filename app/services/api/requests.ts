@@ -17,8 +17,6 @@ import { cacheFn } from "../localCache";
 import { ValueOf } from "~/util/utilityTypes";
 import betterFetch from "~/util/betterFetch";
 
-const BASE_URL = appConfig.BASE_URL;
-
 // ------------------------------------------------------------
 // FPL API RESPONSE RUNTYPES
 // ------------------------------------------------------------
@@ -53,6 +51,7 @@ export const EventRT = Record({
   id: Number,
   finished: Boolean,
   is_current: Boolean,
+  deadline_time_epoch: Number.Or(Null),
 });
 export type EventRT = Static<typeof EventRT>;
 

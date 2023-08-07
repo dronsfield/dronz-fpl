@@ -9,16 +9,8 @@ import appConfig from "~/appConfig";
 import betterFetch from "~/util/betterFetch";
 import { remoteCacheFn } from "~/services/redis.server";
 import { createCachedFnFactory } from "~/services/cacheFn";
-
-let localServerCache: { [key: string]: string } = {};
-
-const localServerCacheFn = createCachedFnFactory({
-  getItem: (key: string) => localServerCache[key] || null,
-  setItem: (key: string, value: string) => {
-    localServerCache[key] = value;
-  },
-  logLabel: "bootstrap-local-cache",
-});
+import { parseCurrentEventIdFromBootstrap } from "~/services/api";
+import { localServerCache, localServerCacheFn } from "~/services/serverCache";
 
 export const loader = async () => {
   const url = `${appConfig.BASE_URL}/bootstrap-static/`;
@@ -28,11 +20,12 @@ export const loader = async () => {
     betterFetch<any>(url).then((resp) => {
       const trimmed = {
         events: resp.events.map((event: any) => {
-          const { id, finished, is_current } = event;
+          const { id, finished, is_current, deadline_time_epoch } = event;
           return {
             id,
             finished,
             is_current,
+            deadline_time_epoch: deadline_time_epoch || null,
           };
         }),
         elements: resp.elements.map((element: any) => {
@@ -80,6 +73,7 @@ export const loader = async () => {
   };
 
   try {
+    // console.log({ localServerCache });
     const localResult = await localServerCacheFn(cacheFnOpts);
     if (localResult.stale) throw new Error("local result is stale");
     if (!localResult.fromCache)
