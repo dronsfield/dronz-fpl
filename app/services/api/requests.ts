@@ -234,39 +234,40 @@ function expireAtMinute() {
 export const apiEndpointConfig = {
   eventStatus: {
     rt: EventStatusRT,
-    getKey: () => `event-status`,
+    getKey: () => `2324/event-status`,
     getExpireAt: expireAtMinute,
   },
   bootstrap: {
     rt: BootstrapRT,
-    getKey: () => `bootstrap`,
+    getKey: () => `2324/bootstrap`,
     getExpireAt: expireAt2am,
   },
   league: {
     rt: LeagueRT,
     getKey: (opts: { leagueId: number; eventId: number }) =>
-      `league/${opts.leagueId}/${opts.eventId}`,
+      `2324/league/${opts.leagueId}/${opts.eventId}`,
     getExpireAt: expireAtMinute,
   },
   manager: {
     rt: ManagerRT,
     getKey: (opts: { managerId: number; eventId: number }) =>
-      `manager/${opts.managerId}/${opts.eventId}`,
+      `2324/manager/${opts.managerId}/${opts.eventId}`,
     getExpireAt: expireAtHalfHour,
   },
   managerInfo: {
     rt: ManagerInfoRT,
-    getKey: (opts: { managerId: number }) => `manager-info/${opts.managerId}`,
+    getKey: (opts: { managerId: number }) =>
+      `2324/manager-info/${opts.managerId}`,
     getExpireAt: expireAtMinute,
   },
   fixtures: {
     rt: Array(FixtureRT),
-    getKey: (opts: { eventId: number }) => `fixtures/${opts.eventId}`,
+    getKey: (opts: { eventId: number }) => `2324/fixtures/${opts.eventId}`,
     getExpireAt: expireAtMinute,
   },
   live: {
     rt: LiveRT,
-    getKey: (opts: { eventId: number }) => `live/${opts.eventId}`,
+    getKey: (opts: { eventId: number }) => `2324/live/${opts.eventId}`,
     getExpireAt: expireAtMinute,
   },
 };
