@@ -25,7 +25,7 @@
   },
   {
     "name": "dan voller",
-    "buyIn": 0
+    "buyIn": 20
   },
   {
     "name": "david solomons",
@@ -41,7 +41,7 @@
   },
   {
     "name": "james clement",
-    "buyIn": 0
+    "buyIn": 20
   },
   {
     "name": "josh dronsfield",
@@ -61,7 +61,7 @@
   },
   {
     "name": "matt voller",
-    "buyIn": 0
+    "buyIn": 10
   },
   {
     "name": "matthew curtis",
@@ -69,11 +69,15 @@
   },
   {
     "name": "matthew wernert",
-    "buyIn": 0
+    "buyIn": 40
   },
   {
     "name": "max clayton clowes",
     "buyIn": 0
+  },
+  {
+    "name": "nat martin",
+    "buyIn": 5
   },
   {
     "name": "noah baker",
