@@ -383,7 +383,10 @@ export async function getLeague(
 
   const _managers: ManagersRT = {};
   await Promise.all(
-    leagueResponse.data.standings.results
+    [
+      ...leagueResponse.data.standings.results,
+      ...leagueResponse.data.new_entries.results,
+    ]
       .slice(0, appConfig.MAX_MANAGERS)
       .map(async (result) => {
         const managerId = result.entry;
@@ -399,54 +402,61 @@ export async function getLeague(
   const {
     league: { name, id },
     standings: { results },
+    new_entries: { results: newResults },
   } = leagueResponse.data;
-  const managers = results.slice(0, appConfig.MAX_MANAGERS).map((result) => {
-    const {
-      gw,
-      transfers: transfersResponse,
-      history: historyResponse,
-    } = _managers[result.entry];
+  const managers = [...results, ...newResults]
+    .slice(0, appConfig.MAX_MANAGERS)
+    .map((result) => {
+      const {
+        gw,
+        transfers: transfersResponse,
+        history: historyResponse,
+      } = _managers[result.entry];
 
-    const picks = gw.picks.reduce((acc, pick) => {
-      acc[pick.element] = {
-        pickType: getPickType(pick),
-        position: pick.position,
-        multiplier: pick.multiplier,
-      };
-      return acc;
-    }, {} as Manager["picks"]);
-
-    const transfers = parseGameweekTransfers(
-      transfersResponse,
-      historyResponse,
-      currentEventId
-    );
-
-    const chips = parseChips(historyResponse);
-
-    const manager: Manager = {
-      id: result.entry,
-      name: result.player_name,
-      teamName: result.entry_name,
-      rank: result.rank,
-      totalPoints: result.total,
-      eventPoints: gw.entry_history.points,
-      totalMoney: gw.entry_history.value * 0.1,
-      bankMoney: gw.entry_history.bank * 0.1,
-      picks,
-      chips,
-      transfers,
-      seasonHistory: historyResponse.current.map((gw) => {
-        return {
-          eventId: gw.event,
-          eventPoints: gw.points,
-          totalPoints: gw.total_points,
-          overallRank: gw.overall_rank,
+      const picks = gw.picks.reduce((acc, pick) => {
+        acc[pick.element] = {
+          pickType: getPickType(pick),
+          position: pick.position,
+          multiplier: pick.multiplier,
         };
-      }),
-    };
-    return manager;
-  });
+        return acc;
+      }, {} as Manager["picks"]);
+
+      const transfers = parseGameweekTransfers(
+        transfersResponse,
+        historyResponse,
+        currentEventId
+      );
+
+      const chips = parseChips(historyResponse);
+
+      const manager: Manager = {
+        id: result.entry,
+        name:
+          result.player_name ||
+          `${result.player_first_name || ""} ${result.player_last_name || ""}`,
+        teamName: result.entry_name,
+        rank: result.rank || 0,
+        totalPoints: result.total || 0,
+        eventPoints: gw.entry_history.points,
+        totalMoney: gw.entry_history.value * 0.1,
+        bankMoney: gw.entry_history.bank * 0.1,
+        picks,
+        chips,
+        transfers,
+        seasonHistory: historyResponse.current.map((gw) => {
+          return {
+            eventId: gw.event,
+            eventPoints: gw.points,
+            totalPoints: gw.total_points,
+            overallRank: gw.overall_rank,
+          };
+        }),
+      };
+      return manager;
+    });
+
+  // console.log({ name, id, managers, stale });
 
   return {
     name,

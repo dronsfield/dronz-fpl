@@ -6,6 +6,7 @@ import {
   Dictionary,
   Null,
   Number,
+  Partial,
   Record,
   Runtype,
   Static,
@@ -63,18 +64,25 @@ export const BootstrapRT = Record({
 });
 export type BootstrapRT = Static<typeof BootstrapRT>;
 
+export const LeagueResultRT = Record({
+  entry: Number,
+  entry_name: String,
+}).And(
+  Partial({
+    player_name: String,
+    player_first_name: String,
+    player_last_name: String,
+    rank: Number,
+    total: Number,
+  })
+);
 export const LeagueRT = Record({
   league: Record({ id: Number, name: String }),
   standings: Record({
-    results: Array(
-      Record({
-        entry: Number,
-        entry_name: String,
-        player_name: String,
-        rank: Number,
-        total: Number,
-      })
-    ),
+    results: Array(LeagueResultRT),
+  }),
+  new_entries: Record({
+    results: Array(LeagueResultRT),
   }),
 });
 export type LeagueRT = Static<typeof LeagueRT>;
@@ -278,7 +286,7 @@ const fetchFromApiAndCache = async <R>(
     rt: config.rt,
     fn: () =>
       runtypeFetch(
-        Record({ data: config.rt, stale: Boolean }),
+        Record({ data: config.rt, stale: Boolean, fromCache: Boolean }),
         window.location.origin + url
       ),
     key: config.getKey(opts),
