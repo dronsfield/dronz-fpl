@@ -1,11 +1,11 @@
 [
   {
     "name": "andrew reeves",
-    "buyIn": 10
+    "buyIn": 20
   },
   {
     "name": "andy pugh",
-    "buyIn": 10
+    "buyIn": 5
   },
   {
     "name": "ashley watson",
@@ -13,23 +13,23 @@
   },
   {
     "name": "ben jones",
-    "buyIn": 40
+    "buyIn": 0
   },
   {
     "name": "ben odart",
-    "buyIn": 20
+    "buyIn": 0
   },
   {
     "name": "callum gordon",
-    "buyIn": 5
+    "buyIn": 0
   },
   {
     "name": "dan voller",
-    "buyIn": 20
+    "buyIn": 0
   },
   {
     "name": "david solomons",
-    "buyIn": 10
+    "buyIn": 0
   },
   {
     "name": "euan buckland",
@@ -37,11 +37,11 @@
   },
   {
     "name": "geoffrey garner",
-    "buyIn": 20
+    "buyIn": 0
   },
   {
     "name": "james clement",
-    "buyIn": 10
+    "buyIn": 0
   },
   {
     "name": "josh dronsfield",
@@ -53,7 +53,7 @@
   },
   {
     "name": "louis goldstein",
-    "buyIn": 5
+    "buyIn": 0
   },
   {
     "name": "mark pugh",
@@ -61,11 +61,15 @@
   },
   {
     "name": "matt voller",
-    "buyIn": 10
+    "buyIn": 0
+  },
+  {
+    "name": "matthew curtis",
+    "buyIn": 40
   },
   {
     "name": "matthew wernert",
-    "buyIn": 20
+    "buyIn": 0
   },
   {
     "name": "max clayton clowes",
@@ -77,19 +81,19 @@
   },
   {
     "name": "oscar koronka",
-    "buyIn": 10
+    "buyIn": 0
   },
   {
     "name": "patrick finnegan",
-    "buyIn": 40
+    "buyIn": 10
   },
   {
     "name": "paul cooper",
-    "buyIn": 20
+    "buyIn": 0
   },
   {
     "name": "pearce finnemore",
-    "buyIn": 10
+    "buyIn": 0
   },
   {
     "name": "rob johnson",
@@ -97,18 +101,18 @@
   },
   {
     "name": "sam lovell",
-    "buyIn": 10
+    "buyIn": 0
   },
   {
     "name": "will jones",
-    "buyIn": 10
+    "buyIn": 0
   },
   {
     "name": "nick osborn",
-    "buyIn": 10
+    "buyIn": 0
   },
   {
     "name": "warren keymist",
-    "buyIn": 5
+    "buyIn": 0
   }
 ]
