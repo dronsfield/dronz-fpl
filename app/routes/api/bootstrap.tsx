@@ -9,6 +9,10 @@ import appConfig from "~/appConfig";
 import betterFetch from "~/util/betterFetch";
 import { remoteCacheFn } from "~/services/redis.server";
 import { createCachedFnFactory } from "~/services/cacheFn";
+import { getUserId } from "~/services/session.server";
+import { track } from "~/services/tracking";
+import fs from "fs";
+import path from "path";
 
 let localServerCache: { [key: string]: string } = {};
 
@@ -20,7 +24,24 @@ const localServerCacheFn = createCachedFnFactory({
   logLabel: "bootstrap-local-cache",
 });
 
-export const loader = async () => {
+const getFile = (key: string) => {
+  const sanitised = key.replace(/\//g, "-");
+  return path.join(process.cwd(), "dataCache", `${sanitised}.json`);
+};
+
+const fsCacheFn = createCachedFnFactory({
+  getItem: async (key: string) => {
+    const file = getFile(key);
+    return fs.readFileSync(file, "utf8");
+  },
+  setItem: async (key: string, value) => {
+    const file = getFile(key);
+    fs.writeFileSync(file, value, "utf8");
+  },
+  logLabel: "fs-cache",
+});
+
+export const loader: LoaderFunction = async ({ request }) => {
   const url = `${appConfig.BASE_URL}/bootstrap-static/`;
   const config = apiEndpointConfig.bootstrap;
 
@@ -72,6 +93,12 @@ export const loader = async () => {
       return config.rt.check(trimmed);
     });
 
+  const trackProps = {
+    distinct_id: await getUserId(request),
+    route: "bootstrap",
+    url: request.url,
+  };
+
   const cacheFnOpts = {
     rt: config.rt,
     expireAt: config.getExpireAt(),
@@ -80,15 +107,67 @@ export const loader = async () => {
   };
 
   try {
-    const localResult = await localServerCacheFn(cacheFnOpts);
-    if (localResult.stale) throw new Error("local result is stale");
-    if (!localResult.fromCache)
-      throw new Error(
-        "remote cache needs to be updated too, so run remoteCacheFn"
-      );
-    return localResult;
+    const result = await fsCacheFn(cacheFnOpts);
+    track("api", {
+      ...trackProps,
+      from_redis: false,
+      from_fs: result.fromCache,
+      stale: result.stale,
+      success: true,
+    });
+    return result;
   } catch (err) {
-    console.error(err);
-    return remoteCacheFn(cacheFnOpts);
+    track("api", {
+      ...trackProps,
+      success: false,
+    });
+    throw err;
   }
+
+  // try {
+  //   const localResult = await localServerCacheFn(cacheFnOpts);
+  //   if (localResult.stale) throw new Error("local result is stale");
+
+  //   if (localResult.fromCache) {
+  //     track("api", {
+  //       ...trackProps,
+  //       from_redis: false,
+  //       from_local: true,
+  //       stale: false,
+  //       success: true,
+  //     });
+  //     return localResult;
+  //   } else {
+  //     const result = await remoteCacheFn({
+  //       ...cacheFnOpts,
+  //       fn: async () => localResult.data,
+  //     });
+  //     track("api", {
+  //       ...trackProps,
+  //       from_redis: result.fromCache,
+  //       from_local: false,
+  //       stale: result.stale,
+  //       success: true,
+  //     });
+  //   }
+  // } catch (err) {
+  //   console.error(err);
+  //   try {
+  //     const result = await remoteCacheFn(cacheFnOpts);
+  //     track("api", {
+  //       ...trackProps,
+  //       from_redis: result.fromCache,
+  //       from_local: false,
+  //       stale: result.stale,
+  //       success: true,
+  //     });
+
+  //     return result;
+  //   } catch (err) {
+  //     track("api", {
+  //       ...trackProps,
+  //       success: false,
+  //     });
+  //   }
+  // }
 };

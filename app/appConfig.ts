@@ -12,6 +12,8 @@ const appConfig = {
   LEAGUE_ID: 215073,
   MAX_MANAGERS: 40,
   BASE_URL:
-    "https://dronz-proxy-cbdo9ru7u-dronz.vercel.app/fantasy.premierleague.com/api",
+    // "https://dronz-proxy-cbdo9ru7u-dronz.vercel.app/fantasy.premierleague.com/api",
+    "https://fantasy.premierleague.com/api",
+  DIRECT_BROWSER_FETCHING: false,
 };
 export default appConfig;

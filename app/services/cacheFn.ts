@@ -67,7 +67,14 @@ export function createCachedFnFactory(factoryOpts: {
       const getCached = async (): Promise<[R | null, boolean]> => {
         if (!expireAt) return [null, false];
 
-        const result = await _getItem(key);
+        let result: string | null = null;
+
+        try {
+          result = await _getItem(key);
+        } catch (err) {
+          return [null, false];
+        }
+
         if (!result) return [null, false];
 
         try {
