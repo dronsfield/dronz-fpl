@@ -32,10 +32,6 @@
     "buyIn": 0
   },
   {
-    "name": "euan buckland",
-    "buyIn": 0
-  },
-  {
     "name": "geoffrey garner",
     "buyIn": 0
   },
@@ -48,12 +44,8 @@
     "buyIn": 40
   },
   {
-    "name": "kieran lawrence",
-    "buyIn": 0
-  },
-  {
     "name": "louis goldstein",
-    "buyIn": 0
+    "buyIn": 5
   },
   {
     "name": "mark pugh",
@@ -72,15 +64,11 @@
     "buyIn": 40
   },
   {
-    "name": "max clayton clowes",
-    "buyIn": 0
-  },
-  {
     "name": "nat martin",
     "buyIn": 5
   },
   {
-    "name": "noah baker",
+    "name": "nick osborn",
     "buyIn": 0
   },
   {
@@ -108,15 +96,11 @@
     "buyIn": 0
   },
   {
-    "name": "will jones",
-    "buyIn": 0
-  },
-  {
-    "name": "nick osborn",
-    "buyIn": 0
-  },
-  {
     "name": "warren keymist",
     "buyIn": 0
-  }
+  },
+  {
+    "name": "will jones",
+    "buyIn": 0
+  }  
 ]

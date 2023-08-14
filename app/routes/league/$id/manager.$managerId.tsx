@@ -52,7 +52,7 @@ const Manager: React.FC<ManagerProps> = (props) => {
     )?.key;
 
     const gwRank =
-      sortBy(managers, "eventPoints").findIndex(
+      sortBy(managers, "eventPoints", true).findIndex(
         (someManager) => manager?.eventPoints === someManager.eventPoints
       ) + 1;
 
