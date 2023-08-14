@@ -3,13 +3,35 @@ import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import { useLeagueData } from "~/hooks/useRouteData";
 import { formatName } from "~/util/formatName";
+import managerData from "~/data/managers.json";
+import { sortBy } from "~/util/sortBy";
 
 const lilSpacer = <Spacer height={5} />;
 
 const Calculation: React.FC<{}> = (props) => {
   const {
+    managers,
     prizeCalculation: { buyIns, totalPrize, prizes, pots },
   } = useLeagueData();
+
+  React.useEffect(() => {
+    const managersNotPaid = managers.filter((m) => !m.buyIn);
+    console.group();
+    console.log("NOT PAID:");
+    sortBy(managersNotPaid, "name").forEach((m) => {
+      console.log(m.name);
+    });
+    console.groupEnd();
+
+    console.group();
+    console.log("NOT JOINED:");
+    managerData.forEach(({ name }) => {
+      if (!managers.find((m) => m.name.toLowerCase() === name)) {
+        console.log(name);
+      }
+    });
+    console.groupEnd();
+  }, [managers]);
 
   return (
     <Section>
