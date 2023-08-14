@@ -39,6 +39,7 @@ import {
 } from "./requests";
 import { getKeys } from "~/util/getKeys";
 import { sortBy } from "~/util/sortBy";
+import wait from "~/util/wait";
 export * from "./models";
 
 function parseCurrentEventId(events: EventRT[]): number {
@@ -388,11 +389,12 @@ export async function getLeague(
       ...leagueResponse.data.new_entries.results,
     ]
       .slice(0, appConfig.MAX_MANAGERS)
-      .map(async (result) => {
+      .map(async (result, index) => {
         const managerId = result.entry;
         const managerResponse = await fetchManager({
           managerId,
           eventId: currentEventId,
+          remoteDelay: index * 50,
         });
         _managers[managerId] = managerResponse.data;
         if (managerResponse.stale) stale = true;

@@ -46,8 +46,9 @@ export function createCachedFnFactory(factoryOpts: {
     rt: Runtype<R>;
     fn: () => Promise<R> | Promise<CacheFetchResult<R>>;
     expireAt: number | null;
+    remoteDelay?: number;
   }): Promise<CacheFetchResult<R>> => {
-    const { key, rt, fn, expireAt } = opts;
+    const { key, rt, fn, expireAt, remoteDelay } = opts;
 
     const log = logLabel
       ? (str: string) => console.log(`${logLabel} | ${key} | ${str} `)
@@ -100,6 +101,7 @@ export function createCachedFnFactory(factoryOpts: {
       }
 
       try {
+        if (remoteDelay) await wait(remoteDelay);
         const remoteData = await fn();
         const parsed = parseRemoteData(remoteData);
         if (!parsed.stale) {

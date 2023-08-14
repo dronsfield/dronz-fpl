@@ -292,6 +292,7 @@ const fetchFromApiAndCache = async <R>(
       ),
     key: config.getKey(opts),
     expireAt: config.getExpireAt(),
+    remoteDelay: opts?.remoteDelay,
   });
 };
 
@@ -322,6 +323,7 @@ export async function fetchLeague(opts: { leagueId: number; eventId: number }) {
 export async function fetchManager(opts: {
   managerId: number;
   eventId: number;
+  remoteDelay?: number;
 }) {
   return fetchFromApiAndCache(
     `/api/manager/${opts.managerId}/${opts.eventId}`,
