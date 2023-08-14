@@ -25,7 +25,9 @@ const localServerCacheFn = createCachedFnFactory({
 });
 
 const getFolder = () => {
-  return path.join(process.cwd(), "dataCache");
+  return process.env.NODE_ENV === "development"
+    ? path.join(process.cwd(), "tmp")
+    : "/tmp";
 };
 const getFile = (key: string) => {
   const sanitised = key.replace(/\//g, "-");
