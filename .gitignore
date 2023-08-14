@@ -13,4 +13,3 @@ node_modules
 
 .env
 /dataCache/*
-!/dataCache/root.json

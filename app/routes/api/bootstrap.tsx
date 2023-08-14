@@ -24,9 +24,12 @@ const localServerCacheFn = createCachedFnFactory({
   logLabel: "bootstrap-local-cache",
 });
 
+const getFolder = () => {
+  return path.join(process.cwd(), "dataCache");
+};
 const getFile = (key: string) => {
   const sanitised = key.replace(/\//g, "-");
-  return path.join(process.cwd(), "dataCache", `${sanitised}.json`);
+  return path.join(getFolder(), `${sanitised}.json`);
 };
 
 const fsCacheFn = createCachedFnFactory({
@@ -36,6 +39,9 @@ const fsCacheFn = createCachedFnFactory({
   },
   setItem: async (key: string, value) => {
     const file = getFile(key);
+    if (!fs.existsSync(getFolder())) {
+      fs.mkdirSync(getFolder());
+    }
     fs.writeFileSync(file, value, "utf8");
   },
   logLabel: "fs-cache",
