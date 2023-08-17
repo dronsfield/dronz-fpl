@@ -16,7 +16,7 @@ import {
 } from "remix";
 import NavTray from "./components/NavTray";
 import GlobalStyle from "./style/global";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { getUser } from "~/services/session.server";
 import { useRootLoaderQuery } from "~/hooks/useRouteData";
 import { Loader } from "~/components/Loader";
@@ -149,16 +149,18 @@ const App: React.FC<{}> = (props) => {
 
   return (
     <Document>
-      <PersistQueryClientProvider
+      {/* <PersistQueryClientProvider
         client={queryClient}
         persistOptions={{ persister, buster: "1" }}
-      >
+      > */}
+      <QueryClientProvider client={queryClient}>
         <UserContext.Provider value={user}>
           <StaleProvider>
             <Layout>{children}</Layout>
           </StaleProvider>
         </UserContext.Provider>
-      </PersistQueryClientProvider>
+      </QueryClientProvider>
+      {/* </PersistQueryClientProvider> */}
     </Document>
   );
 };

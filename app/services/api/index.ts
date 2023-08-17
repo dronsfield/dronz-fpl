@@ -467,8 +467,6 @@ export async function getLeague(
       return manager;
     });
 
-  // console.log({ name, id, managers, stale });
-
   return {
     name,
     id,
