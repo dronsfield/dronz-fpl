@@ -49,9 +49,12 @@ const Played: React.FC<{}> = (props) => {
         last5 = last5Items.reduce((acc, item) => acc + item.rank, 0) / 5;
       }
 
-      const all =
-        pastSeasons.reduce((acc, item) => acc + item.rank, 0) /
-        pastSeasons.length;
+      let all = null;
+      if (pastSeasons.length) {
+        all =
+          pastSeasons.reduce((acc, item) => acc + item.rank, 0) /
+          pastSeasons.length;
+      }
 
       let best: number | null = null;
       pastSeasons.forEach(({ rank }) => {
