@@ -105,7 +105,15 @@ const Played: React.FC<{}> = (props) => {
         <Container>
           <Table
             data={data}
-            sortable={["last3", "last5", "all", "best", "current", "prev"]}
+            sortable={[
+              "last3",
+              "last5",
+              "all",
+              "best",
+              "current",
+              "prev",
+              "quantity",
+            ]}
             headers={headers}
             renderCell={(header, rowData) => {
               if (header === "manager") {

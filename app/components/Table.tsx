@@ -157,7 +157,10 @@ function TableRenderer<
                   sortableMap[header]
                     ? () => {
                         setSortState((sortState) => {
-                          if (!sortState)
+                          if (
+                            !sortState ||
+                            sortState.by !== (header as SortableKey)
+                          )
                             return { by: header as SortableKey, desc: false };
                           if (!sortState.desc)
                             return { by: header as SortableKey, desc: true };
