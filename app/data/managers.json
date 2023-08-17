@@ -21,7 +21,7 @@
   },
   {
     "name": "callum gordon",
-    "buyIn": 0
+    "buyIn": 5
   },
   {
     "name": "dan voller",
@@ -33,7 +33,7 @@
   },
   {
     "name": "geoffrey garner",
-    "buyIn": 0
+    "buyIn": 20
   },
   {
     "name": "james clement",
@@ -69,11 +69,11 @@
   },
   {
     "name": "nick osborn",
-    "buyIn": 0
+    "buyIn": 10
   },
   {
     "name": "oscar koronka",
-    "buyIn": 0
+    "buyIn": 10
   },
   {
     "name": "patrick finnegan",
@@ -85,7 +85,11 @@
   },
   {
     "name": "pearce finnemore",
-    "buyIn": 0
+    "buyIn": 10
+  },
+  {
+    "name": "rio jordan",
+    "buyIn": 5
   },
   {
     "name": "rob johnson",
