@@ -2,6 +2,8 @@ import { capitalCase } from "change-case";
 import React from "react";
 import styled, { css } from "styled-components";
 import colors from "~/style/colors";
+import { onlyText } from "~/util/onlyText";
+import { randomKey } from "~/util/randomKey";
 import { recordFromArray } from "~/util/recordFromArray";
 import { ItemsOf } from "~/util/utilityTypes";
 
@@ -49,13 +51,14 @@ function makeCellWidthStyle(cellWidth: CellWidth) {
 const cellStyle = css<CellProps>`
   ${(p) => `
   ${makeCellWidthStyle(p.widths[0])}
-  ${p.widths[1]
+  ${
+    p.widths[1]
       ? `
   @media (min-width: 600px) {
     ${makeCellWidthStyle(p.widths[1])}
   }`
       : ""
-    }
+  }
   `}
   box-sizing: content-box;
   padding: 8px 4px;
@@ -78,7 +81,7 @@ const HeaderCell = styled.th<CellProps & { onClick?: any }>`
 interface TableProps<
   RowData extends object,
   Headers extends readonly string[]
-  > {
+> {
   data: RowData[];
   headers: Headers;
   renderCell: (header: ItemsOf<Headers>, rowData: RowData) => React.ReactNode;
@@ -98,6 +101,10 @@ function TableRenderer<
     cellWidths: cellWidthsProp,
   } = props;
 
+  const tableId = React.useMemo(() => {
+    return randomKey(10);
+  }, []);
+
   const cellWidths = React.useMemo(() => {
     if (cellWidthsProp) {
       return cellWidthsProp;
@@ -106,8 +113,32 @@ function TableRenderer<
     }
   }, [headers, cellWidthsProp]);
 
-  return (
-    <_Table>
+  const handleDownload = () => {
+    const rows = [
+      headers.map((header) => onlyText(renderHeader(header))),
+      ...data.map((rowData) =>
+        headers.map((header) => onlyText(renderCell(header, rowData)))
+      ),
+    ];
+
+    console.log(rows);
+
+    // let csvContent =
+    //   "data:text/csv;charset=utf-8," + rows.map((e) => e.join(",")).join("\n");
+
+    // var encodedUri = encodeURI(csvContent);
+    // var link = document.createElement("a");
+    // link.setAttribute("href", encodedUri);
+    // link.setAttribute("download", "my_data.csv");
+    // document.body.appendChild(link); // Required for FF
+
+    // link.click(); // This will download the data file named "my_data.csv".
+  };
+
+  handleDownload();
+
+  const renderedTable = (
+    <_Table id={tableId}>
       <thead>
         <HeaderRow>
           {headers.map((header: ItemsOf<Headers>) => {
@@ -148,6 +179,17 @@ function TableRenderer<
       </tbody>
     </_Table>
   );
+
+  const downloadButton = (
+    <button onClick={handleDownload}>Download as CSV</button>
+  );
+
+  return (
+    <>
+      {renderedTable}
+      {downloadButton}
+    </>
+  );
 }
 
 const ComponentsObject = {
@@ -165,7 +207,7 @@ Object.assign(MemoizedTableRenderer, ComponentsObject);
 let Table = MemoizedTableRenderer as (<
   RowData extends object,
   Headers extends readonly string[]
-  >(
+>(
   props: TableProps<RowData, Headers>
 ) => React.ReactElement) &
   typeof ComponentsObject;
