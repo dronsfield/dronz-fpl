@@ -41,7 +41,13 @@ export const PRIZE_DISTRIBUTIONS: { [k: number]: number[] } = {
 };
 
 function sortmanagers(managers: BuyInManager[]): BuyInManager[] {
-  return sortBy(managers, "rank");
+  let invalidManagers: BuyInManager[] = [];
+  let validManagers: BuyInManager[] = [];
+  managers.forEach((manager) => {
+    (manager.rank === 0 ? invalidManagers : validManagers).push(manager);
+  });
+  const sorted = [...sortBy(validManagers, "rank"), ...invalidManagers];
+  return sorted;
 }
 
 export function calculatePrizes(managers: BuyInManager[]): PrizeCalculation {
