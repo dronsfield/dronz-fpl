@@ -14,16 +14,19 @@ import { ItemsOf } from "~/util/utilityTypes";
 const headers = [
   "manager",
   "last3",
+  "last5",
+  "all",
   "best",
   "current",
   "prev",
+  "quantity",
   "link",
 ] as const;
 
 const numFormat = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 });
 
 const Container = styled.div`
-  width: 800px;
+  width: 1000px;
   margin: 0 auto;
 `;
 
@@ -40,6 +43,16 @@ const Played: React.FC<{}> = (props) => {
         last3 = last3Items.reduce((acc, item) => acc + item.rank, 0) / 3;
       }
 
+      let last5 = null;
+      const last5Items = pastSeasons.slice(-5);
+      if (last5Items.length === 5) {
+        last5 = last5Items.reduce((acc, item) => acc + item.rank, 0) / 5;
+      }
+
+      const all =
+        pastSeasons.reduce((acc, item) => acc + item.rank, 0) /
+        pastSeasons.length;
+
       let best: number | null = null;
       pastSeasons.forEach(({ rank }) => {
         if (!best || rank < best) {
@@ -52,7 +65,10 @@ const Played: React.FC<{}> = (props) => {
         current: overallSeasonRank,
         prev: pastSeasons.slice(-1)[0]?.rank,
         last3,
+        last5,
         best,
+        all,
+        quantity: pastSeasons.length,
       };
     });
     return sortBy(data, "last3");
@@ -97,8 +113,14 @@ const Played: React.FC<{}> = (props) => {
                 return "Last season";
               case "last3":
                 return "Last 3 seasons avg";
+              case "last5":
+                return "Last 5 seasons avg";
               case "best":
                 return "Best season";
+              case "all":
+                return "All seasons avg";
+              case "quantity":
+                return "Seasons";
             }
           }}
           cellWidths={undefined}
