@@ -78,8 +78,6 @@ const Played: React.FC<{}> = (props) => {
   }, [managers]);
 
   const pastWinners = React.useMemo(() => {
-    const CURRENT_SEASON = 24;
-
     // managers per season
     const mps: { [key: string]: { rank: number; name: string }[] } = {};
 
@@ -101,14 +99,13 @@ const Played: React.FC<{}> = (props) => {
     );
   }, [managers]);
 
-  console.log(pastWinners);
-
   return (
     <>
       <Section allowOverflow>
         <Container>
           <Table
             data={data}
+            sortable={["last3", "last5", "all", "best", "current", "prev"]}
             headers={headers}
             renderCell={(header, rowData) => {
               if (header === "manager") {

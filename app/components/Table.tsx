@@ -3,6 +3,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 import colors from "~/style/colors";
 import { recordFromArray } from "~/util/recordFromArray";
+import { sortBy } from "~/util/sortBy";
 import { ItemsOf } from "~/util/utilityTypes";
 
 const _Table = styled.table.attrs({ cellSpacing: 0 })`
@@ -49,13 +50,14 @@ function makeCellWidthStyle(cellWidth: CellWidth) {
 const cellStyle = css<CellProps>`
   ${(p) => `
   ${makeCellWidthStyle(p.widths[0])}
-  ${p.widths[1]
+  ${
+    p.widths[1]
       ? `
   @media (min-width: 600px) {
     ${makeCellWidthStyle(p.widths[1])}
   }`
       : ""
-    }
+  }
   `}
   box-sizing: content-box;
   padding: 8px 4px;
@@ -78,12 +80,13 @@ const HeaderCell = styled.th<CellProps & { onClick?: any }>`
 interface TableProps<
   RowData extends object,
   Headers extends readonly string[]
-  > {
+> {
   data: RowData[];
   headers: Headers;
   renderCell: (header: ItemsOf<Headers>, rowData: RowData) => React.ReactNode;
   renderHeader?: (header: ItemsOf<Headers>) => React.ReactNode;
   cellWidths?: Record<ItemsOf<Headers>, CellWidths>;
+  sortable?: Array<Extract<keyof RowData, ItemsOf<Headers>>>;
 }
 
 function TableRenderer<
@@ -96,7 +99,15 @@ function TableRenderer<
     renderCell,
     renderHeader = capitalCase,
     cellWidths: cellWidthsProp,
+    sortable,
   } = props;
+
+  type SortableKey = Extract<keyof RowData, ItemsOf<Headers>>;
+
+  const [sortState, setSortState] = React.useState<{
+    by: SortableKey;
+    desc: boolean;
+  }>();
 
   const cellWidths = React.useMemo(() => {
     if (cellWidthsProp) {
@@ -105,6 +116,18 @@ function TableRenderer<
       return recordFromArray(headers, () => ["auto"] as CellWidths);
     }
   }, [headers, cellWidthsProp]);
+
+  const sortableMap = React.useMemo(() => {
+    const sortableMap: { [k: string]: boolean } = sortable
+      ? recordFromArray(sortable, () => true)
+      : {};
+    return sortableMap;
+  }, [sortable]);
+
+  const sortedData = React.useMemo(() => {
+    if (!sortState) return data;
+    return sortBy(data, sortState.by, sortState.desc);
+  }, [sortState, data]);
 
   return (
     <_Table>
@@ -123,14 +146,33 @@ function TableRenderer<
                   fontSize: "10px",
                   textTransform: "uppercase",
                   textAlign: "left",
+                  color:
+                    header === sortState?.by
+                      ? sortState.desc
+                        ? "red"
+                        : "green"
+                      : "inherit",
                 }}
+                onClick={
+                  sortableMap[header]
+                    ? () => {
+                        setSortState((sortState) => {
+                          if (!sortState)
+                            return { by: header as SortableKey, desc: false };
+                          if (!sortState.desc)
+                            return { by: header as SortableKey, desc: true };
+                          return undefined;
+                        });
+                      }
+                    : undefined
+                }
               />
             );
           })}
         </HeaderRow>
       </thead>
       <tbody>
-        {data.map((rowData, index) => {
+        {sortedData.map((rowData, index) => {
           return (
             <Row key={index}>
               {headers.map((header: ItemsOf<Headers>) => {
@@ -165,7 +207,7 @@ Object.assign(MemoizedTableRenderer, ComponentsObject);
 let Table = MemoizedTableRenderer as (<
   RowData extends object,
   Headers extends readonly string[]
-  >(
+>(
   props: TableProps<RowData, Headers>
 ) => React.ReactElement) &
   typeof ComponentsObject;
