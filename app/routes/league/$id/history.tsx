@@ -75,61 +75,107 @@ const Played: React.FC<{}> = (props) => {
       };
     });
     return sortBy(data, "last3");
-  }, [managers, players, fixtures]);
+  }, [managers]);
+
+  const pastWinners = React.useMemo(() => {
+    const CURRENT_SEASON = 24;
+
+    // managers per season
+    const mps: { [key: string]: { rank: number; name: string }[] } = {};
+
+    managers.forEach((manager) => {
+      manager.pastSeasons.forEach((season) => {
+        const item = { rank: season.rank, name: manager.name };
+        mps[season.name] = [...(mps[season.name] || []), item];
+      });
+    });
+    return sortBy(
+      Object.entries(mps).map(([key, value]) => {
+        return {
+          name: key,
+          managers: sortBy(value, "rank"),
+        };
+      }),
+      "name",
+      true
+    );
+  }, [managers]);
+
+  console.log(pastWinners);
 
   return (
-    <Section allowOverflow>
-      <Container>
-        <Table
-          data={data}
-          headers={headers}
-          renderCell={(header, rowData) => {
-            if (header === "manager") {
-              return (
-                <ManagerCell
-                  manager={rowData.manager}
-                  currentEventId={currentEventId}
-                />
-              );
-            }
-            if (header === "link") {
-              return (
-                <PlainLink
-                  to={`https://fantasy.premierleague.com/entry/${rowData.manager.id}/history`}
-                  children="View history"
-                  style={{ color: colors.purple }}
-                />
-              );
-            }
-            const value = rowData[header];
-            return typeof value === "number"
-              ? numFormat.format(value)
-              : value || "-";
-          }}
-          renderHeader={(header) => {
-            switch (header) {
-              case "manager":
-                return "Manager";
-              case "current":
-                return "This season";
-              case "prev":
-                return "Last season";
-              case "last3":
-                return "Last 3 seasons avg";
-              case "last5":
-                return "Last 5 seasons avg";
-              case "best":
-                return "Best season";
-              case "all":
-                return "All seasons avg";
-              case "quantity":
-                return "Seasons";
-            }
-          }}
-          cellWidths={undefined}
-        />
-      </Container>
-    </Section>
+    <>
+      <Section allowOverflow>
+        <Container>
+          <Table
+            data={data}
+            headers={headers}
+            renderCell={(header, rowData) => {
+              if (header === "manager") {
+                return (
+                  <ManagerCell
+                    manager={rowData.manager}
+                    currentEventId={currentEventId}
+                  />
+                );
+              }
+              if (header === "link") {
+                return (
+                  <PlainLink
+                    to={`https://fantasy.premierleague.com/entry/${rowData.manager.id}/history`}
+                    children="View history"
+                    style={{ color: colors.purple }}
+                  />
+                );
+              }
+              const value = rowData[header];
+              return typeof value === "number"
+                ? numFormat.format(value)
+                : value || "-";
+            }}
+            renderHeader={(header) => {
+              switch (header) {
+                case "manager":
+                  return "Manager";
+                case "current":
+                  return "This season";
+                case "prev":
+                  return "Last season";
+                case "last3":
+                  return "Last 3 seasons avg";
+                case "last5":
+                  return "Last 5 seasons avg";
+                case "best":
+                  return "Best season";
+                case "all":
+                  return "All seasons avg";
+                case "quantity":
+                  return "Seasons";
+              }
+            }}
+            cellWidths={undefined}
+          />
+        </Container>
+      </Section>
+      <Section>
+        {pastWinners.map((season) => {
+          return (
+            <>
+              <h3>{season.name}</h3>
+              {season.managers.slice(0, 8).map((m, index) => {
+                return (
+                  <>
+                    <div>
+                      #{index + 1}: {m.name} ({numFormat.format(m.rank)})
+                    </div>
+                  </>
+                );
+              })}
+            </>
+          );
+        })}
+      </Section>
+    </>
   );
 };
 
