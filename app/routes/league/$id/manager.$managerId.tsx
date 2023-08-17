@@ -19,6 +19,8 @@ import { chipLabels, getPitchPicks } from "~/services/api";
 import { getKeys } from "~/util/getKeys";
 import { sortBy } from "~/util/sortBy";
 
+const numFormat = new Intl.NumberFormat();
+
 const TextContainer = styled.div`
   text-align: center;
 `;
@@ -73,10 +75,18 @@ const Manager: React.FC<ManagerProps> = (props) => {
       <Spacer height={16} />
       <KeyValueTable
         items={[
-          { key: "Gameweek points", value: String(manager.eventPoints) },
-          { key: "Gameweek rank", value: "#" + String(gwRank) },
+          { key: "GW points", value: String(manager.eventPoints) },
+          { key: "GW league rank", value: "#" + String(gwRank) },
+          {
+            key: "GW overall rank",
+            value: numFormat.format(manager.overallGameweekRank),
+          },
           { key: "Season points", value: String(manager.totalPoints) },
-          { key: "Season rank", value: "#" + String(manager.rank) },
+          { key: "Season league rank", value: "#" + String(manager.rank) },
+          {
+            key: "Season overall rank",
+            value: numFormat.format(manager.overallSeasonRank),
+          },
           {
             key: "Transfers in",
             value:

@@ -62,6 +62,8 @@ export interface Manager {
   eventPoints: number;
   totalMoney: number;
   bankMoney: number;
+  overallGameweekRank: number;
+  overallSeasonRank: number;
   picks: {
     [id: number]: {
       pickType: PickType;
@@ -71,6 +73,10 @@ export interface Manager {
   };
   transfers: GameweekTransfers;
   chips: Chip[];
+  pastSeasons: Array<{
+    name: string;
+    rank: number;
+  }>;
   seasonHistory: Array<{
     eventId: number;
     eventPoints: number;

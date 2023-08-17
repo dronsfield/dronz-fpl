@@ -432,6 +432,10 @@ export async function getLeague(
 
       const chips = parseChips(historyResponse);
 
+      const currentEvent = historyResponse.current.find(
+        (x) => x.event === currentEventId
+      );
+
       const manager: Manager = {
         id: result.entry,
         name:
@@ -446,6 +450,11 @@ export async function getLeague(
         picks,
         chips,
         transfers,
+        overallSeasonRank: currentEvent?.overall_rank || 0,
+        overallGameweekRank: currentEvent?.rank || 0,
+        pastSeasons: (historyResponse.past || []).map((season) => {
+          return { name: season.season_name, rank: season.rank };
+        }),
         seasonHistory: historyResponse.current.map((gw) => {
           return {
             eventId: gw.event,
