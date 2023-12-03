@@ -16,6 +16,7 @@ const headers = [
   "inPlayCount",
   "notStartedCount",
   "notFinished",
+  "costNotFinished",
   "gwPoints",
   "seasonPoints",
 ] as const;
@@ -73,6 +74,7 @@ const Played: React.FC<{}> = (props) => {
         const pickType = picks[playerId].pickType;
         const player = players[playerId];
         if (!player) return;
+        if (pickType === "BENCHED") return;
         const teamId = player.teamId;
         const teamFixtureStatus = teamFixtureStatuses[teamId] || "NONE";
         if (teamFixtureStatus === "FINISHED") {
@@ -96,9 +98,13 @@ const Played: React.FC<{}> = (props) => {
         }
       });
 
-      notFinished = sortBy(notFinished, "player", false, {
-        valueTransform: (player: Player) => player.webName,
+      notFinished = sortBy(notFinished, "player", true, {
+        valueTransform: (player: Player) => player.cost,
       });
+      const costNotFinished = notFinished.reduce(
+        (acc, item) => acc + item.player.cost,
+        0
+      );
 
       return {
         manager,
@@ -106,6 +112,7 @@ const Played: React.FC<{}> = (props) => {
         inPlayCount,
         notStartedCount,
         notFinished,
+        costNotFinished,
       };
     });
   }, [managers, players, fixtures]);
@@ -143,6 +150,8 @@ const Played: React.FC<{}> = (props) => {
                 );
               }
             );
+          } else if (header === "costNotFinished") {
+            return "£" + rowData.costNotFinished.toFixed(1);
           } else {
             return rowData[header];
           }
@@ -162,7 +171,9 @@ const Played: React.FC<{}> = (props) => {
             case "notStartedCount":
               return "LTP";
             case "notFinished":
-              return "";
+              return "Players LTP";
+            case "costNotFinished":
+              return "Cost LTP";
           }
         }}
         cellWidths={undefined}
