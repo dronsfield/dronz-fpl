@@ -13,7 +13,7 @@ import { ItemsOf } from "~/util/utilityTypes";
 
 const headers = [
   "manager",
-  "last3",
+  // "last3",
   "last5",
   "all",
   "best",
@@ -74,7 +74,7 @@ const Played: React.FC<{}> = (props) => {
         quantity: pastSeasons.length,
       };
     });
-    return sortBy(data, "last3");
+    return sortBy(data, "last5");
   }, [managers]);
 
   const pastWinners = React.useMemo(() => {
