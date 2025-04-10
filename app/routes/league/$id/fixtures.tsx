@@ -11,6 +11,7 @@ import yellowCardIcon from "~/images/yellow-card.svg";
 import bp3Icon from "~/images/bp3.svg";
 import bp2Icon from "~/images/bp2.svg";
 import bp1Icon from "~/images/bp1.svg";
+import shieldIcon from "~/images/shield.svg";
 import {
   Fixture,
   FixtureTeam,
@@ -166,10 +167,12 @@ const statIconMapper: { [identifier: string]: string } = {
   assists: assistIcon,
   red_cards: redCardIcon,
   yellow_cards: yellowCardIcon,
+  clean_sheets: shieldIcon,
 };
 
 let PlayerStatIcons: React.FC<{ playerStats: PlayerStats }> = (props) => {
   const { playerStats } = props;
+  // console.log("playerStats", playerStats);
 
   const elements: React.ReactNode[] = [];
 
@@ -320,6 +323,7 @@ function useFixturesWithPicks() {
         const playerStats: PlayerStats = {};
 
         const statIdentifiers = Object.keys(fixtureTeam.stats);
+        // console.log("fixtureTeam", fixtureTeam);
         statIdentifiers.forEach((identifier) => {
           const playerValue = fixtureTeam.stats[identifier].filter(
             (stat) => stat.element === player.id
@@ -332,6 +336,15 @@ function useFixturesWithPicks() {
             playerStats[`bp${value}`] = 1;
           }
         });
+
+        const gameweekStats = player.gameweekStats;
+
+        if (
+          gameweekStats.clean_sheets &&
+          ["GKP", "DEF"].includes(player.position)
+        ) {
+          playerStats.clean_sheets = Number(gameweekStats.clean_sheets);
+        }
 
         return {
           player,
