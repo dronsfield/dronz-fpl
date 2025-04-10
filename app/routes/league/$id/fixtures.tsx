@@ -13,6 +13,7 @@ import bp2Icon from "~/images/bp2.svg";
 import bp1Icon from "~/images/bp1.svg";
 import shieldIcon from "~/images/shield.svg";
 import {
+  Chip,
   Fixture,
   FixtureTeam,
   Manager,
@@ -196,8 +197,9 @@ PlayerStatIcons = React.memo(PlayerStatIcons);
 const TeamPicks: React.FC<{
   team: FixtureTeamWithPicksAndStats;
   home?: boolean;
+  currentEventId: number;
 }> = (props) => {
-  const { team, home = false } = props;
+  const { team, home = false, currentEventId } = props;
   const { playerId, setPlayerId } = React.useContext(StateContext);
   return (
     <TeamContainer>
@@ -229,10 +231,15 @@ const TeamPicks: React.FC<{
                   <ManagersContainer home={home}>
                     {picks.map((pick) => {
                       const { manager, pickType } = pick;
-                      const { id, rank, name } = manager;
+                      const { id, rank, name, chips } = manager;
                       const suffix =
                         pickType === "CAPTAIN"
-                          ? " [C]"
+                          ? chips.find((chip: Chip) => {
+                              const { key, eventId } = chip;
+                              return key === "tc" && eventId === currentEventId;
+                            })
+                            ? " [TC]"
+                            : " [C]"
                           : pickType === "VICE"
                           ? " [V]"
                           : "";
@@ -261,12 +268,15 @@ const TeamPicks: React.FC<{
   );
 };
 
-const renderFixture: React.FC<{ fixture: FixtureWithPicks }> = (props) => {
-  const { fixture } = props;
+const renderFixture: React.FC<{
+  fixture: FixtureWithPicks;
+  currentEventId: number;
+}> = (props) => {
+  const { fixture, currentEventId } = props;
   return (
     <Row key={fixture.id}>
-      <TeamPicks {...{ team: fixture.home, home: true }} />
-      <TeamPicks {...{ team: fixture.away }} />
+      <TeamPicks {...{ team: fixture.home, home: true, currentEventId }} />
+      <TeamPicks {...{ team: fixture.away, currentEventId }} />
     </Row>
   );
 };
@@ -371,6 +381,7 @@ function useFixturesWithPicks() {
 const FixturePicks: React.FC<{}> = (props) => {
   const [playerId, setPlayerId] = React.useState<number>();
   const fixturesWithPicks = useFixturesWithPicks();
+  const { currentEventId } = useLeagueData();
 
   React.useEffect(() => {
     type HandleClick = Parameters<typeof document.addEventListener>[1];
@@ -412,15 +423,19 @@ const FixturePicks: React.FC<{}> = (props) => {
         <>
           <Section>
             <SectionTitle>today + future:</SectionTitle>
-            {current.map((fixture) => renderFixture({ fixture }))}
+            {current.map((fixture) =>
+              renderFixture({ fixture, currentEventId })
+            )}
           </Section>
           <Section>
             <SectionTitle>past:</SectionTitle>
-            {past.map((fixture) => renderFixture({ fixture }))}
+            {past.map((fixture) => renderFixture({ fixture, currentEventId }))}
           </Section>
         </>
       ) : (
-        <Section>{past.map((fixture) => renderFixture({ fixture }))}</Section>
+        <Section>
+          {past.map((fixture) => renderFixture({ fixture, currentEventId }))}
+        </Section>
       )}
       <Spacer height={100} />
     </StateContext.Provider>
