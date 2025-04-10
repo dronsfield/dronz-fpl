@@ -89,6 +89,7 @@ export type LeagueRT = Static<typeof LeagueRT>;
 
 export const PickRT = Record({
   element: Number,
+  element_type: Number,
   is_captain: Boolean,
   is_vice_captain: Boolean,
   position: Number,

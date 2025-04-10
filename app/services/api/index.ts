@@ -233,6 +233,8 @@ function parseChips(history: HistoryRT): Chip[] {
         // if (fhIndex === 2) return "fh2";
       } else if (name === "bboost") {
         return "bb";
+      } else if (name === "manager") {
+        return "am";
       }
       return null;
     })();
@@ -261,6 +263,7 @@ function parseManagerProfile(
 }
 
 function getPickType(pick: PickRT): PickType {
+  if (pick.element_type === 5) return "AM";
   if (pick.is_captain) return "CAPTAIN";
   if (pick.is_vice_captain) return "VICE";
   return pick.position <= 11 ? "STARTING" : "BENCHED";

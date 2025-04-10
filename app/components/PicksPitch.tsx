@@ -112,7 +112,7 @@ const PicksPitch: React.FC<PicksPitchProps> = (props) => {
     const rows = new Array(5).fill(0).map(() => [] as PitchPick[]);
     picks.forEach((pick) => {
       const { player, pickType, position } = pick;
-      if (pickType === "BENCHED") {
+      if (pickType === "BENCHED" || pickType === "AM") {
         rows[4].push(pick);
       } else {
         const rowIndex = positionIndexes[player.position];
@@ -122,7 +122,7 @@ const PicksPitch: React.FC<PicksPitchProps> = (props) => {
       }
     });
     return rows.map((row) => {
-      return sortBy(row, "position");
+      return sortBy(row, ["pickType", "position"]);
     });
   }, [picks]);
 

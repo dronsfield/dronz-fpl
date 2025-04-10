@@ -1,13 +1,14 @@
 import { ItemsOf, Maybe } from "~/util/utilityTypes";
 import { Null, Number } from "runtypes";
 
-export const playerPositions = ["GKP", "DEF", "MID", "FWD"] as const;
+export const playerPositions = ["GKP", "DEF", "MID", "FWD", "AM"] as const;
 export type PlayerPosition = ItemsOf<typeof playerPositions> | "???";
 export const positionIndexes: Record<PlayerPosition, number | null> = {
   GKP: 0,
   DEF: 1,
   MID: 2,
   FWD: 3,
+  AM: 4,
   "???": null,
 };
 export interface Player {
@@ -37,7 +38,7 @@ export interface GameweekTransfers {
   cost: number | null;
 }
 
-export const chipKeys = ["wc1", "wc2", "fh", "tc", "bb"] as const;
+export const chipKeys = ["wc1", "wc2", "fh", "tc", "bb", "am"] as const;
 export type ChipKey = ItemsOf<typeof chipKeys>;
 export const chipLabels = {
   wc1: "Wildcard 1",
@@ -46,13 +47,14 @@ export const chipLabels = {
   // fh2: "Free Hit 2",
   tc: "Triple Captain",
   bb: "Bench Boost",
+  am: "Assistant Manager",
 } as const;
 export interface Chip {
   eventId: number;
   key: ChipKey | null;
 }
 
-export type PickType = "STARTING" | "BENCHED" | "CAPTAIN" | "VICE";
+export type PickType = "STARTING" | "BENCHED" | "CAPTAIN" | "VICE" | "AM";
 export interface Manager {
   id: number;
   name: string;

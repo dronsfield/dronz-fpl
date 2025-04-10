@@ -18,7 +18,15 @@ function getCellWidths<K extends string>(headers: readonly K[]) {
   }, {} as any);
 }
 
-const seasonHeaders = ["manager", "wc1", "wc2", "fh", "tc", "bb"] as const;
+const seasonHeaders = [
+  "manager",
+  "wc1",
+  "wc2",
+  "fh",
+  "tc",
+  "bb",
+  "am",
+] as const;
 type SeasonHeader = ItemsOf<typeof seasonHeaders>;
 const seasonCellWidths = getCellWidths(seasonHeaders);
 type SeasonData = Omit<Record<SeasonHeader, number>, "manager"> & {
@@ -48,7 +56,14 @@ const Chips: React.FC<{}> = () => {
         if (key) {
           const value = eventId;
           data[key] = value;
-          if (value === currentEventId) {
+          if (key === "am") {
+            if (currentEventId >= value && currentEventId <= value + 2) {
+              eventData.push({
+                manager,
+                chip: key,
+              });
+            }
+          } else if (value === currentEventId) {
             eventData.push({
               manager,
               chip: key,
@@ -106,7 +121,11 @@ const Chips: React.FC<{}> = () => {
             );
           } else {
             const value = rowData[header];
-            const active = value === currentEventId;
+            const active =
+              value === currentEventId ||
+              (header === "am" &&
+                currentEventId >= value &&
+                currentEventId <= value + 2);
             let color = colors.grey;
             if (active) color = colors.green;
             if (!value) color = colors.grey;
