@@ -3,10 +3,31 @@ import { ColorSpan, HitsCell, ManagerCell } from "~/components/CommonCells";
 import Section from "~/components/Section";
 import Table from "~/components/Table";
 import { useLeagueData } from "~/hooks/useRouteData";
-import { Player } from "~/services/api/models";
+import { ChipKey, Player } from "~/services/api/models";
 import { sortBy } from "~/util/sortBy";
+import { Manager } from "~/services/api";
+import colors from "~/style/colors";
 
-const TBMHeaders = ["manager", "in", "out", "hits"] as const;
+const ChipCell: React.FC<{ manager: Manager; currentEventId: number }> = (
+  props
+) => {
+  const { manager, currentEventId } = props;
+  const chip = manager.chips.find((chip) => chip.eventId === currentEventId);
+  const relevantChips = ["wc1", "wc2", "fh"] as const;
+  const isRelevant = chip?.key && (relevantChips as any).includes(chip.key);
+  return (
+    <ColorSpan
+      color={isRelevant ? colors.text : colors.grey}
+      style={{
+        textTransform: "uppercase",
+      }}
+    >
+      {chip?.key?.slice(0, 2) || "-"}
+    </ColorSpan>
+  );
+};
+
+const TBMHeaders = ["manager", "in", "out", "hits", "chip"] as const;
 const TransfersByManager: React.FC<{}> = (props) => {
   const { managers, currentEventId, players } = useLeagueData();
   return (
@@ -20,9 +41,14 @@ const TransfersByManager: React.FC<{}> = (props) => {
           );
         } else if (header === "hits") {
           return <HitsCell manager={manager} />;
+        } else if (header === "chip") {
+          return <ChipCell manager={manager} currentEventId={currentEventId} />;
         } else {
           const playerIds = manager.transfers[header];
-          return playerIds.map((id) => players[id]?.webName).join(", ") || "-";
+          return (
+            (playerIds || []).map((id) => players[id]?.webName).join(", ") ||
+            "-"
+          );
         }
       }}
       cellWidths={{
@@ -30,6 +56,7 @@ const TransfersByManager: React.FC<{}> = (props) => {
         in: ["auto"],
         out: ["auto"],
         hits: ["auto"],
+        chip: ["auto"],
       }}
     />
   );
@@ -42,6 +69,7 @@ interface TBPData {
 const TBPHeaders = ["player", "transfers"];
 const TransfersByPlayer: React.FC<{}> = (props) => {
   const { managers, currentEventId, players } = useLeagueData();
+  let visibilityRequirement = 2;
 
   const data = React.useMemo(() => {
     const values: { [playerId: number]: number } = {};
@@ -57,32 +85,41 @@ const TransfersByPlayer: React.FC<{}> = (props) => {
       const playerId = Number(playerIdStr);
       return { player: players[playerId], value: values[playerId] };
     });
-    data = data.filter((row) => Math.abs(row.value) > 1);
+    data = data.filter((row) => Math.abs(row.value) >= visibilityRequirement);
+    if (data.length > 15) {
+      visibilityRequirement++;
+      data = data.filter((row) => Math.abs(row.value) >= visibilityRequirement);
+    }
     data = sortBy(data, "value", true);
     return data;
   }, [managers, players]);
 
   return (
-    <Table
-      data={data}
-      headers={TBPHeaders}
-      renderCell={(header, row) => {
-        if (header === "player") {
-          return row.player.webName;
-        } else if (header === "transfers") {
-          const value = row.value;
-          return value > 0 ? `+${value}` : value;
-        }
-      }}
-      renderHeader={(header) => {
-        if (header === "transfers") {
-          return "net transfers";
-        } else {
-          return header;
-        }
-      }}
-      cellWidths={{ player: ["auto"], transfers: ["auto"] }}
-    />
+    <>
+      <p>
+        {`Players that were transferred in or out ${visibilityRequirement} or more times this gameweek:`}
+      </p>
+      <Table
+        data={data}
+        headers={TBPHeaders}
+        renderCell={(header, row) => {
+          if (header === "player") {
+            return row.player.webName;
+          } else if (header === "transfers") {
+            const value = row.value;
+            return value > 0 ? `+${value}` : value;
+          }
+        }}
+        renderHeader={(header) => {
+          if (header === "transfers") {
+            return "net transfers";
+          } else {
+            return header;
+          }
+        }}
+        cellWidths={{ player: ["auto"], transfers: ["auto"] }}
+      />
+    </>
   );
 };
 
@@ -91,11 +128,7 @@ const Transfers: React.FC<{}> = (props) => {
     <Section>
       <p>Transfers made by each manager this gameweek:</p>
       <TransfersByManager />
-      <p>
-        {
-          "Players that were transferred in or out 2 or more times this gameweek:"
-        }
-      </p>
+
       <TransfersByPlayer />
     </Section>
   );
