@@ -16,6 +16,7 @@ import Section from "~/components/Section";
 import Spacer from "~/components/Spacer";
 import { useLeagueData, useProfileData } from "~/hooks/useRouteData";
 import { chipLabels, getPitchPicks } from "~/services/api";
+import { calculatePoints } from "~/util/calculatePoints";
 import { getKeys } from "~/util/getKeys";
 import { sortBy } from "~/util/sortBy";
 
@@ -44,7 +45,7 @@ const Manager: React.FC<ManagerProps> = (props) => {
   const { managers, players, currentEventId, fixturesPerTeam } =
     useLeagueData();
 
-  const { manager, picks, chipKey, gwRank } = React.useMemo(() => {
+  const { manager, picks, chipKey, gwRank, gwPoints } = React.useMemo(() => {
     const manager = managers.find((manager) => {
       return String(manager.id) === String(managerId);
     });
@@ -58,7 +59,9 @@ const Manager: React.FC<ManagerProps> = (props) => {
         (someManager) => manager?.eventPoints === someManager.eventPoints
       ) + 1;
 
-    return { manager, picks, chipKey, gwRank };
+    const gwPoints = calculatePoints(picks);
+
+    return { manager, picks, chipKey, gwRank, gwPoints };
   }, [managers]);
 
   if (!manager) return null;
@@ -75,7 +78,7 @@ const Manager: React.FC<ManagerProps> = (props) => {
       <Spacer height={16} />
       <KeyValueTable
         items={[
-          { key: "GW points", value: String(manager.eventPoints) },
+          { key: "GW points", value: `${manager.eventPoints} (${gwPoints})` },
           { key: "GW league rank", value: "#" + String(gwRank) },
           {
             key: "GW overall rank",

@@ -5,6 +5,7 @@ import { Manager } from "~/services/api";
 import colors from "~/style/colors";
 import { formatName } from "~/util/formatName";
 import PlainLink from "./PlainLink";
+import { useProfileData } from "~/hooks/useRouteData";
 
 // MONEY
 
@@ -52,10 +53,13 @@ export const ManagerCell: React.FC<{
 }> = (props) => {
   const { manager, currentEventId } = props;
   const { id: leagueId } = useParams<{ id: string }>();
+  const profile = useProfileData();
+  const isMe = profile?.id === manager.id;
   return (
     <PlainLink
       children={formatName(manager.name)}
       to={`/league/${leagueId}/manager/${manager.id}`}
+      style={isMe ? { color: colors.purple } : undefined}
     />
   );
 };

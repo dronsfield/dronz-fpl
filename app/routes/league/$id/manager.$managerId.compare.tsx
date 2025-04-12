@@ -14,6 +14,7 @@ import Section from "~/components/Section";
 import FlexCenter from "~/components/FlexCenter";
 import { ManagerCell } from "~/components/CommonCells";
 import { formatName } from "~/util/formatName";
+import { calculatePoints } from "~/util/calculatePoints";
 
 const Container = styled.div`
   display: flex;
@@ -58,14 +59,6 @@ const filterPicks = (picks: PitchPick[], refPicks: PitchPick[]) => {
           pick.multiplier === refPick.multiplier
       )
   );
-};
-
-const calculatePoints = (picks: PitchPick[]) => {
-  let total = 0;
-  picks.forEach((pick) => {
-    total += (pick.points || 0) * (pick.multiplier || 1);
-  });
-  return total;
 };
 
 export interface CompareProps {
