@@ -42,6 +42,7 @@ const PlayerWrapper = styled(FlexCenter)`
 `;
 
 const pickSortProp = [
+  (pick: PitchPick) => (pick.player.position === "AM" ? 1 : 0),
   (pick: PitchPick) => (pick.pickType === "BENCHED" ? 1 : 0),
   // (pick: PitchPick) => positionIndexes[pick.player.position],
   (pick: PitchPick) => (pick.player.position === "GKP" ? 1 : 0),
@@ -62,9 +63,7 @@ const filterPicks = (picks: PitchPick[], refPicks: PitchPick[]) => {
 const calculatePoints = (picks: PitchPick[]) => {
   let total = 0;
   picks.forEach((pick) => {
-    if (pick.pickType !== "BENCHED") {
-      total += pick.points || 0;
-    }
+    total += (pick.points || 0) * (pick.multiplier || 1);
   });
   return total;
 };
@@ -146,17 +145,19 @@ const Compare: React.FC<CompareProps> = (props) => {
             <div>{calculatePoints(theirPicks)}</div>
           </PlayerWrapper>
         </Row>
-        {myPicks.map((myPick, index) => (
-          <Row key={index}>
-            <PlayerWrapper>
-              <PlayerBlock pick={myPick} />
-            </PlayerWrapper>
+        {myPicks.map((myPick, index) => {
+          return (
+            <Row key={index}>
+              <PlayerWrapper>
+                <PlayerBlock pick={myPick} />
+              </PlayerWrapper>
 
-            <PlayerWrapper>
-              <PlayerBlock pick={theirPicks[index]} />
-            </PlayerWrapper>
-          </Row>
-        ))}
+              <PlayerWrapper>
+                <PlayerBlock pick={theirPicks[index]} />
+              </PlayerWrapper>
+            </Row>
+          );
+        })}
       </Container>
     </Section>
   );

@@ -81,11 +81,14 @@ const CaptainCircle = styled.div`
 `;
 
 export interface PlayerBlockProps {
-  pick: PitchPick;
+  pick?: PitchPick;
 }
 
 export const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
   const { pick } = props;
+  if (!pick) {
+    return null;
+  }
   return (
     <PlayerBlockContainer style={{}}>
       {pick.pickType === "CAPTAIN" ? <CaptainCircle children="c" /> : null}
@@ -93,7 +96,7 @@ export const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
       <Shirt
         teamCode={pick.player.teamCode}
         isGoalkeeper={pick.player.position === "GKP"}
-        style={pick.pickType === "BENCHED" ? { opacity: 0.33 } : undefined}
+        style={pick.multiplier === 0 ? { opacity: 0.33 } : undefined}
       />
       <Spacer height={4} />
       <PlayerName>{pick.player.webName}</PlayerName>
