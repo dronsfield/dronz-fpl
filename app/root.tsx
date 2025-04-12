@@ -149,18 +149,18 @@ const App: React.FC<{}> = (props) => {
 
   return (
     <Document>
-      {/* <PersistQueryClientProvider
+      <PersistQueryClientProvider
         client={queryClient}
         persistOptions={{ persister, buster: "1" }}
-      > */}
-      <QueryClientProvider client={queryClient}>
+      >
+        {/* <QueryClientProvider client={queryClient}> */}
         <UserContext.Provider value={user}>
           <StaleProvider>
             <Layout>{children}</Layout>
           </StaleProvider>
         </UserContext.Provider>
-      </QueryClientProvider>
-      {/* </PersistQueryClientProvider> */}
+        {/* </QueryClientProvider> */}
+      </PersistQueryClientProvider>
     </Document>
   );
 };
