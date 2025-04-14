@@ -8,5 +8,6 @@ const colors = {
   negative: "#cc0000",
   grey: "#bbb",
   playerGreen: "#46C484",
+  white: "white",
 };
 export default colors;

@@ -64,15 +64,16 @@ const PickValue = styled.div`
   line-height: 1;
 `;
 
-const CaptainCircle = styled.div`
-  background-color: ${colors.darkPurple};
-  color: white;
+const CaptainCircle = styled.div<{ $isTc?: boolean }>`
+  background-color: ${(props) => (props.$isTc ? colors.white : colors.text)};
+  color: ${(props) => (props.$isTc ? colors.text : colors.white)};
+  border: 1px solid ${colors.text};
   position: absolute;
   right: 0;
   top: 15px;
-  width: 14px;
-  height: 14px;
-  line-height: 14px;
+  width: 15px;
+  height: 15px;
+  line-height: 13px;
   text-align: center;
   font-size: 10px;
   border-radius: 50%;
@@ -91,8 +92,12 @@ export const PlayerBlock: React.FC<PlayerBlockProps> = (props) => {
   }
   return (
     <PlayerBlockContainer style={{}}>
-      {pick.pickType === "CAPTAIN" ? <CaptainCircle children="c" /> : null}
-      {pick.pickType === "VICE" ? <CaptainCircle children="v" /> : null}
+      {pick.pickType === "CAPTAIN" ? (
+        <CaptainCircle children="c" $isTc={pick.multiplier === 3} />
+      ) : null}
+      {pick.pickType === "VICE" ? (
+        <CaptainCircle children="v" $isTc={pick.multiplier === 3} />
+      ) : null}
       <Shirt
         teamCode={pick.player.teamCode}
         isGoalkeeper={pick.player.position === "GKP"}
