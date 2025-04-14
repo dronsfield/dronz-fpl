@@ -134,6 +134,7 @@ export interface PitchPick {
 
 export interface BasicFixtureInfoPerTeam {
   [teamId: number]: Array<{
+    finished: boolean;
     started: boolean;
     isHome: boolean;
     opponent: Team;

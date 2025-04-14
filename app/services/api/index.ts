@@ -280,6 +280,7 @@ export function getBasicFixtureInfoPerTeam(fixtures: Fixture[]) {
       ...(output[us.teamId] || []),
       {
         started: fixture.started,
+        finished: fixture.finished,
         isHome: isHome,
         opponent: them.team,
         shorthand: `${them.team.shortName} (${isHome ? "H" : "A"})`,

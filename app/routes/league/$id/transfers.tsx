@@ -27,14 +27,80 @@ const ChipCell: React.FC<{ manager: Manager; currentEventId: number }> = (
   );
 };
 
-const TBMHeaders = ["manager", "in", "out", "hits", "chip"] as const;
+const TBMHeaders = ["manager", "in", "out", "gain","hits",  "chip"] as const;
 const TransfersByManager: React.FC<{}> = (props) => {
-  const { managers, currentEventId, players } = useLeagueData();
+  const { managers, currentEventId, players, fixturesPerTeam } =
+    useLeagueData();
+
+  const data = React.useMemo(() => {
+    return managers.map((manager) => {
+      let unfinishedFixtures = false;
+      const [transfersIn, transfersOut] = [
+        manager.transfers.in,
+        manager.transfers.out,
+      ].map((playerIds) => {
+        return sortBy(
+          (playerIds || []).map((id) => players[id]),
+          "cost",
+          true
+        ).map((player) => {
+          if (!player) return null;
+          const lastFixtureFinished = [...fixturesPerTeam[player.teamId]].slice(
+            -1
+          )[0]?.finished;
+          if (!lastFixtureFinished) {
+            unfinishedFixtures = true;
+          }
+          const points = Number(player.gameweekStats.total_points) || 0;
+          const pointsLabel = lastFixtureFinished ? points : points + "*";
+          const playerLabel = `${player.webName} (${pointsLabel})`;
+
+          return { points, pointsLabel, player, playerLabel };
+        });
+      });
+
+      const inTotal = transfersIn.reduce(
+        (acc, player) => acc + (player?.points || 0),
+        0
+      );
+      const outTotal = transfersOut.reduce(
+        (acc, player) => acc + (player?.points || 0),
+        0
+      );
+
+      const gain = inTotal - outTotal - (manager.transfers.cost || 0);
+      let gainLabel = gain > 0 ? `+${gain}` : gain;
+      if (unfinishedFixtures) {
+        gainLabel = `${gainLabel}*`;
+      }
+
+      return {
+        manager,
+        in: transfersIn,
+        out: transfersOut,
+        gainLabel,
+        gain,
+      };
+    });
+  }, [managers, players, currentEventId]);
+
+
+  const [expandedManagers, setExpandedManagers] = React.useState<Record<number, boolean>>(
+    {}
+  );
+  const expandManager = React.useCallback((managerId: number) => {
+    setExpandedManagers((prev) => ({
+      ...prev,
+      [managerId]: true
+    }));
+  }, []);
+
   return (
     <Table
-      data={managers}
+      data={data}
       headers={TBMHeaders}
-      renderCell={(header, manager) => {
+      renderCell={(header, row) => {
+        const { manager, in, out, gainLabel, gain } = row;
         if (header === "manager") {
           return (
             <ManagerCell manager={manager} currentEventId={currentEventId} />
@@ -43,11 +109,39 @@ const TransfersByManager: React.FC<{}> = (props) => {
           return <HitsCell manager={manager} />;
         } else if (header === "chip") {
           return <ChipCell manager={manager} currentEventId={currentEventId} />;
+        } else if (header === "gain") {
+          return <ColorSpan color={gain > 0 ? colors.green : gain < 0 ? colors.negative : colors.grey}>{gainLabel}</ColorSpan>
         } else {
-          const playerIds = manager.transfers[header];
+          const playerList = row[header];
+          const expanded = expandedManagers[manager.id];
+          const showExpand = playerList.length > 3;
+          const displayList = expanded || !showExpand ? playerList : playerList.slice(0, 2);
+          
           return (
-            (playerIds || []).map((id) => players[id]?.webName).join(", ") ||
-            "-"
+            <div style={{ whiteSpace: "pre-wrap", position: "relative" }}>
+              {playerList.length === 0 ? <div>-</div> : null}
+              {displayList.map((player) => {
+                return player ? <div key={player.player.id}>{player.playerLabel}</div> : null;
+              })}
+              {!expanded && showExpand && (
+                <button
+                  onClick={() => expandManager(manager.id)}
+                  style={{
+                    border: "none",
+                    background: "none", 
+                    // color: colors.purple,
+                    // textTransform: "uppercase",
+                    fontSize: "0.8em",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    padding: 0,
+                    // marginTop: 4
+                  }}
+                >
+                  +{playerList.length - 2} more
+                </button>
+              )}
+            </div>
           );
         }
       }}
@@ -56,6 +150,7 @@ const TransfersByManager: React.FC<{}> = (props) => {
         in: ["auto"],
         out: ["auto"],
         hits: ["auto"],
+        gain: ["auto"],
         chip: ["auto"],
       }}
     />
@@ -126,7 +221,18 @@ const TransfersByPlayer: React.FC<{}> = (props) => {
 const Transfers: React.FC<{}> = (props) => {
   return (
     <Section>
-      <p>Transfers made by each manager this gameweek:</p>
+      <p>
+        Transfers made by each manager this gameweek. An asterix (*) indicates
+        unfinished fixtures.
+      </p>
+      {/* <p>
+        The number in parentheses is the player's points this GW, with a * if
+        they still have unfinished fixtures.
+      </p>
+      <p>
+        Gain is the net points gained from a manager's transfers, including the
+        cost of hits.
+      </p> */}
       <TransfersByManager />
 
       <TransfersByPlayer />

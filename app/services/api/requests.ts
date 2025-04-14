@@ -286,6 +286,8 @@ type ConfigValue<R> = {
   getExpireAt: () => number | null;
 };
 
+const DEV_NEVER_EXPIRE = false;
+
 const fetchFromApiAndCache = async <R>(
   url: string,
   config: ConfigValue<R>,
@@ -299,7 +301,9 @@ const fetchFromApiAndCache = async <R>(
         window.location.origin + url
       ),
     key: config.getKey(opts),
-    expireAt: config.getExpireAt(),
+    expireAt: DEV_NEVER_EXPIRE
+      ? dayjs().utc().add(1000, "day").unix()
+      : config.getExpireAt(),
     remoteDelay: opts?.remoteDelay,
   });
 };
