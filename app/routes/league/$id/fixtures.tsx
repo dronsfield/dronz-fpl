@@ -353,7 +353,7 @@ function useFixturesWithPicks() {
           gameweekStats.clean_sheets &&
           ["GKP", "DEF"].includes(player.position)
         ) {
-          playerStats.clean_sheets = Number(gameweekStats.clean_sheets);
+          // playerStats.clean_sheets = Number(gameweekStats.clean_sheets);
         }
 
         return {
