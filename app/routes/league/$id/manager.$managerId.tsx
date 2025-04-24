@@ -50,9 +50,14 @@ const Manager: React.FC<ManagerProps> = (props) => {
       return String(manager.id) === String(managerId);
     });
     const picks = getPitchPicks(manager, players, fixturesPerTeam);
-    const chipKey = manager?.chips.find(
-      (chip) => chip.eventId === currentEventId
-    )?.key;
+    const chipKey = manager?.chips.find((chip) => {
+      return (
+        chip.eventId === currentEventId ||
+        (chip.key === "am" &&
+          currentEventId >= chip.eventId &&
+          currentEventId <= chip.eventId + 2)
+      );
+    })?.key;
 
     const gwRank =
       sortBy(managers, "eventPoints", true).findIndex(

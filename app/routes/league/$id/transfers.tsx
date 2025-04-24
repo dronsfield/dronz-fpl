@@ -12,7 +12,14 @@ const ChipCell: React.FC<{ manager: Manager; currentEventId: number }> = (
   props
 ) => {
   const { manager, currentEventId } = props;
-  const chip = manager.chips.find((chip) => chip.eventId === currentEventId);
+  const chip = manager?.chips.find((chip) => {
+    return (
+      chip.eventId === currentEventId ||
+      (chip.key === "am" &&
+        currentEventId >= chip.eventId &&
+        currentEventId <= chip.eventId + 2)
+    );
+  });
   const relevantChips = ["wc1", "wc2", "fh"] as const;
   const isRelevant = chip?.key && (relevantChips as any).includes(chip.key);
   return (
