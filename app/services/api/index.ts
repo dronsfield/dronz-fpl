@@ -308,7 +308,7 @@ export function getPitchPicks(
     const player = players[playerId];
     const { pickType, position, multiplier } = managerPicks[playerId];
 
-    const basicFixtureInfo = basicFixtureInfoPerTeam[player.teamId];
+    const basicFixtureInfo = basicFixtureInfoPerTeam[player.teamId] || [];
     const firstFixture = basicFixtureInfo[0];
     const _points = player.gameweekStats.total_points;
     const points =

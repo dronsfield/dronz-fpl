@@ -171,7 +171,9 @@ export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
   console.error(error);
   return (
     <Document>
-      <h1>Error</h1>
+      <div style={{ textAlign: "center", fontFamily: "sans-serif" }}>
+        <p>Something went wrong. Refresh?</p>
+      </div>
     </Document>
   );
 };

@@ -52,7 +52,7 @@ const TransfersByManager: React.FC<{}> = (props) => {
           true
         ).map((player) => {
           if (!player) return null;
-          const lastFixtureFinished = [...fixturesPerTeam[player.teamId]].slice(
+          const lastFixtureFinished = [...(fixturesPerTeam[player.teamId] || [])].slice(
             -1
           )[0]?.finished;
           if (!lastFixtureFinished) {
