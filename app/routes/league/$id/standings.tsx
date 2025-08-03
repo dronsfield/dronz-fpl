@@ -15,6 +15,16 @@ const RankSpan = styled.span`
   font-style: italic;
 `;
 
+const WarningMessage = styled.div`
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-weight: bold;
+`;
+
 const basicHeaders = ["rank", "manager", "gwPoints", "totalPoints"] as const;
 
 const fplboysHeaders = [
@@ -35,6 +45,13 @@ const Standings: React.FC<{}> = (props) => {
   return (
     <>
       <Section>
+        {currentEventId === 0 && (
+          <WarningMessage>
+            ⚠️ As the new season hasn't yet begun, these are randomised
+            standings to demonstrate how the Snails prize winnings calculation
+            works. Refresh the page to re-randomize!
+          </WarningMessage>
+        )}
         <Table
           data={managers}
           headers={headers}

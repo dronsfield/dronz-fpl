@@ -10,6 +10,7 @@ import {
   PrizeCalculation,
 } from "~/util/calculatePrizes";
 import { logDuration } from "~/util/logDuration";
+import { randomizeManagerStandingsWithBuyIn } from "~/util/randomizeManagerStandings";
 import { Params } from "react-router";
 
 const buyInsByName: { [id: string]: number } = {};
@@ -45,7 +46,14 @@ export const leagueLoader = async ({ params }: { params: Params }) => {
         : 0;
     return { ...manager, buyIn };
   });
-  const prizeCalculation = calculatePrizes(buyInManagers);
+
+  // Randomize manager standings if currentEventId is 0 and it's the main league
+  let finalManagers = buyInManagers;
+  if (currentEventId === 0 && leagueData.id === appConfig.LEAGUE_ID) {
+    finalManagers = randomizeManagerStandingsWithBuyIn(buyInManagers);
+  }
+
+  const prizeCalculation = calculatePrizes(finalManagers);
 
   const data: LeagueLoaderData = {
     ...leagueData,

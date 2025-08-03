@@ -361,6 +361,9 @@ export function fetchFixtures(opts: { eventId: number }) {
 }
 
 export function fetchLive(opts: { eventId: number }) {
+  if (opts.eventId === 0) {
+    return { data: { elements: [] } };
+  }
   return fetchFromApiAndCache(
     `/api/live/${opts.eventId}`,
     apiEndpointConfig.live,

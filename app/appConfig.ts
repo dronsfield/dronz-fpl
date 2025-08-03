@@ -9,7 +9,7 @@ function craEnv(suffix: string) {
 }
 
 const appConfig = {
-  LEAGUE_ID: 10465,
+  LEAGUE_ID: 73982,
   MAX_MANAGERS: 40,
   BASE_URL:
     "https://dronz-proxy-cbdo9ru7u-dronz.vercel.app/fantasy.premierleague.com/api",

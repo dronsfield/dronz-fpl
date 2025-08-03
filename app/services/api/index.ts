@@ -30,6 +30,7 @@ import {
   fetchManagerInfo,
   FixtureRT,
   HistoryRT,
+  LiveElementRT,
   LiveStatsRT,
   ManagerInfoRT,
   ManagersRT,
@@ -40,6 +41,7 @@ import {
 import { getKeys } from "~/util/getKeys";
 import { sortBy } from "~/util/sortBy";
 import wait from "~/util/wait";
+import { CacheFetchResult } from "~/services/cacheFn";
 export * from "./models";
 
 function parseCurrentEventId(events: EventRT[]): number {
@@ -53,7 +55,7 @@ function parseCurrentEventId(events: EventRT[]): number {
   return currentEventId;
 }
 function parseCurrentEventIdFromStatus(statusResp: EventStatusRT): number {
-  return statusResp.status[0]?.event || 1;
+  return statusResp.status[0]?.event || 0;
 }
 function transformWebName(web_name: string) {
   if (web_name === "Alexander-Arnold") return "Trent";
@@ -77,7 +79,7 @@ function parsePlayerFromElement(
   const position = playerPositions[element_type - 1] || "???";
   const cost = 0.1 * now_cost;
   const liveForPlayer = live[id];
-  if (!liveForPlayer) console.log(`no live data for ${web_name}`);
+  // if (!liveForPlayer) console.log(`no live data for ${web_name}`);
   return {
     id,
     firstName: first_name,
@@ -338,151 +340,233 @@ export function getPitchPicks(
 }
 
 export async function getCurrentEventId() {
-  const eventStatusResponse = await fetchEventStatus();
-  return {
-    data: parseCurrentEventIdFromStatus(eventStatusResponse.data),
-    stale: eventStatusResponse.stale,
-  };
+  try {
+    const eventStatusResponse = await fetchEventStatus();
+    return {
+      data: parseCurrentEventIdFromStatus(eventStatusResponse.data),
+      stale: eventStatusResponse.stale,
+    };
+  } catch (error) {
+    console.error(`Error in getCurrentEventId():`, error);
+    throw error;
+  }
 }
 
 export async function getBootstrap(currentEventId: number) {
-  const [bootstrapResponse, liveResponse, fixturesResponse] = await Promise.all(
-    [
-      fetchBootstrap(),
-      fetchLive({ eventId: currentEventId }),
-      fetchFixtures({ eventId: currentEventId }),
-    ]
-  );
-  const live = keyBy(liveResponse.data.elements, "id");
-  const playerList = bootstrapResponse.data.elements.map((element) =>
-    parsePlayerFromElement(element, live)
-  );
-  const players = keyBy(playerList, "id");
-  const teamList = bootstrapResponse.data.teams.map(parseTeam);
-  const teams = keyBy(teamList, "id");
-  const fixtures = fixturesResponse.data.map((fixture) =>
-    parseFixture(fixture, teams)
-  );
-  const fixturesPerTeam = getBasicFixtureInfoPerTeam(fixtures);
-  return {
-    players,
-    teams,
-    fixtures,
-    currentEventId,
-    fixturesPerTeam,
-    stale:
-      bootstrapResponse.stale || liveResponse.stale || fixturesResponse.stale,
-  };
+  try {
+    let bootstrapResponse, liveResponse, fixturesResponse;
+
+    if (currentEventId === 0) {
+      // When currentEventId is 0, only fetch bootstrap data
+      bootstrapResponse = await fetchBootstrap();
+      // Create stub responses for live and fixtures that match the expected types
+      liveResponse = {
+        data: { elements: [] as LiveElementRT[] },
+        stale: false,
+        fromCache: false,
+      } as CacheFetchResult<{ elements: LiveElementRT[] }>;
+      fixturesResponse = {
+        data: [],
+        stale: false,
+        fromCache: false,
+      } as CacheFetchResult<FixtureRT[]>;
+    } else {
+      // Normal flow when currentEventId is not 0
+      [bootstrapResponse, liveResponse, fixturesResponse] = await Promise.all([
+        fetchBootstrap(),
+        fetchLive({ eventId: currentEventId }),
+        fetchFixtures({ eventId: currentEventId }),
+      ]);
+    }
+
+    const live = keyBy(liveResponse.data.elements, "id");
+    const playerList = bootstrapResponse.data.elements.map((element) =>
+      parsePlayerFromElement(element, live)
+    );
+    const players = keyBy(playerList, "id");
+    const teamList = bootstrapResponse.data.teams.map(parseTeam);
+    const teams = keyBy(teamList, "id");
+    const fixtures = fixturesResponse.data.map((fixture) =>
+      parseFixture(fixture, teams)
+    );
+    const fixturesPerTeam = getBasicFixtureInfoPerTeam(fixtures);
+    return {
+      players,
+      teams,
+      fixtures,
+      currentEventId,
+      fixturesPerTeam,
+      stale:
+        bootstrapResponse.stale || liveResponse.stale || fixturesResponse.stale,
+    };
+  } catch (error) {
+    console.error(
+      `Error in getBootstrap(currentEventId: ${currentEventId}):`,
+      error
+    );
+    throw error;
+  }
 }
 
 export async function getLeague(
   leagueId: number,
   currentEventId: number
 ): Promise<League & { stale: boolean }> {
-  let stale = false;
-  const leagueResponse = await fetchLeague({
-    leagueId,
-    eventId: currentEventId,
-  });
-  if (leagueResponse.stale) stale = true;
-
-  const _managers: ManagersRT = {};
-  await Promise.all(
-    [
-      ...leagueResponse.data.standings.results,
-      ...leagueResponse.data.new_entries.results,
-    ]
-      .slice(0, appConfig.MAX_MANAGERS)
-      .map(async (result, index) => {
-        const managerId = result.entry;
-        const managerResponse = await fetchManager({
-          managerId,
-          eventId: currentEventId,
-          remoteDelay: index * 50,
-        });
-        _managers[managerId] = managerResponse.data;
-        if (managerResponse.stale) stale = true;
-      })
-  );
-
-  const {
-    league: { name, id },
-    standings: { results },
-    new_entries: { results: newResults },
-  } = leagueResponse.data;
-  const managers = [...results, ...newResults]
-    .slice(0, appConfig.MAX_MANAGERS)
-    .map((result) => {
-      const {
-        gw,
-        transfers: transfersResponse,
-        history: historyResponse,
-      } = _managers[result.entry];
-
-      const picks = gw.picks.reduce((acc, pick) => {
-        acc[pick.element] = {
-          pickType: getPickType(pick),
-          position: pick.position,
-          multiplier: pick.multiplier,
-        };
-        return acc;
-      }, {} as Manager["picks"]);
-
-      const transfers = parseGameweekTransfers(
-        transfersResponse,
-        historyResponse,
-        currentEventId
-      );
-
-      const chips = parseChips(historyResponse);
-
-      const currentEvent = historyResponse.current.find(
-        (x) => x.event === currentEventId
-      );
-
-      const manager: Manager = {
-        id: result.entry,
-        name:
-          result.player_name ||
-          `${result.player_first_name || ""} ${result.player_last_name || ""}`,
-        teamName: result.entry_name,
-        rank: result.rank || 0,
-        totalPoints: result.total || 0,
-        eventPoints: gw.entry_history.points,
-        totalMoney: gw.entry_history.value * 0.1,
-        bankMoney: gw.entry_history.bank * 0.1,
-        picks,
-        chips,
-        transfers,
-        overallSeasonRank: currentEvent?.overall_rank || 0,
-        overallGameweekRank: currentEvent?.rank || 0,
-        pastSeasons: (historyResponse.past || []).map((season) => {
-          return { name: season.season_name, rank: season.rank };
-        }),
-        seasonHistory: historyResponse.current.map((gw) => {
-          return {
-            eventId: gw.event,
-            eventPoints: gw.points,
-            totalPoints: gw.total_points,
-            overallRank: gw.overall_rank,
-          };
-        }),
-      };
-      return manager;
+  try {
+    let stale = false;
+    const leagueResponse = await fetchLeague({
+      leagueId,
+      eventId: currentEventId,
     });
+    if (leagueResponse.stale) stale = true;
 
-  return {
-    name,
-    id,
-    managers,
-    stale,
-  };
+    const _managers: ManagersRT = {};
+
+    if (currentEventId === 0) {
+      // Create stub responses when currentEventId is 0
+      await Promise.all(
+        [
+          ...leagueResponse.data.standings.results,
+          ...leagueResponse.data.new_entries.results,
+        ]
+          .slice(0, appConfig.MAX_MANAGERS)
+          .map(async (result) => {
+            const managerId = result.entry;
+            // Create stub manager response that matches ManagerRT structure
+            _managers[managerId] = {
+              gw: {
+                picks: [],
+                entry_history: {
+                  points: 0,
+                  value: 1000, // 100.0 in the original format
+                  bank: 0,
+                },
+              },
+              transfers: [],
+              history: {
+                chips: [],
+                current: [],
+                past: [],
+              },
+            };
+          })
+      );
+    } else {
+      // Normal flow when currentEventId is not 0
+      await Promise.all(
+        [
+          ...leagueResponse.data.standings.results,
+          ...leagueResponse.data.new_entries.results,
+        ]
+          .slice(0, appConfig.MAX_MANAGERS)
+          .map(async (result, index) => {
+            const managerId = result.entry;
+            const managerResponse = await fetchManager({
+              managerId,
+              eventId: currentEventId,
+              remoteDelay: index * 50,
+            });
+            _managers[managerId] = managerResponse.data;
+            if (managerResponse.stale) stale = true;
+          })
+      );
+    }
+
+    const {
+      league: { name, id },
+      standings: { results },
+      new_entries: { results: newResults },
+    } = leagueResponse.data;
+    const managers = [...results, ...newResults]
+      .slice(0, appConfig.MAX_MANAGERS)
+      .map((result) => {
+        const {
+          gw,
+          transfers: transfersResponse,
+          history: historyResponse,
+        } = _managers[result.entry];
+
+        const picks = gw.picks.reduce((acc, pick) => {
+          acc[pick.element] = {
+            pickType: getPickType(pick),
+            position: pick.position,
+            multiplier: pick.multiplier,
+          };
+          return acc;
+        }, {} as Manager["picks"]);
+
+        const transfers = parseGameweekTransfers(
+          transfersResponse,
+          historyResponse,
+          currentEventId
+        );
+
+        const chips = parseChips(historyResponse);
+
+        const currentEvent = historyResponse.current.find(
+          (x) => x.event === currentEventId
+        );
+
+        const manager: Manager = {
+          id: result.entry,
+          name:
+            result.player_name ||
+            `${result.player_first_name || ""} ${
+              result.player_last_name || ""
+            }`,
+          teamName: result.entry_name,
+          rank: result.rank || 0,
+          totalPoints: result.total || 0,
+          eventPoints: gw.entry_history.points,
+          totalMoney: gw.entry_history.value * 0.1,
+          bankMoney: gw.entry_history.bank * 0.1,
+          picks,
+          chips,
+          transfers,
+          overallSeasonRank: currentEvent?.overall_rank || 0,
+          overallGameweekRank: currentEvent?.rank || 0,
+          pastSeasons: (historyResponse.past || []).map((season) => {
+            return { name: season.season_name, rank: season.rank };
+          }),
+          seasonHistory: historyResponse.current.map((gw) => {
+            return {
+              eventId: gw.event,
+              eventPoints: gw.points,
+              totalPoints: gw.total_points,
+              overallRank: gw.overall_rank,
+            };
+          }),
+        };
+        return manager;
+      });
+
+    return {
+      name,
+      id,
+      managers,
+      stale,
+    };
+  } catch (error) {
+    console.error(
+      `Error in getLeague(leagueId: ${leagueId}, currentEventId: ${currentEventId}):`,
+      error
+    );
+    throw error;
+  }
 }
 
 export async function getManagerProfile(managerId: number) {
-  const managerInfoResponse = await fetchManagerInfo({ managerId });
-  return {
-    data: parseManagerProfile(managerId, managerInfoResponse.data),
-    stale: managerInfoResponse.stale,
-  };
+  try {
+    const managerInfoResponse = await fetchManagerInfo({ managerId });
+    return {
+      data: parseManagerProfile(managerId, managerInfoResponse.data),
+      stale: managerInfoResponse.stale,
+    };
+  } catch (error) {
+    console.error(
+      `Error in getManagerProfile(managerId: ${managerId}):`,
+      error
+    );
+    throw error;
+  }
 }

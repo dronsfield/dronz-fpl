@@ -168,7 +168,7 @@ const App: React.FC<{}> = (props) => {
 export default App;
 
 export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
-  console.error(error);
+  console.log("ErrorBoundary", error);
   return (
     <Document>
       <div style={{ textAlign: "center", fontFamily: "sans-serif" }}>

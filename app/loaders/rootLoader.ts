@@ -55,7 +55,10 @@ export const rootLoader = async (user: User) => {
       if (bootstrapStale) stale = true;
       return bootstrap;
     })(),
-  ]);
+  ]).catch((err) => {
+    console.log("rootLoader error", err);
+    throw err;
+  });
 
   const data: RootLoaderData = { profile, bootstrap, stale };
   // duration.end();

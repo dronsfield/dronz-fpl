@@ -112,6 +112,7 @@ const League: React.FC<LeagueProps> = (props) => {
         </FlexCenter>
       ) : leagueQuery.error ? (
         <Section>
+          {console.log("leagueQuery.error", leagueQuery.error)}
           <div style={{ textAlign: "center" }}>
             Something went wrong. Refresh?
           </div>
