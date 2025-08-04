@@ -48,5 +48,6 @@
   },
   "engines": {
     "node": "18.x"
-  }
+  },
+  "enginesStrict": false
 }
